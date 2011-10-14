@@ -54,7 +54,7 @@ class BListener extends BlockListener {
 
 	@Override
 	public void onSignChange(SignChangeEvent event) {
-		if (event.getLine(0).equalsIgnoreCase("[AGENT]")) {
+		if (event.getLine(0).equalsIgnoreCase("[AGENT]") || event.getLine(0).equalsIgnoreCase("[HOTEL]")) {
 			if(SimpleRegionMarket.getEconomicManager() != null) {
 				ProtectedRegion region;
 				Location signloc = event.getBlock().getLocation();
@@ -99,7 +99,9 @@ class BListener extends BlockListener {
 						return;
 					}
 				}
-
+// if Hotel:
+// getHotelTime(region) (regions parent) /hotel setprice | settime
+// else:
 				double price = 0;
 				if (event.getLine(2).isEmpty()) {
 					if (SimpleRegionMarket.getAgentManager().countAgents(region) > 0) {
@@ -138,7 +140,7 @@ class BListener extends BlockListener {
 						return;
 					}
 				}
-
+//  else end
 				Player lp = p;
 				if (p != null) {
 					if (!SimpleRegionMarket.getAgentManager().isOwner(p, region) || event.getLine(3).equalsIgnoreCase("none")) {
@@ -148,10 +150,11 @@ class BListener extends BlockListener {
 					}
 				}
 
-				if (SimpleRegionMarket.getAgentManager().addAgent(region, signloc, lp, price)) {
+				if (SimpleRegionMarket.getAgentManager().addAgent(type, region, signloc, lp, price)) { // new saving format
 					if (p != null) {
 						if(lp == null) {
 							LanguageHandler.outputDebug(p, "REGION_OFFER_NONE", null);
+// "HOTEL_OFFER_NONE"
 						} else {
 							LanguageHandler.outputDebug(p, "REGION_OFFER_USER", null);
 						}
@@ -163,7 +166,7 @@ class BListener extends BlockListener {
 							LanguageHandler.outputDebug(p, "AGENT_PLACED", list);
 						}
 					}
-					event.setLine(0, "[AGENT]");
+					event.setLine(0, "[AGENT]"); // or HOTEL
 					event.setLine(1, region.getId());
 					event.setLine(2, SimpleRegionMarket.getEconomicManager().format(price));
 					int rightX = (int) region.getMaximumPoint().getX() - (int) (region.getMinimumPoint().getX() - 1);
