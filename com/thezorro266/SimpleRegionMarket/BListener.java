@@ -1,4 +1,4 @@
-package com.thezorro266.SimpleRegionMarket;
+package com.thezorro266.simpleregionmarket;
 
 import java.util.ArrayList;
 

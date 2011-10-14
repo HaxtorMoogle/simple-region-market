@@ -1,9 +1,11 @@
 name: SimpleRegionMarket
 version: 1.4
 author: theZorro266
-website: http://forums.bukkit.org/threads/39672/
+website: http://dev.bukkit.org/server-mods/simple-region-market/
+dev-url: http://dev.bukkit.org/server-mods/simple-region-market/
 main: com.thezorro266.simpleregionmarket.SimpleRegionMarket
-depend: [WorldGuard]
+depend: ['WorldGuard']
+softdepend: ['Multiverse-Core']
 
 commands:
   regionmarket:
