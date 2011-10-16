@@ -1,5 +1,5 @@
 name: SimpleRegionMarket
-version: 1.4
+version: 1.5
 author: theZorro266
 website: http://dev.bukkit.org/server-mods/simple-region-market/
 dev-url: http://dev.bukkit.org/server-mods/simple-region-market/
@@ -20,9 +20,15 @@ permissions:
       simpleregionmarket.admin: true
       simpleregionmarket.buy: true
       simpleregionmarket.sell: true
+      simpleregionmarket.rent: true
+      simpleregionmarket.create: true
   simpleregionmarket.admin:
     default: op
   simpleregionmarket.buy:
     default: false
   simpleregionmarket.sell:
+    default: false
+  simpleregionmarket.rent:
+    default: false
+  simpleregionmarket.create:
     default: false

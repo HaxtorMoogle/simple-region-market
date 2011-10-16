@@ -16,6 +16,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.nijikokun.register.payment.Method;
 import com.nijikokun.register.payment.Methods;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class SimpleRegionMarket extends JavaPlugin {
@@ -24,12 +25,6 @@ public class SimpleRegionMarket extends JavaPlugin {
 	private static AgentManager agentmanager;
 
 	private boolean error = false;
-
-	public static int ERR_NAME = 0;
-	public static int ERR_NOOWN = 1;
-	public static int ERR_MONEY = 2;
-	public static int ERR_OWN = 3;
-	public static int ERR_NOPERM = 4;
 
 	public static String plugin_dir = null;
 	public static String language = null;
@@ -68,6 +63,14 @@ public class SimpleRegionMarket extends JavaPlugin {
 		return (player.hasPermission("simpleregionmarket.sell") || isAdmin(player));
 	}
 
+	public static boolean canRent(Player player) {
+		return (player.hasPermission("simpleregionmarket.rent") || canCreate(player) || isAdmin(player));
+	}
+
+	public static boolean canCreate(Player player) {
+		return (player.hasPermission("simpleregionmarket.create") || isAdmin(player));
+	}
+
 	public static boolean isAdmin(Player player) {
 		return (player.hasPermission("simpleregionmarket.admin") || player.isOp());
 	}
@@ -82,15 +85,33 @@ public class SimpleRegionMarket extends JavaPlugin {
 				list.add(p.getName());
 				LanguageHandler.outputDebug(powner, "REGION_SOLD", list);
 			}
-			region.getOwners().removePlayer(player);
 		}
-		getAgentManager().removeAgentsFromRegion(region);
+		region.setMembers(new DefaultDomain());
+		region.setOwners(new DefaultDomain());
 		region.getOwners().addPlayer(getWorldGuard().wrapPlayer(p));
+		getAgentManager().removeAgentsFromRegion(region);
+		saveAll();
+	}
+
+	public static void rentHotel(ProtectedRegion region, Player p, long renttime) {
+		for (String player : region.getParent().getOwners().getPlayers()) {
+			Player powner;
+			powner = Bukkit.getPlayerExact(player);
+			if (powner != null) {
+				ArrayList<String> list = new ArrayList<String>();
+				list.add(region.getId());
+				list.add(p.getName());
+				LanguageHandler.outputDebug(powner, "HOTEL_RENT", list);
+			}
+		}
+		region.setMembers(new DefaultDomain());
+		region.setOwners(new DefaultDomain());
+		region.getMembers().addPlayer(getWorldGuard().wrapPlayer(p));
+		getAgentManager().rentRegionForPlayer(region, p, renttime);
 		saveAll();
 	}
 
 	private BListener blockListener = new BListener();
-
 	private PListener playerListener = new PListener();
 
 	@Override
@@ -123,12 +144,11 @@ public class SimpleRegionMarket extends JavaPlugin {
 				LanguageHandler.outputError(p, "ERR_NO_PERM_BUY_SELL", null);
 			}
 		} else if (args[0].equalsIgnoreCase("list") || args[0].equalsIgnoreCase("l")) {
-			ArrayList<RegionAgent> list = new ArrayList<RegionAgent>();
-			getAgentManager().checkAgents();
-			for (RegionAgent agent : getAgentManager().getAgentList()) {
+			ArrayList<SignAgent> list = new ArrayList<SignAgent>();
+			for (SignAgent agent : getAgentManager().getAgentList()) {
 				if (agent.getWorldWorld() == p.getWorld()) {
 					boolean add = true;
-					for (RegionAgent tmp : list) {
+					for (SignAgent tmp : list) {
 						if (tmp.getProtectedRegion() == agent.getProtectedRegion()) {
 							add = false;
 							break;
@@ -142,7 +162,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 			String string = "";
 			boolean first = true;
-			for (RegionAgent agent : list) {
+			for (SignAgent agent : list) {
 				if (!first) {
 					string += " | ";
 				}
@@ -236,12 +256,16 @@ public class SimpleRegionMarket extends JavaPlugin {
 			server.getPluginManager().disablePlugin(this);
 			return;
 		}
-		
-		getAgentManager().checkAgents();
 
 		server.getPluginManager().registerEvent(Event.Type.BLOCK_BREAK, blockListener, Event.Priority.Normal, this);
 		server.getPluginManager().registerEvent(Event.Type.SIGN_CHANGE, blockListener, Event.Priority.Normal, this);
 		server.getPluginManager().registerEvent(Event.Type.PLAYER_INTERACT, playerListener, Event.Priority.Normal, this);
+		
+		server.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+			public void run() {
+			getAgentManager().checkAgents();
+		}
+		}, 20L, 1200L);
 		
 		LanguageHandler.outputConsole(Level.INFO, "Version " + getDescription().getVersion() + " loaded, updated by theZorro266");
 	}
