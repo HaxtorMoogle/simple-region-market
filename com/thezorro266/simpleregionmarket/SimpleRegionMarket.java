@@ -94,14 +94,16 @@ public class SimpleRegionMarket extends JavaPlugin {
 	}
 
 	public static void rentHotel(ProtectedRegion region, Player p, long renttime) {
-		for (String player : region.getParent().getOwners().getPlayers()) {
-			Player powner;
-			powner = Bukkit.getPlayerExact(player);
-			if (powner != null) {
-				ArrayList<String> list = new ArrayList<String>();
-				list.add(region.getId());
-				list.add(p.getName());
-				LanguageHandler.outputDebug(powner, "HOTEL_RENT", list);
+		if(region.getParent() != null) {
+			for (String player : region.getParent().getOwners().getPlayers()) {
+				Player powner;
+				powner = Bukkit.getPlayerExact(player);
+				if (powner != null) {
+					ArrayList<String> list = new ArrayList<String>();
+					list.add(region.getId());
+					list.add(p.getName());
+					LanguageHandler.outputDebug(powner, "HOTEL_RENT", list);
+				}
 			}
 		}
 		region.setMembers(new DefaultDomain());
