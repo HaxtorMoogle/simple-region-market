@@ -84,7 +84,14 @@ public class LanguageHandler {
 						"CMD_MAXREGIONS: 'Max Regions for all players set to $0.'\n" +
 						"CMD_LANG_NO_ARG: 'Language: \"$0\" - Use /rm lang [LANGUAGE] to set the language.'\n" +
 						"CMD_LANG_SWITCHED: 'Successfully switched to English translated by <SERVERNAME HERE> :D'\n" +
-						"CMD_LANG_NO_LANG: 'Language not found.'");
+						"CMD_LANG_NO_LANG: 'Language not found.'\n" +
+						"CMD_LOGGING_NO_ARG: 'Logging is set to $0. To enable logging use \"/rm logging true\", otherwise use \"false\" instead.'\n" +
+						"CMD_LOGGING_SET: 'Logging was set to $0.'\n" +
+						"CMD_LOGGING_ALREADY_SET: 'Logging already set to $0.'\n" +
+						"LOG_SWITCHED: 'Logging was switched to $0'\n" +
+						"LOG_SOLD_REGION: 'Region $0 was sold to $1'\n" +
+						"LOG_RENT_HOTEL: 'Hotel $0 was rent to $1'\n" +
+						"LOG_EXPIRED_HOTEL: 'Hotel $0 was rent by $1 and just expired'");
 			} catch (InvalidConfigurationException e) {
 				outputConsole(Level.SEVERE, "[SimpleRegionMarket] Error: Internal language error!!");
 				return false;

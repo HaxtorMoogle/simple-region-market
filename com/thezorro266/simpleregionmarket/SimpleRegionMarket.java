@@ -29,7 +29,8 @@ public class SimpleRegionMarket extends JavaPlugin {
 	private boolean error = false;
 
 	public static String plugin_dir = null;
-	public static String language = null;
+	public static String language = "en";
+	public static boolean logging = true;
 
 	public static void saveAll() {
 		ArrayList<World> done = new ArrayList<World>();
@@ -105,6 +106,12 @@ public class SimpleRegionMarket extends JavaPlugin {
 		region.getOwners().addPlayer(getWorldGuard().wrapPlayer(p));
 		getAgentManager().removeAgentsFromRegion(region);
 		saveAll();
+		if(logging) {
+			ArrayList<String> list = new ArrayList<String>();
+			list.add(region.getId());
+			list.add(p.getName());
+			LanguageHandler.langOutputConsole("LOG_SOLD_REGION", Level.INFO, list);
+		}
 	}
 
 	public static void rentHotel(ProtectedRegion region, Player p, long renttime) {
@@ -125,6 +132,12 @@ public class SimpleRegionMarket extends JavaPlugin {
 		region.getMembers().addPlayer(getWorldGuard().wrapPlayer(p));
 		getAgentManager().rentRegionForPlayer(region, p, renttime);
 		saveAll();
+		if(logging) {
+			ArrayList<String> list = new ArrayList<String>();
+			list.add(region.getId());
+			list.add(p.getName());
+			LanguageHandler.langOutputConsole("LOG_RENT_HOTEL", Level.INFO, list);
+		}
 	}
 
 	private BListener blockListener = new BListener();
@@ -211,6 +224,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 				ArrayList<String> list = new ArrayList<String>();
 				list.add(Integer.toString(maxregions));
 				LanguageHandler.outputDebug(p, "CMD_MAXREGIONS", list);
+				configuration.save();
 			} else {
 				LanguageHandler.outputError(p, "ERR_NO_PERM", null);
 			}
@@ -226,12 +240,34 @@ public class SimpleRegionMarket extends JavaPlugin {
 						ArrayList<String> list = new ArrayList<String>();
 						list.add(language);
 						LanguageHandler.outputDebug(p, "CMD_LANG_SWITCHED", list);
+						configuration.save();
 					} else {
 						LanguageHandler.outputError(p, "CMD_LANG_NO_LANG", null);
 					}
 				}
 			} else {
 				LanguageHandler.outputError(p, "ERR_NO_PERM", null);
+			}
+		} else if (args[0].equalsIgnoreCase("logging")) {
+			if(isAdmin(p)) {
+				ArrayList<String> list = new ArrayList<String>();
+				if(args.length < 2) {
+					list.add(Boolean.toString(logging));
+					LanguageHandler.outputDebug(p, "CMD_LOGGING_NO_ARG", list);
+				} else {
+					boolean log = false;
+					log = Boolean.parseBoolean(args[1]);
+					if(logging != log) {
+						logging = log;
+						list.add(Boolean.toString(log));
+						LanguageHandler.outputDebug(p, "CMD_LOGGING_SET", list);
+						LanguageHandler.langOutputConsole("LOG_SWITCHED", Level.INFO, list);
+					} else {
+						list.add(Boolean.toString(logging));
+						LanguageHandler.outputDebug(p, "CMD_LOGGING_ALREADY_SET", list);
+					}
+					configuration.save();
+				}
 			}
 		} else
 			return false;

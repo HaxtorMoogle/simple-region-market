@@ -89,6 +89,12 @@ public class AgentManager {
 						Player p = Bukkit.getPlayerExact(obj.getRent());
 						obj.getProtectedRegion().setMembers(new DefaultDomain());
 						obj.getProtectedRegion().setOwners(new DefaultDomain());
+						if(SimpleRegionMarket.logging) {
+							ArrayList<String> list = new ArrayList<String>();
+							list.add(obj.getRegion());
+							list.add(obj.getRent());
+							LanguageHandler.langOutputConsole("LOG_EXPIRED_HOTEL", Level.INFO, list);
+						}
 						obj.rentTo("");
 						if(p != null) {
 							if(!player_hotel_expired.contains(p.getName())) {
