@@ -1,11 +1,13 @@
 package com.thezorro266.simpleregionmarket;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -30,6 +32,18 @@ public class SimpleRegionMarket extends JavaPlugin {
 	public static String language = null;
 
 	public static void saveAll() {
+		ArrayList<World> done = new ArrayList<World>();
+		for(int i=0; i < getAgentManager().getAgentList().size(); i++) {
+			World iw = getAgentManager().getAgentList().get(i).getWorldWorld();
+			if(!done.contains(iw)) {
+		        try {
+		        	getWorldGuard().getGlobalRegionManager().get(iw).save();
+		        } catch (IOException e) {
+		        	LanguageHandler.outputConsole(Level.SEVERE, "WorldGuard >> Failed to write regions file: " + e.getMessage());
+		        }
+				done.add(iw);
+			}
+		}
 		configuration.save();
 	}
 
