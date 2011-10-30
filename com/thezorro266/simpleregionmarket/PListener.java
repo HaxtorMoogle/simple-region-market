@@ -24,14 +24,13 @@ class PListener extends PlayerListener {
 						
 			if(SimpleRegionMarket.getEconomicManager() != null) {
 				Player p = event.getPlayer();
-				if(agent.getMode() == SignAgent.MODE_SELL_REGION) {
-					if(AgentManager.max_regions != 0) {
-						int count = 0;
-						count = SimpleRegionMarket.getWorldGuard().getRegionManager(b.getWorld()).getRegionCountOfPlayer(SimpleRegionMarket.getWorldGuard().wrapPlayer(p));
-						if(count >= AgentManager.max_regions && !SimpleRegionMarket.isAdmin(p)) {
+				if(!SimpleRegionMarket.isAdmin(p)) {
+					if(agent.getMode() == SignAgent.MODE_SELL_REGION) {
+						if(!LimitHandler.limitCanBuy(p))
 							LanguageHandler.outputError(p, "ERR_REGION_LIMIT", null);
-							return;
-						}
+					} else if(agent.getMode() == SignAgent.MODE_SELL_REGION) {
+						if(!LimitHandler.limitCanRent(p))
+							LanguageHandler.outputError(p, "ERR_HOTEL_LIMIT", null);
 					}
 				}
 

@@ -23,7 +23,6 @@ public class ConfigHandler {
 		YamlConfiguration confighandle;
 		
 		confighandle = YamlConfiguration.loadConfiguration(config);
-		AgentManager.max_regions = confighandle.getInt("maxregions", 0);
 		SimpleRegionMarket.language = confighandle.getString("language", "en");
 		SimpleRegionMarket.logging = confighandle.getBoolean("logging", true);
 		
@@ -116,7 +115,6 @@ public class ConfigHandler {
 		
 		confighandle = new YamlConfiguration();
 		
-		confighandle.set("maxregions", AgentManager.max_regions);
 		confighandle.set("language", SimpleRegionMarket.language);
 		confighandle.set("logging", SimpleRegionMarket.logging);
 		

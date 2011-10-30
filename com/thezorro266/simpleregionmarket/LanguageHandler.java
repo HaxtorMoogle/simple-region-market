@@ -64,6 +64,7 @@ public class LanguageHandler {
 						"REGION_OFFER_USER: 'You offer your region for sale.'\n" +
 						"ERR_PARENT_NO_OWNER: 'You do not own the hotel (parent of the region).'\n" +
 						"ERR_ALREADY_RENT: 'This room is already rented by someone.'\n" +
+						"ERR_HOTEL_LIMIT: 'You have reached your limit of rooms on this world.'\n" +
 						"HOTEL_YOURS: 'You cannot rent a room in your hotel.'\n" +
 						"HOTEL_EXPIRED: 'Your room in the hotel expired. It is not anymore yours.'\n" +
 						"HOTEL_RENT: 'The room $0 was just rented by $1.'\n" +
@@ -79,9 +80,7 @@ public class LanguageHandler {
 						"HELP_ADM_02: 'and in the last line there can be a \"none\" that the money does not go to you, but to the server.'\n" +
 						"HELP_05: 'After successfully creating the sign the last line will be filled with the size of the region.'\n" +
 						"HELP_BUY: 'If you want to buy a region, just right-click on the sign.'\n" +
-						"CMD_MAXREGIONS_NO_ARG: 'Max Regions: $0 - Use /rm maxregions [VALUE] to set Max Regions for all players.'\n" +
-						"CMD_MAXREGIONS_WRONG_ARG: 'Use /rm maxregions [VALUE] to set Max Regions for all players.'\n" +
-						"CMD_MAXREGIONS: 'Max Regions for all players set to $0.'\n" +
+						"CMD_LIMITS_NO_ARG: 'Use /rm limits <buy/rent> <world/player> <name (of world/player)> (<new limit>)'\n" +
 						"CMD_LANG_NO_ARG: 'Language: \"$0\" - Use /rm lang [LANGUAGE] to set the language.'\n" +
 						"CMD_LANG_SWITCHED: 'Successfully switched to English translated by <SERVERNAME HERE> :D'\n" +
 						"CMD_LANG_NO_LANG: 'Language not found.'\n" +

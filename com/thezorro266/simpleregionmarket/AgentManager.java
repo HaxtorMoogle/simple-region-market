@@ -19,8 +19,6 @@ public class AgentManager {
 
 	private ArrayList<SignAgent> agents = new ArrayList<SignAgent>();
 
-	public static int max_regions = 0;
-
 	public SignAgent addAgent(int mode, Location location, ProtectedRegion region, double price, String account, long renttime) {
 		if (mode == SignAgent.MODE_SELL_REGION || mode == SignAgent.MODE_RENT_HOTEL) {
 			if(location != null) {

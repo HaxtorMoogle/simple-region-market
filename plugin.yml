@@ -1,5 +1,5 @@
 name: SimpleRegionMarket
-version: 1.5.3
+version: 1.6
 author: theZorro266
 website: http://dev.bukkit.org/server-mods/simple-region-market/
 dev-url: http://dev.bukkit.org/server-mods/simple-region-market/
@@ -11,7 +11,7 @@ commands:
   regionmarket:
     description: Using Simple Region Market
     aliases: rm
-    usage: /regionmarket ? | list | maxregions | lang | logging
+    usage: /regionmarket ? | list | limits | lang | logging
 
 permissions:
   simpleregionmarket.*:

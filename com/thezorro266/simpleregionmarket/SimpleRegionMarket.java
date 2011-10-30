@@ -205,25 +205,14 @@ public class SimpleRegionMarket extends JavaPlugin {
 				}
 			}
 			LanguageHandler.outputString(p, string);
-		} else if (args[0].equalsIgnoreCase("maxregions")) {
+		} else if (args[0].equalsIgnoreCase("limits")) {
 			if(isAdmin(p)) {
-				int maxregions;
 				if(args.length < 2) {
-					ArrayList<String> list = new ArrayList<String>();
-					list.add(Integer.toString(AgentManager.max_regions));
-					LanguageHandler.outputDebug(p, "CMD_MAXREGIONS_NO_ARG", list);
+					LanguageHandler.outputDebug(p, "CMD_LIMITS_NO_ARG", null);
 					return true;
 				}
-				try {
-					maxregions = Integer.parseInt(args[1]);
-				} catch (Exception e) {
-					LanguageHandler.outputError(p, "CMD_MAXREGIONS_WRONG_ARG", null);
-					return true;
-				}
-				AgentManager.max_regions = maxregions;
-				ArrayList<String> list = new ArrayList<String>();
-				list.add(Integer.toString(maxregions));
-				LanguageHandler.outputDebug(p, "CMD_MAXREGIONS", list);
+				// TODO /rm limits command
+				// /rm limits <buy/rent> <world/(group)/player> <name (of world/(group)/player)> (<new limit>)
 				configuration.save();
 			} else {
 				LanguageHandler.outputError(p, "ERR_NO_PERM", null);
