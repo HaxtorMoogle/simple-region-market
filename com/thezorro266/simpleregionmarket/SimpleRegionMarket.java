@@ -154,7 +154,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 		if (args.length < 1)
 			return false;
 
-		if (args[0].equalsIgnoreCase("?")) {
+		if (args[0].equalsIgnoreCase("?") || args[0].equalsIgnoreCase("help")) {
 			if(canBuy(p)) {
 				if(canSell(p)) {
 					LanguageHandler.outputDebug(p, "HELP_01", null);
@@ -172,39 +172,67 @@ public class SimpleRegionMarket extends JavaPlugin {
 			} else {
 				LanguageHandler.outputError(p, "ERR_NO_PERM_BUY_SELL", null);
 			}
+		} else if (args[0].equalsIgnoreCase("version") || args[0].equalsIgnoreCase("v")) {
+			LanguageHandler.outputConsole(Level.INFO, "Version " + getDescription().getVersion() + ", updated by theZorro266");
 		} else if (args[0].equalsIgnoreCase("list") || args[0].equalsIgnoreCase("l")) {
-			ArrayList<SignAgent> list = new ArrayList<SignAgent>();
-			for (SignAgent agent : getAgentManager().getAgentList()) {
-				if (agent.getWorldWorld() == p.getWorld()) {
-					boolean add = true;
-					for (SignAgent tmp : list) {
-						if (tmp.getProtectedRegion() == agent.getProtectedRegion()) {
-							add = false;
-							break;
+			if(getAgentManager().getAgentList().size() > 200) {
+				LanguageHandler.outputError(p, "CMD_LIST_TOO_MANY_REGIONS", null);
+			} else {
+				ArrayList<SignAgent> list = new ArrayList<SignAgent>();
+				for (SignAgent agent : getAgentManager().getAgentList()) {
+					if (agent.getWorldWorld() == p.getWorld() && agent.getMode() == SignAgent.MODE_SELL_REGION) {
+						boolean add = true;
+						for (SignAgent tmp : list) {
+							if (tmp.getProtectedRegion() == agent.getProtectedRegion()) {
+								add = false;
+								break;
+							}
+						}
+						if (add) {
+							list.add(agent);
 						}
 					}
-					if (add) {
-						list.add(agent);
+				}
+				
+				if(list.size() < 1) {
+					LanguageHandler.outputDebug(p, "CMD_LIST_NO_REGIONS", null);
+					return true;
+				}
+				
+				int initsite = 1;
+				if(args.length > 1) {
+					try {
+						initsite = Integer.parseInt(args[1]);
+					} catch (Exception e) {
+						LanguageHandler.outputError(p, "CMD_LIST_WRONG_ARG", null);
+						return true;
+					}
+					
+					if(initsite < 1) {
+						LanguageHandler.outputError(p, "CMD_LIST_WRONG_ARG", null);
+						return true;
 					}
 				}
-			}
-
-			String string = "";
-			boolean first = true;
-			for (SignAgent agent : list) {
-				if (!first) {
-					string += " | ";
+				
+				int site = list.size()/8;
+				if(list.size() % 8 > 0)
+					site++;
+				
+				int showsite = 0;
+				if(site > 0)
+					showsite = initsite;
+				
+				LanguageHandler.outputString(p, "Site " + showsite + " of " + site);
+				initsite--;
+				initsite *= 8;
+				for(int i=initsite; i < initsite+8; i++) {
+					if(i >= list.size())
+						break;
+					
+					SignAgent agent = list.get(i);
+					LanguageHandler.outputString(p, "Region: " + agent.getRegion() + " - " + getEconomicManager().format(agent.getPrice()));
 				}
-				string += agent.getRegion() + " - " + getEconomicManager().format(agent.getPrice());
-				if (string.length() > 80) {
-					LanguageHandler.outputString(p, string);
-					string = "";
-					first = true;
-				} else {
-					first = false;
-				}
 			}
-			LanguageHandler.outputString(p, string);
 		} else if (args[0].equalsIgnoreCase("limits")) {
 			if(isAdmin(p)) {
 				if(args.length < 2) {
