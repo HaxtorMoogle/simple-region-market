@@ -39,8 +39,8 @@ public class LanguageHandler {
 					"ERR_NO_RENTTIME: 'Renttime not found.'\n" +
 					"ERR_NO_PRICE_RENTTIME: 'Price and renttime not found.'\n" +
 					"ERR_NO_PERM: 'You are not allowed to do that.'\n" +
-					"ERR_NO_PERM_BUY: 'You do not have the permission to buy a region.'\n" +
-					"ERR_NO_PERM_BUY_SELL: 'You cannot buy or sell a region.'\n" +
+					"ERR_NO_PERM_SELL: 'You do not have the permission to sell a region.'\n" +
+					"ERR_NO_PERM_BUY: 'You do not have the permission to buy or sell a region.'\n" +
 					"ERR_NO_PERM_RENT: 'You do not have the permission to rent a room.'\n" +
 					"ERR_NO_PERM_RENT_CREATE: 'You cannot create a hotel or rent a room.'\n" +
 					"ERR_PLACE_AGENT: 'The agent could not be created.'\n" +
@@ -81,10 +81,15 @@ public class LanguageHandler {
 					"HELP_ADM_02: 'and in the last line there can be a \"none\" that the money does not go to you, but to the server.'\n" +
 					"HELP_05: 'After successfully creating the sign the last line will be filled with the size of the region.'\n" +
 					"HELP_BUY: 'If you want to buy a region, just right-click on the sign.'\n" +
-					"CMD_LIST_TOO_MANY_REGIONS: 'There are too many regions so you can't list them.'\n" +
-					"CMD_LIST_NO_REGIONS: 'There are no regions being sold by Signs'\n" +
+					"CMD_LIMITS_NO_ARG: 'Use /rm limits <buy/rent> <world/player/new global limit> <name (of world/player)> (<new limit>)'\n" +
+					"CMD_LIMITS_WRONG_ARG: 'Wrong argument. Use /rm limits <buy/rent> <world/player/new global limit> <name (of world/player)> (<new limit>)'\n" +
+					"CMD_LIMITS_NO_WORLD: 'World not found.'\n" +
+					"CMD_LIMITS_NO_PLAYER: 'Player not found.'\n" +
+					"CMD_LIMITS_SET_LIMIT: 'Set limit to $0'\n" +
+					"CMD_LIMITS_OUTPUT_LIMIT: 'Limit: $0'\n" +
+					"CMD_LIST_TOO_MANY_REGIONS: 'There are too many regions so you cant list them.'\n" +
+					"CMD_LIST_NO_REGIONS: 'There are no regions being sold by Signs.'\n" +
 					"CMD_LIST_WRONG_ARG: 'Use /rm list <site> (site must be over zero).'\n" +
-					"CMD_LIMITS_NO_ARG: 'Use /rm limits <buy/rent> <world/player> <name (of world/player)> (<new limit>)'\n" +
 					"CMD_LANG_NO_ARG: 'Language: \"$0\" - Use /rm lang [LANGUAGE] to set the language.'\n" +
 					"CMD_LANG_SWITCHED: 'Successfully switched to English translated by <SERVERNAME HERE> :D'\n" +
 					"CMD_LANG_NO_LANG: 'Language not found.'\n" +
@@ -160,14 +165,14 @@ public class LanguageHandler {
 	}
 
 	public static void outputDebug(Player p, String id, ArrayList<String> args) {
-		p.sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_BLUE + "SimpleRegionMarket" + ChatColor.WHITE + "] " + ChatColor.YELLOW + parseLanguageString(id, args));
+		p.sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_BLUE + "SRM" + ChatColor.WHITE + "] " + ChatColor.YELLOW + parseLanguageString(id, args));
 	}
 
 	public static void outputError(Player p, String id, ArrayList<String> args) {
-		p.sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_BLUE + "SimpleRegionMarket" + ChatColor.WHITE + "] " + ChatColor.RED + parseLanguageString(id, args));
+		p.sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_BLUE + "SRM" + ChatColor.WHITE + "] " + ChatColor.RED + parseLanguageString(id, args));
 	}
 
 	public static void outputString(Player p, String string) {
-		p.sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_BLUE + "SimpleRegionMarket" + ChatColor.WHITE + "] " + ChatColor.YELLOW + string);
+		p.sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_BLUE + "SRM" + ChatColor.WHITE + "] " + ChatColor.YELLOW + string);
 	}
 }

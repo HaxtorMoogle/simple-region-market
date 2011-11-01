@@ -85,12 +85,12 @@ class BListener extends BlockListener {
 					if(mode == SignAgent.MODE_SELL_REGION) {
 						if(!SimpleRegionMarket.canSell(p)) {
 							event.setCancelled(true);
-							LanguageHandler.outputDebug(p, "ERR_NO_PERM_BUY_SELL", null);
+							LanguageHandler.outputDebug(p, "ERR_NO_PERM_SELL", null);
 							event.getBlock().setType(Material.AIR);
 							signloc.getWorld().dropItem(signloc, new ItemStack(Material.SIGN, 1));
 							return;
 						}
-						if (!SimpleRegionMarket.getAgentManager().isOwner(p, region) && !SimpleRegionMarket.isAdmin(p)) {
+						if (!SimpleRegionMarket.isAdmin(p) && !SimpleRegionMarket.getAgentManager().isOwner(p, region)) {
 							LanguageHandler.outputError(p, "ERR_REGION_NO_OWNER", null);
 							event.setCancelled(true);
 							event.getBlock().setType(Material.AIR);
@@ -105,7 +105,7 @@ class BListener extends BlockListener {
 							signloc.getWorld().dropItem(signloc, new ItemStack(Material.SIGN, 1));
 							return;
 						}
-						if (!SimpleRegionMarket.getAgentManager().isOwner(p, region.getParent()) && !SimpleRegionMarket.isAdmin(p)) {
+						if (!SimpleRegionMarket.isAdmin(p) && !SimpleRegionMarket.getAgentManager().isOwner(p, region.getParent())) {
 							LanguageHandler.outputError(p, "ERR_PARENT_NO_OWNER", null);
 							event.setCancelled(true);
 							event.getBlock().setType(Material.AIR);

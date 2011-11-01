@@ -26,11 +26,15 @@ class PListener extends PlayerListener {
 				Player p = event.getPlayer();
 				if(!SimpleRegionMarket.isAdmin(p)) {
 					if(agent.getMode() == SignAgent.MODE_SELL_REGION) {
-						if(!LimitHandler.limitCanBuy(p))
+						if(!LimitHandler.limitCanBuy(p)) {
 							LanguageHandler.outputError(p, "ERR_REGION_LIMIT", null);
-					} else if(agent.getMode() == SignAgent.MODE_SELL_REGION) {
-						if(!LimitHandler.limitCanRent(p))
+							return;
+						}
+					} else if(agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
+						if(!LimitHandler.limitCanRent(p)) {
 							LanguageHandler.outputError(p, "ERR_HOTEL_LIMIT", null);
+							return;
+						}
 					}
 				}
 

@@ -33,18 +33,24 @@ public class SimpleRegionMarket extends JavaPlugin {
 	public static boolean logging = true;
 
 	public static void saveAll() {
-		ArrayList<World> done = new ArrayList<World>();
-		for(int i=0; i < getAgentManager().getAgentList().size(); i++) {
-			World iw = getAgentManager().getAgentList().get(i).getWorldWorld();
-			if(!done.contains(iw)) {
-		        try {
-		        	getWorldGuard().getGlobalRegionManager().get(iw).save();
-		        } catch (IOException e) {
-		        	LanguageHandler.outputConsole(Level.SEVERE, "WorldGuard >> Failed to write regions file: " + e.getMessage());
-		        }
-				done.add(iw);
+		if(getWorldGuard() != null
+				&& getWorldGuard().isEnabled()) {
+			ArrayList<World> done = new ArrayList<World>();
+			for(int i=0; i < getAgentManager().getAgentList().size(); i++) {
+				World iw = getAgentManager().getAgentList().get(i).getWorldWorld();
+				if(!done.contains(iw)) {
+			        try {
+			        	getWorldGuard().getGlobalRegionManager().get(iw).save();
+			        } catch (IOException e) {
+			        	LanguageHandler.outputConsole(Level.SEVERE, "WorldGuard >> Failed to write regions file: " + e.getMessage());
+			        }
+					done.add(iw);
+				}
 			}
+		} else {
+			LanguageHandler.outputConsole(Level.SEVERE, "Bukkit failed and unloaded WorldGuard => Not saving");
 		}
+		LimitHandler.saveLimits();
 		configuration.save();
 	}
 
@@ -170,7 +176,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 				}
 				LanguageHandler.outputDebug(p, "HELP_BUY", null);
 			} else {
-				LanguageHandler.outputError(p, "ERR_NO_PERM_BUY_SELL", null);
+				LanguageHandler.outputError(p, "ERR_NO_PERM_SELL", null);
 			}
 		} else if (args[0].equalsIgnoreCase("version") || args[0].equalsIgnoreCase("v")) {
 			LanguageHandler.outputConsole(Level.INFO, "Version " + getDescription().getVersion() + ", updated by theZorro266");
@@ -233,15 +239,106 @@ public class SimpleRegionMarket extends JavaPlugin {
 					LanguageHandler.outputString(p, "Region: " + agent.getRegion() + " - " + getEconomicManager().format(agent.getPrice()));
 				}
 			}
-		} else if (args[0].equalsIgnoreCase("limits")) {
+		} else if (args[0].equalsIgnoreCase("limits") || args[0].equalsIgnoreCase("limit")) {
 			if(isAdmin(p)) {
-				if(args.length < 2) {
+				if(args.length < 2) { // limits
 					LanguageHandler.outputDebug(p, "CMD_LIMITS_NO_ARG", null);
 					return true;
+				} else {
+					int mode;
+					if(args[1].equalsIgnoreCase("buy") || args[1].equalsIgnoreCase("regions")) {
+						mode = 0;
+					} else if(args[1].equalsIgnoreCase("rent") || args[1].equalsIgnoreCase("rooms")) {
+						mode = 1;
+					} else {
+						LanguageHandler.outputError(p, "CMD_LIMITS_WRONG_ARG", null);
+						return true;
+					}
+					int limit;
+					if(args.length < 3) { // limits buy|rent - Will show global limits of buying regions
+						ArrayList<String> list = new ArrayList<String>();
+						if(mode == 0)
+							list.add(Integer.toString(LimitHandler.getGlobalBuyLimit()));
+						else if(mode == 1)
+							list.add(Integer.toString(LimitHandler.getGlobalRentLimit()));
+						LanguageHandler.outputDebug(p, "CMD_LIMITS_OUTPUT_LIMIT", list);
+					} else { // limits buy|rent <limit>|<...>
+						try {
+							limit = Integer.parseInt(args[2]);
+							if(mode == 0)
+								LimitHandler.setGlobalBuyLimit(limit);
+							else if(mode == 1)
+								LimitHandler.setGlobalRentLimit(limit);
+							ArrayList<String> list = new ArrayList<String>();
+							list.add(Integer.toString(limit));
+							LanguageHandler.outputDebug(p, "CMD_LIMITS_SET_LIMIT", list);
+						} catch(Exception e) {
+							if(args[2].equalsIgnoreCase("world")) {
+								World w = Bukkit.getWorld(args[3]);
+								if(w != null) {
+									if(args.length < 4) { // limits buy|rent world
+										LanguageHandler.outputError(p, "CMD_LIMITS_NO_WORLD", null);
+									} else if(args.length < 5) { // limits buy|rent world <name>
+										ArrayList<String> list = new ArrayList<String>();
+										if(mode == 0)
+											list.add(Integer.toString(LimitHandler.getBuyWorldLimit(w)));
+										else if(mode == 1)
+											list.add(Integer.toString(LimitHandler.getRentWorldLimit(w)));
+										LanguageHandler.outputDebug(p, "CMD_LIMITS_OUTPUT_LIMIT", list);
+									} else { // limits buy|rent world <name> <limit>
+										try {
+											limit = Integer.parseInt(args[4]);
+											if(mode == 0)
+												LimitHandler.setBuyWorldLimit(w, limit);
+											else if(mode == 1)
+												LimitHandler.setRentWorldLimit(w, limit);
+											ArrayList<String> list = new ArrayList<String>();
+											list.add(Integer.toString(limit));
+											LanguageHandler.outputDebug(p, "CMD_LIMITS_SET_LIMIT", list);
+										} catch(Exception e2) {
+											LanguageHandler.outputError(p, "CMD_LIMITS_WRONG_ARG", null);
+										}
+									}
+								} else {
+									LanguageHandler.outputError(p, "CMD_LIMITS_NO_WORLD", null);
+								}
+							} else if(args[2].equalsIgnoreCase("player")) {
+								Player p2 = Bukkit.getPlayer(args[3]);
+								if(p2 != null) {
+									if(args.length < 4) { // limits buy|rent player
+										LanguageHandler.outputError(p, "CMD_LIMITS_NO_PLAYER", null);
+									} else if(args.length < 5) { // limits buy|rent player <name>
+										ArrayList<String> list = new ArrayList<String>();
+										if(mode == 0)
+											list.add(Integer.toString(LimitHandler.getBuyPlayerLimit(p2)));
+										else if(mode == 1)
+											list.add(Integer.toString(LimitHandler.getRentPlayerLimit(p2)));
+										LanguageHandler.outputDebug(p, "CMD_LIMITS_OUTPUT_LIMIT", list);
+									} else { // limits buy|rent player <name> <limit>
+										try {
+											limit = Integer.parseInt(args[4]);
+											if(mode == 0)
+												LimitHandler.setBuyPlayerLimit(p2, limit);
+											else if(mode == 1)
+												LimitHandler.setRentPlayerLimit(p2, limit);
+											ArrayList<String> list = new ArrayList<String>();
+											list.add(Integer.toString(limit));
+											LanguageHandler.outputDebug(p, "CMD_LIMITS_SET_LIMIT", list);
+										} catch(Exception e2) {
+											LanguageHandler.outputError(p, "CMD_LIMITS_WRONG_ARG", null);
+										}
+									}
+								} else {
+									LanguageHandler.outputError(p, "CMD_LIMITS_NO_PLAYER", null);
+								}
+							} else {
+								LanguageHandler.outputError(p, "CMD_LIMITS_WRONG_ARG", null);
+							}
+						}
+					}
 				}
-				// TODO /rm limits command
-				// /rm limits <buy/rent> <world/(group)/player> <name (of world/(group)/player)> (<new limit>)
-				configuration.save();
+
+				LimitHandler.saveLimits();
 			} else {
 				LanguageHandler.outputError(p, "ERR_NO_PERM", null);
 			}
@@ -335,6 +432,8 @@ public class SimpleRegionMarket extends JavaPlugin {
 			getAgentManager().checkAgents();
 		}
 		}, 20L, 1200L);
+
+		LimitHandler.loadLimits();
 		
 		LanguageHandler.outputConsole(Level.INFO, "Version " + getDescription().getVersion() + " loaded, updated by theZorro266");
 	}
