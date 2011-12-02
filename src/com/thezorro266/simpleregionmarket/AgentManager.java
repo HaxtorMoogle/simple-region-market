@@ -77,8 +77,8 @@ public class AgentManager {
 				obj.destroyAgent(false);
 				itr.remove();
 			} else if(obj.getLocation().getBlock() == null ||
-					 (obj.getLocation().getBlock().getTypeId() != 63 &&
-					  obj.getLocation().getBlock().getTypeId() != 68)) { // block is not a sign - remove agent
+					(obj.getLocation().getBlock().getTypeId() != 63 &&
+					obj.getLocation().getBlock().getTypeId() != 68)) { // block is not a sign - remove agent
 				LanguageHandler.langOutputConsole("AGENT_BLOCK_REMOVED", Level.WARNING, null);
 				itr.remove();
 			} else {
@@ -167,7 +167,7 @@ public class AgentManager {
 			}
 		}
 	}
-	
+
 	public void actAgent(SignAgent agent, SignChangeEvent event) {
 		if(agent != null) {
 			Sign agentsign = (Sign)agent.getLocation().getBlock().getState();
@@ -182,11 +182,12 @@ public class AgentManager {
 					agentsign.setLine(2, SimpleRegionMarket.getEconomicManager().format(agent.getPrice()));
 				}
 			} else if(agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
-				if(event != null)
+				if(event != null) {
 					event.setLine(0, "[HOTEL]");
-				else
+				} else {
 					agentsign.setLine(0, "[HOTEL]");
-				
+				}
+
 				if(agent.isRent()) {
 					if(event != null) {
 						event.setLine(1, agent.getRent());
@@ -205,26 +206,30 @@ public class AgentManager {
 					}
 				}
 			}
-			
+
 			ProtectedRegion region = agent.getProtectedRegion();
-			
+
 			int rightX = (int) region.getMaximumPoint().getX() - (int) (region.getMinimumPoint().getX() - 1);
-			if (rightX < 0)
+			if (rightX < 0) {
 				rightX *= -1;
+			}
 
 			int rightY = (int) region.getMaximumPoint().getY() - (int) (region.getMinimumPoint().getY() - 1);
-			if (rightY < 0)
+			if (rightY < 0) {
 				rightY *= -1;
+			}
 
 			int rightZ = (int) region.getMaximumPoint().getZ() - (int) (region.getMinimumPoint().getZ() - 1);
-			if (rightZ < 0)
+			if (rightZ < 0) {
 				rightZ *= -1;
-			
-			if(event != null)
+			}
+
+			if(event != null) {
 				event.setLine(3, Integer.toString(rightX) + " x " + Integer.toString(rightY) + " x " + Integer.toString(rightZ));
-			else
+			} else {
 				agentsign.setLine(3, Integer.toString(rightX) + " x " + Integer.toString(rightY) + " x " + Integer.toString(rightZ));
-			
+			}
+
 
 			agentsign.update();
 		}
@@ -300,9 +305,8 @@ public class AgentManager {
 			if (renttimes.size() > 0) {
 				long old = renttimes.get(0);
 				for (int i = 0; i < renttimes.size(); i++) {
-					if (renttimes.get(i) != old) {
+					if (renttimes.get(i) != old)
 						return -1;
-					}
 				}
 				return old;
 			}
@@ -313,37 +317,43 @@ public class AgentManager {
 	public static long parseSignTime(String timestring) {
 		long time = 0;
 		int i, u;
-		
+
 		i = timestring.indexOf("d");
 		if(i > 0) {
-			if(timestring.charAt(i-1) == ' ' && i > 1)
+			if(timestring.charAt(i-1) == ' ' && i > 1) {
 				i--;
+			}
 			u = i-1;
-			while(u > 0 && Character.isDigit(timestring.charAt(u-1)))
+			while(u > 0 && Character.isDigit(timestring.charAt(u-1))) {
 				u--;
+			}
 			time += (Long.parseLong(timestring.substring(u, i)) * 24*60*60*1000);
 		}
 
 		i = timestring.indexOf("h");
 		if(i > 0) {
-			if(timestring.charAt(i-1) == ' ' && i > 1)
+			if(timestring.charAt(i-1) == ' ' && i > 1) {
 				i--;
+			}
 			u = i-1;
-			while(u > 0 && Character.isDigit(timestring.charAt(u-1)))
+			while(u > 0 && Character.isDigit(timestring.charAt(u-1))) {
 				u--;
+			}
 			time += (Long.parseLong(timestring.substring(u, i)) * 60*60*1000);
 		}
 
 		i = timestring.indexOf("m");
 		if(i > 0) {
-			if(timestring.charAt(i-1) == ' ' && i > 1)
+			if(timestring.charAt(i-1) == ' ' && i > 1) {
 				i--;
+			}
 			u = i-1;
-			while(u > 0 && Character.isDigit(timestring.charAt(u-1)))
+			while(u > 0 && Character.isDigit(timestring.charAt(u-1))) {
 				u--;
+			}
 			time += (Long.parseLong(timestring.substring(u, i)) * 60*1000);
 		}
-		
+
 		return time;
 	}
 
@@ -353,23 +363,20 @@ public class AgentManager {
 		int hours = (int) (time / (60*60));
 		int minutes = (int) (time / (60));
 		if(days > 0) {
-			if(days == 1) {
+			if(days == 1)
 				return days + " day";
-			} else {
+			else
 				return days + " days";
-			}
 		} else if(hours > 0) {
-			if(hours == 1) {
+			if(hours == 1)
 				return hours + " hour";
-			} else {
+			else
 				return hours + " hours";
-			}
 		} else if(minutes > 0) {
-			if(minutes == 1) {
+			if(minutes == 1)
 				return minutes + " min";
-			} else {
+			else
 				return minutes + " mins";
-			}
 		}
 		return "< 1 min";
 	}

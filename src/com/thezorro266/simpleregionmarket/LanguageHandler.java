@@ -7,16 +7,16 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 public class LanguageHandler {
 	private static YamlConfiguration languageFile;
 	private static YamlConfiguration defaultLang;
 
 	public static boolean setLang(String lang) {
-		// TODO Automatically download language per Dropbox?
+		// TODO Automatically download language per server
 		if(lang == null || lang.isEmpty()) {
 			lang = "en";
 		}
@@ -124,7 +124,7 @@ public class LanguageHandler {
 
 	private static String parseLanguageString(String id, ArrayList<String> args) {
 		String string = id;
-		
+
 		if(languageFile != null && languageFile.getString(id) != null) {
 			string = languageFile.getString(id);
 		} else if(defaultLang != null && defaultLang.getString(id) != null) {
@@ -155,7 +155,7 @@ public class LanguageHandler {
 		}
 		return string;
 	}
-	
+
 	public static void outputConsole(Level level, String string) {
 		Bukkit.getLogger().log(level, "[SimpleRegionMarket] " + string);
 	}

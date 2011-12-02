@@ -31,6 +31,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 	public static String plugin_dir = null;
 	public static String language = "en";
 	public static boolean logging = true;
+	public static boolean unloading = false;
 
 	public static void saveAll() {
 		if(getWorldGuard() != null
@@ -39,16 +40,18 @@ public class SimpleRegionMarket extends JavaPlugin {
 			for(int i=0; i < getAgentManager().getAgentList().size(); i++) {
 				World iw = getAgentManager().getAgentList().get(i).getWorldWorld();
 				if(!done.contains(iw)) {
-			        try {
-			        	getWorldGuard().getGlobalRegionManager().get(iw).save();
-			        } catch (IOException e) {
-			        	LanguageHandler.outputConsole(Level.SEVERE, "WorldGuard >> Failed to write regions file: " + e.getMessage());
-			        }
+					try {
+						getWorldGuard().getGlobalRegionManager().get(iw).save();
+					} catch (IOException e) {
+						LanguageHandler.outputConsole(Level.SEVERE, "WorldGuard >> Failed to write regions file: " + e.getMessage());
+					}
 					done.add(iw);
 				}
 			}
 		} else {
-			LanguageHandler.outputConsole(Level.SEVERE, "Bukkit failed and unloaded WorldGuard => Not saving");
+			if(!unloading) {
+				LanguageHandler.outputConsole(Level.SEVERE, "Saving WorldGuard failed, because it is unloaded.");
+			}
 		}
 		LimitHandler.saveLimits();
 		configuration.save();
@@ -179,7 +182,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 				LanguageHandler.outputError(p, "ERR_NO_PERM_SELL", null);
 			}
 		} else if (args[0].equalsIgnoreCase("version") || args[0].equalsIgnoreCase("v")) {
-			LanguageHandler.outputConsole(Level.INFO, "Version " + getDescription().getVersion() + ", updated by theZorro266");
+			LanguageHandler.outputString(p, "loaded version " + getDescription().getVersion() + ",  Copyright (C) 2011  theZorro266");
 		} else if (args[0].equalsIgnoreCase("list") || args[0].equalsIgnoreCase("l")) {
 			if(getAgentManager().getAgentList().size() > 200) {
 				LanguageHandler.outputError(p, "CMD_LIST_TOO_MANY_REGIONS", null);
@@ -199,12 +202,12 @@ public class SimpleRegionMarket extends JavaPlugin {
 						}
 					}
 				}
-				
+
 				if(list.size() < 1) {
 					LanguageHandler.outputDebug(p, "CMD_LIST_NO_REGIONS", null);
 					return true;
 				}
-				
+
 				int initsite = 1;
 				if(args.length > 1) {
 					try {
@@ -213,28 +216,31 @@ public class SimpleRegionMarket extends JavaPlugin {
 						LanguageHandler.outputError(p, "CMD_LIST_WRONG_ARG", null);
 						return true;
 					}
-					
+
 					if(initsite < 1) {
 						LanguageHandler.outputError(p, "CMD_LIST_WRONG_ARG", null);
 						return true;
 					}
 				}
-				
+
 				int site = list.size()/8;
-				if(list.size() % 8 > 0)
+				if(list.size() % 8 > 0) {
 					site++;
-				
+				}
+
 				int showsite = 0;
-				if(site > 0)
+				if(site > 0) {
 					showsite = initsite;
-				
+				}
+
 				LanguageHandler.outputString(p, "Site " + showsite + " of " + site);
 				initsite--;
 				initsite *= 8;
 				for(int i=initsite; i < initsite+8; i++) {
-					if(i >= list.size())
+					if(i >= list.size()) {
 						break;
-					
+					}
+
 					SignAgent agent = list.get(i);
 					LanguageHandler.outputString(p, "Region: " + agent.getRegion() + " - " + getEconomicManager().format(agent.getPrice()));
 				}
@@ -257,18 +263,20 @@ public class SimpleRegionMarket extends JavaPlugin {
 					int limit;
 					if(args.length < 3) { // limits buy|rent - Will show global limits of buying regions
 						ArrayList<String> list = new ArrayList<String>();
-						if(mode == 0)
+						if(mode == 0) {
 							list.add(Integer.toString(LimitHandler.getGlobalBuyLimit()));
-						else if(mode == 1)
+						} else if(mode == 1) {
 							list.add(Integer.toString(LimitHandler.getGlobalRentLimit()));
+						}
 						LanguageHandler.outputDebug(p, "CMD_LIMITS_OUTPUT_LIMIT", list);
 					} else { // limits buy|rent <limit>|<...>
 						try {
 							limit = Integer.parseInt(args[2]);
-							if(mode == 0)
+							if(mode == 0) {
 								LimitHandler.setGlobalBuyLimit(limit);
-							else if(mode == 1)
+							} else if(mode == 1) {
 								LimitHandler.setGlobalRentLimit(limit);
+							}
 							ArrayList<String> list = new ArrayList<String>();
 							list.add(Integer.toString(limit));
 							LanguageHandler.outputDebug(p, "CMD_LIMITS_SET_LIMIT", list);
@@ -280,18 +288,20 @@ public class SimpleRegionMarket extends JavaPlugin {
 										LanguageHandler.outputError(p, "CMD_LIMITS_NO_WORLD", null);
 									} else if(args.length < 5) { // limits buy|rent world <name>
 										ArrayList<String> list = new ArrayList<String>();
-										if(mode == 0)
+										if(mode == 0) {
 											list.add(Integer.toString(LimitHandler.getBuyWorldLimit(w)));
-										else if(mode == 1)
+										} else if(mode == 1) {
 											list.add(Integer.toString(LimitHandler.getRentWorldLimit(w)));
+										}
 										LanguageHandler.outputDebug(p, "CMD_LIMITS_OUTPUT_LIMIT", list);
 									} else { // limits buy|rent world <name> <limit>
 										try {
 											limit = Integer.parseInt(args[4]);
-											if(mode == 0)
+											if(mode == 0) {
 												LimitHandler.setBuyWorldLimit(w, limit);
-											else if(mode == 1)
+											} else if(mode == 1) {
 												LimitHandler.setRentWorldLimit(w, limit);
+											}
 											ArrayList<String> list = new ArrayList<String>();
 											list.add(Integer.toString(limit));
 											LanguageHandler.outputDebug(p, "CMD_LIMITS_SET_LIMIT", list);
@@ -309,18 +319,20 @@ public class SimpleRegionMarket extends JavaPlugin {
 										LanguageHandler.outputError(p, "CMD_LIMITS_NO_PLAYER", null);
 									} else if(args.length < 5) { // limits buy|rent player <name>
 										ArrayList<String> list = new ArrayList<String>();
-										if(mode == 0)
+										if(mode == 0) {
 											list.add(Integer.toString(LimitHandler.getBuyPlayerLimit(p2)));
-										else if(mode == 1)
+										} else if(mode == 1) {
 											list.add(Integer.toString(LimitHandler.getRentPlayerLimit(p2)));
+										}
 										LanguageHandler.outputDebug(p, "CMD_LIMITS_OUTPUT_LIMIT", list);
 									} else { // limits buy|rent player <name> <limit>
 										try {
 											limit = Integer.parseInt(args[4]);
-											if(mode == 0)
+											if(mode == 0) {
 												LimitHandler.setBuyPlayerLimit(p2, limit);
-											else if(mode == 1)
+											} else if(mode == 1) {
 												LimitHandler.setRentPlayerLimit(p2, limit);
+											}
 											ArrayList<String> list = new ArrayList<String>();
 											list.add(Integer.toString(limit));
 											LanguageHandler.outputDebug(p, "CMD_LIMITS_SET_LIMIT", list);
@@ -390,6 +402,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		unloading = true;
 		if(error) {
 			LanguageHandler.langOutputConsole("ERR_PLUGIN_UNLOAD", Level.SEVERE, null);
 		} else {
@@ -426,15 +439,16 @@ public class SimpleRegionMarket extends JavaPlugin {
 		server.getPluginManager().registerEvent(Event.Type.BLOCK_BREAK, blockListener, Event.Priority.Normal, this);
 		server.getPluginManager().registerEvent(Event.Type.SIGN_CHANGE, blockListener, Event.Priority.Normal, this);
 		server.getPluginManager().registerEvent(Event.Type.PLAYER_INTERACT, playerListener, Event.Priority.Normal, this);
-		
+
 		server.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+			@Override
 			public void run() {
-			getAgentManager().checkAgents();
-		}
+				getAgentManager().checkAgents();
+			}
 		}, 20L, 1200L);
 
 		LimitHandler.loadLimits();
-		
-		LanguageHandler.outputConsole(Level.INFO, "Version " + getDescription().getVersion() + " loaded, updated by theZorro266");
+
+		LanguageHandler.outputConsole(Level.INFO, "loaded version " + getDescription().getVersion() + ",  Copyright (C) 2011  theZorro266");
 	}
 }

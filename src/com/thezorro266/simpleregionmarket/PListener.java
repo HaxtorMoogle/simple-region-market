@@ -21,9 +21,26 @@ class PListener extends PlayerListener {
 
 			if (agent == null)
 				return;
-						
+
 			if(SimpleRegionMarket.getEconomicManager() != null) {
 				Player p = event.getPlayer();
+				
+				if(agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
+					if(agent.isRent()) {
+						if (SimpleRegionMarket.getAgentManager().isOwner(p, agent.getProtectedRegion())) {
+							// TODO rent erweiterung
+						} else {
+							LanguageHandler.outputError(p, "ERR_ALREADY_RENT", null);
+						}
+					} else {
+						if(agent.getProtectedRegion().getParent() != null) {
+							if(SimpleRegionMarket.getAgentManager().isOwner(p, agent.getProtectedRegion().getParent())) {
+								LanguageHandler.outputDebug(p, "HOTEL_YOURS", null);
+							}
+						}
+					}
+				}
+				
 				if(!SimpleRegionMarket.isAdmin(p)) {
 					if(agent.getMode() == SignAgent.MODE_SELL_REGION) {
 						if(!LimitHandler.limitCanBuy(p)) {
@@ -97,12 +114,8 @@ class PListener extends PlayerListener {
 						}
 					}
 				} else if(agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
-					if(agent.isRent()) {
-						LanguageHandler.outputError(p, "ERR_ALREADY_RENT", null);
-					} else if(!SimpleRegionMarket.canRent(p)) {
+					if(!SimpleRegionMarket.canRent(p)) {
 						LanguageHandler.outputError(p, "ERR_NO_PERM_RENT", null);
-					} else if (SimpleRegionMarket.getAgentManager().isOwner(p, region)) {
-						LanguageHandler.outputDebug(p, "HOTEL_YOURS", null);
 					} else {
 						String account = agent.getAccount();
 						if (!SimpleRegionMarket.getEconomicManager().hasAccount(p.getName())) {
@@ -154,4 +167,4 @@ class PListener extends PlayerListener {
 			}
 		}
 	}
-		}
+}

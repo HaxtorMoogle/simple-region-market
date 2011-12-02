@@ -21,16 +21,16 @@ public class ConfigHandler {
 
 	public void load() {
 		YamlConfiguration confighandle;
-		
+
 		confighandle = YamlConfiguration.loadConfiguration(config);
 		SimpleRegionMarket.language = confighandle.getString("language", "en");
 		SimpleRegionMarket.logging = confighandle.getBoolean("logging", true);
-		
+
 		confighandle = YamlConfiguration.loadConfiguration(agents);
-		
+
 		ArrayList<String> worlds_called = new ArrayList<String>();
 		ArrayList<String> regions_called = new ArrayList<String>();
-		
+
 		ConfigurationSection path;
 		for (String world: confighandle.getKeys(false)) {
 			path = confighandle.getConfigurationSection(world);
@@ -38,22 +38,25 @@ public class ConfigHandler {
 				path = confighandle.getConfigurationSection(world).getConfigurationSection(region);
 				for (String signnr: path.getKeys(false)) {
 					path = confighandle.getConfigurationSection(world).getConfigurationSection(region).getConfigurationSection(signnr);
-					if(path == null)
+					if(path == null) {
 						continue;
-					
+					}
+
 					String account = "";
-					if(path.isSet("Owner")) // Older Version support
+					if(path.isSet("Owner")) {
 						account = path.getString("Owner");
-					else if(path.isSet("Account"))
+					} else if(path.isSet("Account")) {
 						account = path.getString("Account");
-						
+					}
+
 					Date expiredate = null;
-					if(path.isSet("ExpireDate"))
+					if(path.isSet("ExpireDate")) {
 						expiredate = new Date(path.getLong("ExpireDate"));
+					}
 
 					World world_world = Bukkit.getWorld(world);
 					ProtectedRegion protectedregion_region = SimpleRegionMarket.getWorldGuard().getRegionManager(world_world).getRegion(region);
-					
+
 					SignAgent newagent;
 					if(expiredate != null) {
 						newagent = SimpleRegionMarket.getAgentManager().addAgent(path.getInt("Mode", 0),
@@ -70,7 +73,7 @@ public class ConfigHandler {
 										path.getDouble("Z", 0)),
 										protectedregion_region, path.getDouble("Price"), account, path.getInt("RentTime", 0));
 					}
-					
+
 					if(newagent == null) {
 						if(world_world == null) {
 							if(!worlds_called.contains(world)) {
@@ -92,12 +95,14 @@ public class ConfigHandler {
 							tempconfighandle.set(path.getCurrentPath() + ".Price", path.getDouble("Price"));
 							tempconfighandle.set(path.getCurrentPath() + ".Account", account);
 							tempconfighandle.set(path.getCurrentPath() + ".RentTime", path.getInt("RentTime", 0));
-							if(path.isSet("RentBy"))
+							if(path.isSet("RentBy")) {
 								tempconfighandle.set(path.getCurrentPath() + ".RentBy", path.getString("RentBy"));
-							
-							if(path.isSet("ExpireDate"))
+							}
+
+							if(path.isSet("ExpireDate")) {
 								tempconfighandle.set(path.getCurrentPath() + ".ExpireDate", path.getLong("ExpireDate"));
-							
+							}
+
 							try {
 								tempconfighandle.save(agents_fail);
 							} catch(IOException e) {
@@ -112,12 +117,12 @@ public class ConfigHandler {
 
 	public void save() {
 		YamlConfiguration confighandle;
-		
+
 		confighandle = new YamlConfiguration();
-		
+
 		confighandle.set("language", SimpleRegionMarket.language);
 		confighandle.set("logging", SimpleRegionMarket.logging);
-		
+
 		try {
 			confighandle.save(config);
 		} catch (IOException e) {
@@ -125,13 +130,13 @@ public class ConfigHandler {
 		}
 
 		confighandle = new YamlConfiguration();
-	
+
 		int i = 0;
 		String path;
 		for (SignAgent obj : SimpleRegionMarket.getAgentManager().getAgentList()) {
 			Location loc = obj.getLocation();
 			path = loc.getWorld().getName() + "." + obj.getRegion() + "." + Integer.toString(i);
-			
+
 			confighandle.set(path + ".Mode", obj.getMode());
 			confighandle.set(path + ".X", loc.getX());
 			confighandle.set(path + ".Y", loc.getY());
@@ -145,7 +150,7 @@ public class ConfigHandler {
 			}
 			i++;
 		}
-		
+
 		try {
 			confighandle.save(agents);
 		} catch (IOException e) {
