@@ -3,11 +3,13 @@ package com.thezorro266.simpleregionmarket;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -19,6 +21,7 @@ import com.nijikokun.register.payment.Method;
 import com.nijikokun.register.payment.Methods;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
+import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class SimpleRegionMarket extends JavaPlugin {
@@ -30,22 +33,20 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 	public static String plugin_dir = null;
 	public static String language = "en";
+	public static boolean removeBuyedSigns = true;
 	public static boolean logging = true;
 	public static boolean unloading = false;
 
 	public static void saveAll() {
 		if(getWorldGuard() != null
 				&& getWorldGuard().isEnabled()) {
-			ArrayList<World> done = new ArrayList<World>();
-			for(int i=0; i < getAgentManager().getAgentList().size(); i++) {
-				World iw = getAgentManager().getAgentList().get(i).getWorldWorld();
-				if(!done.contains(iw)) {
-					try {
-						getWorldGuard().getGlobalRegionManager().get(iw).save();
-					} catch (IOException e) {
-						LanguageHandler.outputConsole(Level.SEVERE, "WorldGuard >> Failed to write regions file: " + e.getMessage());
-					}
-					done.add(iw);
+			for(World w: server.getWorlds()) {
+				RegionManager mgr = getWorldGuard().getGlobalRegionManager().get(w);
+				
+				try {
+					mgr.save();
+				} catch (IOException e) {
+					LanguageHandler.outputConsole(Level.SEVERE, "WorldGuard >> Failed to write regionsfile: " + e.getMessage());
 				}
 			}
 		} else {
@@ -113,7 +114,19 @@ public class SimpleRegionMarket extends JavaPlugin {
 		region.setMembers(new DefaultDomain());
 		region.setOwners(new DefaultDomain());
 		region.getOwners().addPlayer(getWorldGuard().wrapPlayer(p));
-		getAgentManager().removeAgentsFromRegion(region);
+		if(removeBuyedSigns) {
+			getAgentManager().removeAgentsFromRegion(region);
+		} else {
+			Iterator<SignAgent> itr = getAgentManager().getAgentList().iterator();
+			while(itr.hasNext()) {
+				SignAgent obj = itr.next();
+				if(obj.getProtectedRegion() == region) {
+					Sign agentsign = (Sign)obj.getLocation().getBlock().getState();
+					agentsign.setLine(2, p.getName());
+					itr.remove();
+				}
+			}
+		}
 		saveAll();
 		if(logging) {
 			ArrayList<String> list = new ArrayList<String>();

@@ -25,6 +25,7 @@ public class ConfigHandler {
 		confighandle = YamlConfiguration.loadConfiguration(config);
 		SimpleRegionMarket.language = confighandle.getString("language", "en");
 		SimpleRegionMarket.logging = confighandle.getBoolean("logging", true);
+		SimpleRegionMarket.removeBuyedSigns = confighandle.getBoolean("remove_buyed_signs", true);
 
 		confighandle = YamlConfiguration.loadConfiguration(agents);
 
@@ -122,6 +123,7 @@ public class ConfigHandler {
 
 		confighandle.set("language", SimpleRegionMarket.language);
 		confighandle.set("logging", SimpleRegionMarket.logging);
+		confighandle.set("remove_buyed_signs", SimpleRegionMarket.removeBuyedSigns);
 
 		try {
 			confighandle.save(config);

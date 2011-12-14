@@ -27,7 +27,7 @@ class PListener extends PlayerListener {
 				
 				if(agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
 					if(agent.isRent()) {
-						if (SimpleRegionMarket.getAgentManager().isOwner(p, agent.getProtectedRegion())) {
+						if (agent.getRent().equals(p.getName())) {
 							// TODO rent erweiterung
 						} else {
 							LanguageHandler.outputError(p, "ERR_ALREADY_RENT", null);

@@ -16,7 +16,6 @@ import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class AgentManager {
-
 	private ArrayList<SignAgent> agents = new ArrayList<SignAgent>();
 
 	public SignAgent addAgent(int mode, Location location, ProtectedRegion region, double price, String account, long renttime) {
