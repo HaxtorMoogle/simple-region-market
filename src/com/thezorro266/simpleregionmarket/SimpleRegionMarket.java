@@ -31,6 +31,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 	private boolean error = false;
 
+	public static int maxRentMultiplier = 2;
 	public static String plugin_dir = null;
 	public static String language = "en";
 	public static boolean removeBuyedSigns = true;

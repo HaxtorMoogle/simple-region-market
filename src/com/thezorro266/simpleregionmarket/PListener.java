@@ -1,6 +1,7 @@
 package com.thezorro266.simpleregionmarket;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.logging.Level;
 
 import org.bukkit.block.Block;
@@ -28,7 +29,13 @@ class PListener extends PlayerListener {
 				if(agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
 					if(agent.isRent()) {
 						if (agent.getRent().equals(p.getName())) {
-							// TODO rent erweiterung
+							long newRentTime = agent.getExpireDate().getTime() + agent.getRentTime();
+							if(((newRentTime-System.currentTimeMillis()) / agent.getRentTime()) < SimpleRegionMarket.maxRentMultiplier) {
+								agent.setExpireDate(new Date(newRentTime));
+								SimpleRegionMarket.getAgentManager().actAgent(agent, null);
+							} else {
+								LanguageHandler.outputError(p, "ERR_RERENT_TOO_LONG", null);
+							}
 						} else {
 							LanguageHandler.outputError(p, "ERR_ALREADY_RENT", null);
 						}
