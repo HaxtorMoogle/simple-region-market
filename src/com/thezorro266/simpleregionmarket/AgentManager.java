@@ -174,11 +174,19 @@ public class AgentManager {
 				if(event != null) {
 					event.setLine(0, "[AGENT]");
 					event.setLine(1, agent.getRegion());
-					event.setLine(2, SimpleRegionMarket.getEconomicManager().format(agent.getPrice()));
+					if(!SimpleRegionMarket.enableEconomy || agent.getPrice() == 0) {
+						event.setLine(2, "FREE");
+					} else {
+						event.setLine(2, SimpleRegionMarket.getEconomicManager().format(agent.getPrice()));
+					}
 				} else {
 					agentsign.setLine(0, "[AGENT]");
 					agentsign.setLine(1, agent.getRegion());
-					agentsign.setLine(2, SimpleRegionMarket.getEconomicManager().format(agent.getPrice()));
+					if(!SimpleRegionMarket.enableEconomy || agent.getPrice() == 0) {
+						agentsign.setLine(2, "FREE");
+					} else {
+						agentsign.setLine(2, SimpleRegionMarket.getEconomicManager().format(agent.getPrice()));
+					}
 				}
 			} else if(agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
 				if(event != null) {
@@ -197,10 +205,18 @@ public class AgentManager {
 					}
 				} else {
 					if(event != null) {
-						event.setLine(1, SimpleRegionMarket.getEconomicManager().format(agent.getPrice()));
+						if(!SimpleRegionMarket.enableEconomy || agent.getPrice() == 0) {
+							event.setLine(1, "FREE");
+						} else {
+							event.setLine(1, SimpleRegionMarket.getEconomicManager().format(agent.getPrice()));
+						}
 						event.setLine(2, getSignTime(agent.getRentTime()));
 					} else {
-						agentsign.setLine(1, SimpleRegionMarket.getEconomicManager().format(agent.getPrice()));
+						if(!SimpleRegionMarket.enableEconomy || agent.getPrice() == 0) {
+							agentsign.setLine(1, "FREE");
+						} else {
+							agentsign.setLine(1, SimpleRegionMarket.getEconomicManager().format(agent.getPrice()));
+						}
 						agentsign.setLine(2, getSignTime(agent.getRentTime()));
 					}
 				}

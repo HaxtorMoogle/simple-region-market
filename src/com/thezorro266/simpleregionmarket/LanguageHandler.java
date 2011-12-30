@@ -24,14 +24,14 @@ public class LanguageHandler {
 		defaultLang = new YamlConfiguration();
 		try {
 			defaultLang.loadFromString("ERR_NO_WORLDGUARD: 'Error: WorldGuard was not found.'\n" +
-					"ERR_NO_REGISTER: 'Error: Register was not found.'\n" +
 					"ERR_NO_ECO: 'Error: Economic System was not found.'\n" +
 					"ERR_ECO_TRANSFER: 'There was a problem with transfering the money.'\n" +
 					"ERR_NO_ECO_USER: 'The economic system was not found, please tell the server owner.'\n" +
 					"ERR_CREATE_ECO_ACCOUNT: 'Error: Could not create economy account \"$0\".'\n" +
+					"NO_REGISTER: 'Register was not found. Switching to economy-free version.'\n" +
 					"CONFIG_SAVED: 'Config saved successfully.'\n" +
-					"ERR_CONFIG_NOT_SAVED: 'Error: Config was not saved successfully.'\n" +
 					"PLUGIN_UNLOAD: 'Plugin successfully unloaded.'\n" +
+					"ERR_CONFIG_NOT_SAVED: 'Error: Config was not saved successfully.'\n" +
 					"ERR_PLUGIN_UNLOAD: 'Error: Plugin unloaded. There was an error with the other plugins.'\n" +
 					"ERR_NO_MONEY: 'You do not have enough money.'\n" +
 					"ERR_NO_PRICE: 'Price not found.'\n" +
@@ -66,6 +66,8 @@ public class LanguageHandler {
 					"ERR_PARENT_NO_OWNER: 'You do not own the hotel (parent of the region).'\n" +
 					"ERR_ALREADY_RENT: 'This room is already rented by someone.'\n" +
 					"ERR_HOTEL_LIMIT: 'You have reached your limit of rooms on this world.'\n" +
+					"ERR_RERENT_TOO_LONG: 'You cannot extend your room.'\n" +
+					"HOTEL_SUCCESS_RERENT: 'You successfully extended your room''s time.'\n" +
 					"HOTEL_YOURS: 'You cannot rent a room in your hotel.'\n" +
 					"HOTEL_EXPIRED: 'Your room in the hotel expired. It is not anymore yours.'\n" +
 					"HOTEL_RENT: 'The room $0 was just rented by $1.'\n" +
@@ -73,14 +75,7 @@ public class LanguageHandler {
 					"HOTEL_RENT_USER: 'You successfully rented the room $0 from $1.'\n" +
 					"HOTEL_OFFER_NONE: 'You offer this room for rent by the server.'\n" +
 					"HOTEL_OFFER_USER: 'You offer this room for rent.'\n" +
-					"HELP_01: 'To sell a region you need to place a sign on it.'\n" +
-					"HELP_02: 'In the first line of the sign should be \"[AGENT]\"'\n" +
-					"HELP_03: 'in the second line the name of the region (if there is more than one region at that location)'\n" +
-					"HELP_04: 'and in the third line there should be the price (if there is not already a sign with a given price).'\n" +
-					"HELP_ADM_01: 'in the third line there should be the price (if there is not already a sign with a given price)'\n" +
-					"HELP_ADM_02: 'and in the last line there can be a \"none\" that the money does not go to you, but to the server.'\n" +
-					"HELP_05: 'After successfully creating the sign the last line will be filled with the size of the region.'\n" +
-					"HELP_BUY: 'If you want to buy a region, just right-click on the sign.'\n" +
+					"HELP: 'To see how to use this plugin, visit \"http://dev.bukkit.org/server-mods/simple-region-market/pages/how-to/\"'\n" +
 					"CMD_LIMITS_NO_ARG: 'Use /rm limits <buy/rent> <world/player/new global limit> <name (of world/player)> (<new limit>)'\n" +
 					"CMD_LIMITS_WRONG_ARG: 'Wrong argument. Use /rm limits <buy/rent> <world/player/new global limit> <name (of world/player)> (<new limit>)'\n" +
 					"CMD_LIMITS_NO_WORLD: 'World not found.'\n" +

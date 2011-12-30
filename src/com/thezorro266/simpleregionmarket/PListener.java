@@ -23,7 +23,7 @@ class PListener extends PlayerListener {
 			if (agent == null)
 				return;
 
-			if(SimpleRegionMarket.getEconomicManager() != null) {
+			if(!SimpleRegionMarket.enableEconomy || SimpleRegionMarket.getEconomicManager() != null) {
 				Player p = event.getPlayer();
 				
 				if(agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
@@ -31,18 +31,39 @@ class PListener extends PlayerListener {
 						if (agent.getRent().equals(p.getName())) {
 							long newRentTime = agent.getExpireDate().getTime() + agent.getRentTime();
 							if(((newRentTime-System.currentTimeMillis()) / agent.getRentTime()) < SimpleRegionMarket.maxRentMultiplier) {
-								agent.setExpireDate(new Date(newRentTime));
-								SimpleRegionMarket.getAgentManager().actAgent(agent, null);
+								if(SimpleRegionMarket.enableEconomy) {
+									double price = agent.getPrice();
+									if (SimpleRegionMarket.getEconomicManager().getAccount(p.getName()).hasEnough(price)) {
+										String account = agent.getAccount();
+										if(account.isEmpty()) {
+											SimpleRegionMarket.getEconomicManager().getAccount(p.getName()).subtract(price);
+										} else {
+											SimpleRegionMarket.getEconomicManager().getAccount(p.getName()).subtract(price);
+											SimpleRegionMarket.getEconomicManager().getAccount(account).add(price);
+										}
+										agent.setExpireDate(new Date(newRentTime));
+										SimpleRegionMarket.getAgentManager().actAgent(agent, null);
+										LanguageHandler.outputDebug(p, "HOTEL_SUCCESS_RERENT", null);
+									} else {
+										LanguageHandler.outputError(p, "ERR_NO_MONEY", null);
+									}
+								} else {
+									agent.setExpireDate(new Date(newRentTime));
+									SimpleRegionMarket.getAgentManager().actAgent(agent, null);
+									LanguageHandler.outputDebug(p, "HOTEL_SUCCESS_RERENT", null);
+								}
 							} else {
 								LanguageHandler.outputError(p, "ERR_RERENT_TOO_LONG", null);
 							}
 						} else {
 							LanguageHandler.outputError(p, "ERR_ALREADY_RENT", null);
 						}
+						return;
 					} else {
 						if(agent.getProtectedRegion().getParent() != null) {
 							if(SimpleRegionMarket.getAgentManager().isOwner(p, agent.getProtectedRegion().getParent())) {
 								LanguageHandler.outputDebug(p, "HOTEL_YOURS", null);
+								return;
 							}
 						}
 					}
@@ -78,92 +99,106 @@ class PListener extends PlayerListener {
 							LanguageHandler.outputDebug(p, "ERR_REGION_BUY_YOURS", null);
 						}
 					} else {
-						String account = agent.getAccount();
-						if (!SimpleRegionMarket.getEconomicManager().hasAccount(p.getName())) {
-							SimpleRegionMarket.getEconomicManager().createAccount(p.getName());
-						}
-						if (SimpleRegionMarket.getEconomicManager().hasAccount(p.getName())) {
-							double price = agent.getPrice();
-							if (SimpleRegionMarket.getEconomicManager().getAccount(p.getName()).hasEnough(price)) {
-								if(account.isEmpty()) {
-									SimpleRegionMarket.getEconomicManager().getAccount(p.getName()).subtract(price);
-									SimpleRegionMarket.sellRegion(region, p);
-									ArrayList<String> list = new ArrayList<String>();
-									list.add(region.getId());
-									LanguageHandler.outputDebug(p, "REGION_BUYED_NONE", list);
-								} else {
-									if (!SimpleRegionMarket.getEconomicManager().hasAccount(account)) {
-										SimpleRegionMarket.getEconomicManager().createAccount(account);
-									}
-									if (SimpleRegionMarket.getEconomicManager().hasAccount(account)) {
+						if(SimpleRegionMarket.enableEconomy) {
+							String account = agent.getAccount();
+							if (!SimpleRegionMarket.getEconomicManager().hasAccount(p.getName())) {
+								SimpleRegionMarket.getEconomicManager().createAccount(p.getName());
+							}
+							if (SimpleRegionMarket.getEconomicManager().hasAccount(p.getName())) {
+								double price = agent.getPrice();
+								if (SimpleRegionMarket.getEconomicManager().getAccount(p.getName()).hasEnough(price)) {
+									if(account.isEmpty()) {
 										SimpleRegionMarket.getEconomicManager().getAccount(p.getName()).subtract(price);
-										SimpleRegionMarket.getEconomicManager().getAccount(account).add(price);
 										SimpleRegionMarket.sellRegion(region, p);
 										ArrayList<String> list = new ArrayList<String>();
 										list.add(region.getId());
-										list.add(account);
-										LanguageHandler.outputDebug(p, "REGION_BUYED_USER", list);
+										LanguageHandler.outputDebug(p, "REGION_BUYED_NONE", list);
 									} else {
-										LanguageHandler.outputError(p, "ERR_ECO_TRANSFER", null);
-										ArrayList<String> list = new ArrayList<String>();
-										list.add(account);
-										LanguageHandler.langOutputConsole("ERR_CREATE_ECO_ACCOUNT", Level.SEVERE, list);
+										if (!SimpleRegionMarket.getEconomicManager().hasAccount(account)) {
+											SimpleRegionMarket.getEconomicManager().createAccount(account);
+										}
+										if (SimpleRegionMarket.getEconomicManager().hasAccount(account)) {
+											SimpleRegionMarket.getEconomicManager().getAccount(p.getName()).subtract(price);
+											SimpleRegionMarket.getEconomicManager().getAccount(account).add(price);
+											SimpleRegionMarket.sellRegion(region, p);
+											ArrayList<String> list = new ArrayList<String>();
+											list.add(region.getId());
+											list.add(account);
+											LanguageHandler.outputDebug(p, "REGION_BUYED_USER", list);
+										} else {
+											LanguageHandler.outputError(p, "ERR_ECO_TRANSFER", null);
+											ArrayList<String> list = new ArrayList<String>();
+											list.add(account);
+											LanguageHandler.langOutputConsole("ERR_CREATE_ECO_ACCOUNT", Level.SEVERE, list);
+										}
 									}
+								} else {
+									LanguageHandler.outputError(p, "ERR_NO_MONEY", null);
 								}
 							} else {
-								LanguageHandler.outputError(p, "ERR_NO_MONEY", null);
+								LanguageHandler.outputError(p, "ERR_ECO_TRANSFER", null);
+								ArrayList<String> list = new ArrayList<String>();
+								list.add(p.getName());
+								LanguageHandler.langOutputConsole("ERR_CREATE_ECO_ACCOUNT", Level.SEVERE, list);
 							}
 						} else {
-							LanguageHandler.outputError(p, "ERR_ECO_TRANSFER", null);
+							SimpleRegionMarket.sellRegion(region, p);
 							ArrayList<String> list = new ArrayList<String>();
-							list.add(p.getName());
-							LanguageHandler.langOutputConsole("ERR_CREATE_ECO_ACCOUNT", Level.SEVERE, list);
+							list.add(region.getId());
+							LanguageHandler.outputDebug(p, "REGION_BUYED_NONE", list);
 						}
 					}
 				} else if(agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
 					if(!SimpleRegionMarket.canRent(p)) {
 						LanguageHandler.outputError(p, "ERR_NO_PERM_RENT", null);
 					} else {
-						String account = agent.getAccount();
-						if (!SimpleRegionMarket.getEconomicManager().hasAccount(p.getName())) {
-							SimpleRegionMarket.getEconomicManager().createAccount(p.getName());
-						}
-						if (SimpleRegionMarket.getEconomicManager().hasAccount(p.getName())) {
-							double price = agent.getPrice();
-							if (SimpleRegionMarket.getEconomicManager().getAccount(p.getName()).hasEnough(price)) {
-								if(account.isEmpty()) {
-									SimpleRegionMarket.getEconomicManager().getAccount(p.getName()).subtract(price);
-									SimpleRegionMarket.rentHotel(region, p, agent.getRentTime());
-									ArrayList<String> list = new ArrayList<String>();
-									list.add(region.getId());
-									LanguageHandler.outputDebug(p, "HOTEL_RENT_NONE", list);
-								} else {
-									if (!SimpleRegionMarket.getEconomicManager().hasAccount(account)) {
-										SimpleRegionMarket.getEconomicManager().createAccount(account);
-									}
-									if (SimpleRegionMarket.getEconomicManager().hasAccount(account)) {
+						if(SimpleRegionMarket.enableEconomy) {
+							String account = agent.getAccount();
+							if (!SimpleRegionMarket.getEconomicManager().hasAccount(p.getName())) {
+								SimpleRegionMarket.getEconomicManager().createAccount(p.getName());
+							}
+							if (SimpleRegionMarket.getEconomicManager().hasAccount(p.getName())) {
+								double price = agent.getPrice();
+								if (SimpleRegionMarket.getEconomicManager().getAccount(p.getName()).hasEnough(price)) {
+									if(account.isEmpty()) {
 										SimpleRegionMarket.getEconomicManager().getAccount(p.getName()).subtract(price);
-										SimpleRegionMarket.getEconomicManager().getAccount(account).add(price);
 										SimpleRegionMarket.rentHotel(region, p, agent.getRentTime());
 										ArrayList<String> list = new ArrayList<String>();
 										list.add(region.getId());
-										list.add(account);
-										LanguageHandler.outputDebug(p, "HOTEL_RENT_USER", list);
+										LanguageHandler.outputDebug(p, "HOTEL_RENT_NONE", list);
 									} else {
-										LanguageHandler.outputError(p, "ERR_ECO_TRANSFER", null);
-										ArrayList<String> list = new ArrayList<String>();
-										list.add(account);
-										LanguageHandler.langOutputConsole("ERR_CREATE_ECO_ACCOUNT", Level.SEVERE, list);
+										if (!SimpleRegionMarket.getEconomicManager().hasAccount(account)) {
+											SimpleRegionMarket.getEconomicManager().createAccount(account);
+										}
+										if (SimpleRegionMarket.getEconomicManager().hasAccount(account)) {
+											SimpleRegionMarket.getEconomicManager().getAccount(p.getName()).subtract(price);
+											SimpleRegionMarket.getEconomicManager().getAccount(account).add(price);
+											SimpleRegionMarket.rentHotel(region, p, agent.getRentTime());
+											ArrayList<String> list = new ArrayList<String>();
+											list.add(region.getId());
+											list.add(account);
+											LanguageHandler.outputDebug(p, "HOTEL_RENT_USER", list);
+										} else {
+											LanguageHandler.outputError(p, "ERR_ECO_TRANSFER", null);
+											ArrayList<String> list = new ArrayList<String>();
+											list.add(account);
+											LanguageHandler.langOutputConsole("ERR_CREATE_ECO_ACCOUNT", Level.SEVERE, list);
+										}
 									}
+								} else {
+									LanguageHandler.outputError(p, "ERR_NO_MONEY", null);
 								}
 							} else {
-								LanguageHandler.outputError(p, "ERR_NO_MONEY", null);
+								LanguageHandler.outputError(p, "ERR_ECO_TRANSFER", null);
+								ArrayList<String> list = new ArrayList<String>();
+								list.add(p.getName());
+								LanguageHandler.langOutputConsole("ERR_CREATE_ECO_ACCOUNT", Level.SEVERE, list);
 							}
 						} else {
-							LanguageHandler.outputError(p, "ERR_ECO_TRANSFER", null);
+							SimpleRegionMarket.rentHotel(region, p, agent.getRentTime());
 							ArrayList<String> list = new ArrayList<String>();
-							list.add(p.getName());
-							LanguageHandler.langOutputConsole("ERR_CREATE_ECO_ACCOUNT", Level.SEVERE, list);
+							list.add(region.getId());
+							LanguageHandler.outputDebug(p, "HOTEL_RENT_NONE", list);
 						}
 					}
 				}

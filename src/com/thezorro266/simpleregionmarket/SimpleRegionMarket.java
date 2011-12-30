@@ -35,6 +35,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 	public static String plugin_dir = null;
 	public static String language = "en";
 	public static boolean removeBuyedSigns = true;
+	public static boolean enableEconomy = true;
 	public static boolean logging = true;
 	public static boolean unloading = false;
 
@@ -73,9 +74,9 @@ public class SimpleRegionMarket extends JavaPlugin {
 	}
 
 	public static Method getEconomicManager() {
-		if(Methods.hasMethod())
+		if(Methods.hasMethod()) {
 			return Methods.getMethod();
-		else {
+		} else {
 			LanguageHandler.langOutputConsole("ERR_NO_ECO", Level.SEVERE, null);
 			return null;
 		}
@@ -256,7 +257,11 @@ public class SimpleRegionMarket extends JavaPlugin {
 					}
 
 					SignAgent agent = list.get(i);
-					LanguageHandler.outputString(p, "Region: " + agent.getRegion() + " - " + getEconomicManager().format(agent.getPrice()));
+					if(enableEconomy) {
+						LanguageHandler.outputString(p, "Region: " + agent.getRegion() + " - " + getEconomicManager().format(agent.getPrice()));
+					} else {
+						LanguageHandler.outputString(p, "Region: " + agent.getRegion());
+					}
 				}
 			}
 		} else if (args[0].equalsIgnoreCase("limits") || args[0].equalsIgnoreCase("limit")) {
@@ -443,11 +448,9 @@ public class SimpleRegionMarket extends JavaPlugin {
 			return;
 		}
 
-		if(server.getPluginManager().getPlugin("Register") == null) {
-			error = true;
-			LanguageHandler.langOutputConsole("ERR_NO_REGISTER", Level.SEVERE, null);
-			server.getPluginManager().disablePlugin(this);
-			return;
+		if(server.getPluginManager().getPlugin("Register") == null && enableEconomy) {
+			LanguageHandler.langOutputConsole("NO_REGISTER", Level.WARNING, null);
+			enableEconomy = false;
 		}
 
 		server.getPluginManager().registerEvent(Event.Type.BLOCK_BREAK, blockListener, Event.Priority.Normal, this);

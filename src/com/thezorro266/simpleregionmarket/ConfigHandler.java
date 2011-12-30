@@ -26,6 +26,7 @@ public class ConfigHandler {
 		SimpleRegionMarket.language = confighandle.getString("language", "en");
 		SimpleRegionMarket.logging = confighandle.getBoolean("logging", true);
 		SimpleRegionMarket.removeBuyedSigns = confighandle.getBoolean("remove_buyed_signs", true);
+		SimpleRegionMarket.enableEconomy = confighandle.getBoolean("enable_economy", true);
 		SimpleRegionMarket.maxRentMultiplier = confighandle.getInt("max_rent_multiplier", 2);
 
 		confighandle = YamlConfiguration.loadConfiguration(agents);
@@ -125,6 +126,7 @@ public class ConfigHandler {
 		confighandle.set("language", SimpleRegionMarket.language);
 		confighandle.set("logging", SimpleRegionMarket.logging);
 		confighandle.set("remove_buyed_signs", SimpleRegionMarket.removeBuyedSigns);
+		confighandle.set("enable_economy", SimpleRegionMarket.enableEconomy);
 		confighandle.set("max_rent_multiplier", SimpleRegionMarket.maxRentMultiplier);
 
 		try {
