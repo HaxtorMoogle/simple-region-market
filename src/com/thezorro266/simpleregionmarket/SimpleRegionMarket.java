@@ -34,6 +34,8 @@ public class SimpleRegionMarket extends JavaPlugin {
 	public static int maxRentMultiplier = 2;
 	public static String plugin_dir = null;
 	public static String language = "en";
+	public static String agentName = "[AGENT]";
+	public static String hotelName = "[HOTEL]";
 	public static boolean removeBuyedSigns = true;
 	public static boolean enableEconomy = true;
 	public static boolean logging = true;
@@ -53,7 +55,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 			}
 		} else {
 			if(!unloading) {
-				LanguageHandler.outputConsole(Level.SEVERE, "Saving WorldGuard failed, because it is unloaded.");
+				LanguageHandler.outputConsole(Level.SEVERE, "Saving WorldGuard failed, because it is not loaded.");
 			}
 		}
 		LimitHandler.saveLimits();
@@ -188,23 +190,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 			return false;
 
 		if (args[0].equalsIgnoreCase("?") || args[0].equalsIgnoreCase("help")) {
-			if(canBuy(p)) {
-				if(canSell(p)) {
-					LanguageHandler.outputDebug(p, "HELP_01", null);
-					LanguageHandler.outputDebug(p, "HELP_02", null);
-					LanguageHandler.outputDebug(p, "HELP_03", null);
-					if(isAdmin(p)) {
-						LanguageHandler.outputDebug(p, "HELP_ADM_01", null);
-						LanguageHandler.outputDebug(p, "HELP_ADM_02", null);
-					} else {
-						LanguageHandler.outputDebug(p, "HELP_04", null);
-					}
-					LanguageHandler.outputDebug(p, "HELP_05", null);
-				}
-				LanguageHandler.outputDebug(p, "HELP_BUY", null);
-			} else {
-				LanguageHandler.outputError(p, "ERR_NO_PERM_SELL", null);
-			}
+			LanguageHandler.outputDebug(p, "HELP", null);
 		} else if (args[0].equalsIgnoreCase("version") || args[0].equalsIgnoreCase("v")) {
 			LanguageHandler.outputString(p, "loaded version " + getDescription().getVersion() + ",  Copyright (C) 2011  theZorro266");
 		} else if (args[0].equalsIgnoreCase("list") || args[0].equalsIgnoreCase("l")) {

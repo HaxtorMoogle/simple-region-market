@@ -156,7 +156,7 @@ public class AgentManager {
 			Sign agentsign = (Sign)agent.getLocation().getBlock().getState();
 			if(agent.getMode() == SignAgent.MODE_SELL_REGION) {
 				if(event != null) {
-					event.setLine(0, "[AGENT]");
+					event.setLine(0, SimpleRegionMarket.agentName);
 					event.setLine(1, agent.getRegion());
 					if(!SimpleRegionMarket.enableEconomy || agent.getPrice() == 0) {
 						event.setLine(2, "FREE");
@@ -164,7 +164,7 @@ public class AgentManager {
 						event.setLine(2, SimpleRegionMarket.getEconomicManager().format(agent.getPrice()));
 					}
 				} else {
-					agentsign.setLine(0, "[AGENT]");
+					agentsign.setLine(0, SimpleRegionMarket.agentName);
 					agentsign.setLine(1, agent.getRegion());
 					if(!SimpleRegionMarket.enableEconomy || agent.getPrice() == 0) {
 						agentsign.setLine(2, "FREE");
@@ -174,9 +174,9 @@ public class AgentManager {
 				}
 			} else if(agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
 				if(event != null) {
-					event.setLine(0, "[HOTEL]");
+					event.setLine(0, SimpleRegionMarket.hotelName);
 				} else {
-					agentsign.setLine(0, "[HOTEL]");
+					agentsign.setLine(0, SimpleRegionMarket.hotelName);
 				}
 
 				if(agent.isRent()) {

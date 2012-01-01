@@ -28,6 +28,8 @@ public class ConfigHandler {
 		SimpleRegionMarket.removeBuyedSigns = confighandle.getBoolean("remove_buyed_signs", true);
 		SimpleRegionMarket.enableEconomy = confighandle.getBoolean("enable_economy", true);
 		SimpleRegionMarket.maxRentMultiplier = confighandle.getInt("max_rent_multiplier", 2);
+		SimpleRegionMarket.agentName = confighandle.getString("agent_name", "[AGENT]");
+		SimpleRegionMarket.hotelName = confighandle.getString("hotel_name", "[HOTEL]");
 
 		confighandle = YamlConfiguration.loadConfiguration(agents);
 
@@ -128,6 +130,8 @@ public class ConfigHandler {
 		confighandle.set("remove_buyed_signs", SimpleRegionMarket.removeBuyedSigns);
 		confighandle.set("enable_economy", SimpleRegionMarket.enableEconomy);
 		confighandle.set("max_rent_multiplier", SimpleRegionMarket.maxRentMultiplier);
+		confighandle.set("agent_name", SimpleRegionMarket.agentName);
+		confighandle.set("hotel_name", SimpleRegionMarket.hotelName);
 
 		try {
 			confighandle.save(config);
