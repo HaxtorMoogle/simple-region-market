@@ -116,19 +116,28 @@ public class SimpleRegionMarket extends JavaPlugin {
 		region.setMembers(new DefaultDomain());
 		region.setOwners(new DefaultDomain());
 		region.getOwners().addPlayer(getWorldGuard().wrapPlayer(p));
+		
+		Iterator<SignAgent> itr = getAgentManager().getAgentList().iterator();
 		if(removeBuyedSigns) {
-			getAgentManager().removeAgentsFromRegion(region);
+			while(itr.hasNext()) {
+				SignAgent obj = itr.next();
+				if(obj.getProtectedRegion() == region) {
+					obj.destroyAgent(false);
+					itr.remove();
+				}
+			}
 		} else {
-			Iterator<SignAgent> itr = getAgentManager().getAgentList().iterator();
 			while(itr.hasNext()) {
 				SignAgent obj = itr.next();
 				if(obj.getProtectedRegion() == region) {
 					Sign agentsign = (Sign)obj.getLocation().getBlock().getState();
 					agentsign.setLine(2, p.getName());
+					agentsign.update();
 					itr.remove();
 				}
 			}
 		}
+		
 		saveAll();
 		if(logging) {
 			ArrayList<String> list = new ArrayList<String>();

@@ -138,22 +138,6 @@ public class AgentManager {
 		return ret;
 	}
 
-	public int removeAgentsFromRegion(ProtectedRegion region) {
-		int count = 0;
-		if(region != null) {
-			Iterator<SignAgent> itr = getAgentList().iterator();
-			while(itr.hasNext()) {
-				SignAgent obj = itr.next();
-				if(obj.getProtectedRegion() == region) {
-					obj.destroyAgent(false);
-					itr.remove();
-					count++;
-				}
-			}
-		}
-		return count;
-	}
-
 	public void rentRegionForPlayer(ProtectedRegion region, Player p, long renttime) {
 		if(region != null) {
 			Iterator<SignAgent> itr = getAgentList().iterator();
