@@ -84,15 +84,15 @@ public class LimitHandler {
 				for(String key: path.getKeys(false)) {
 					if(main.equalsIgnoreCase("regions")) {
 						if(limiter.equalsIgnoreCase("worlds")) {
-							limitregionworlds.put(key, path.getInt(key));
+							limitregionworlds.put(key.toLowerCase(), path.getInt(key));
 						} else if(limiter.equalsIgnoreCase("players")) {
-							limitregionplayers.put(key, path.getInt(key));
+							limitregionplayers.put(key.toLowerCase(), path.getInt(key));
 						}
 					} else if(main.equalsIgnoreCase("rooms")) {
 						if(limiter.equalsIgnoreCase("worlds")) {
-							limitroomworlds.put(key, path.getInt(key));
+							limitroomworlds.put(key.toLowerCase(), path.getInt(key));
 						} else if(limiter.equalsIgnoreCase("players")) {
-							limitroomplayers.put(key, path.getInt(key));
+							limitroomplayers.put(key.toLowerCase(), path.getInt(key));
 						}
 					}
 				}
@@ -115,7 +115,7 @@ public class LimitHandler {
 			SignAgent now = SimpleRegionMarket.getAgentManager().getAgentList().get(i);
 			if(now != null
 					&& now.getMode() == SignAgent.MODE_RENT_HOTEL
-					&& now.getRent() == p.getName()) {
+					&& now.getRent().equalsIgnoreCase(p.getName())) {
 				count++;
 			}
 		}
@@ -140,13 +140,15 @@ public class LimitHandler {
 				limit = -1;
 			}
 
-			limitregionworlds.put(w.getName(), limit);
+			String worldname = w.getName().toLowerCase();
+			limitregionworlds.put(worldname, limit);
 		}
 	}
 
 	public static int getBuyWorldLimit(World w) {
-		if(limitregionworlds.get(w.getName()) != null)
-			return limitregionworlds.get(w.getName());
+		String worldname = w.getName().toLowerCase();
+		if(limitregionworlds.get(worldname) != null)
+			return limitregionworlds.get(worldname);
 		else
 			return -1;
 	}
@@ -157,13 +159,15 @@ public class LimitHandler {
 				limit = -1;
 			}
 
-			limitregionplayers.put(p.getName(), limit);
+			String playername = p.getName().toLowerCase();
+			limitregionplayers.put(playername, limit);
 		}
 	}
 
 	public static int getBuyPlayerLimit(Player p) {
-		if(limitregionplayers.get(p.getName()) != null)
-			return limitregionplayers.get(p.getName());
+		String playername = p.getName().toLowerCase();
+		if(limitregionplayers.get(playername) != null)
+			return limitregionplayers.get(playername);
 		else
 			return -1;
 	}
@@ -186,13 +190,15 @@ public class LimitHandler {
 				limit = -1;
 			}
 
-			limitroomworlds.put(w.getName(), limit);
+			String worldname = w.getName().toLowerCase();
+			limitroomworlds.put(worldname, limit);
 		}
 	}
 
 	public static int getRentWorldLimit(World w) {
-		if(limitroomworlds.get(w.getName()) != null)
-			return limitroomworlds.get(w.getName());
+		String worldname = w.getName().toLowerCase();
+		if(limitroomworlds.get(worldname) != null)
+			return limitroomworlds.get(worldname);
 		else
 			return -1;
 	}
@@ -203,26 +209,29 @@ public class LimitHandler {
 				limit = -1;
 			}
 
-			limitroomplayers.put(p.getName(), limit);
+			String playername = p.getName().toLowerCase();
+			limitroomplayers.put(playername, limit);
 		}
 	}
 
 	public static int getRentPlayerLimit(Player p) {
-		if(limitroomplayers.get(p.getName()) != null)
-			return limitroomplayers.get(p.getName());
+		String playername = p.getName().toLowerCase();
+		if(limitroomplayers.get(playername) != null)
+			return limitroomplayers.get(playername);
 		else
 			return -1;
 	}
 
 	public static boolean limitCanBuy(Player p) {
 		if(p != null) {
-			String playername = p.getName();
+			String playername = p.getName().toLowerCase();
+			String worldname = p.getWorld().getName().toLowerCase();
 			if(limitregionplayers.containsKey(playername))
 				return (countPlayerOwnRegion(p) < limitregionplayers.get(playername));
 			else if(p.getWorld() != null
-					&& limitregionworlds.containsKey(p.getWorld().getName())
-					&& limitregionworlds.get(p.getWorld().getName()) != -1)
-				return (countPlayerOwnRegion(p) < limitregionworlds.get(p.getWorld().getName()));
+					&& limitregionworlds.containsKey(worldname)
+					&& limitregionworlds.get(worldname) != -1)
+				return (countPlayerOwnRegion(p) < limitregionworlds.get(worldname));
 			else if(limitregions != -1)
 				return (countPlayerOwnRegion(p) < limitregions);
 			return true;
@@ -232,13 +241,14 @@ public class LimitHandler {
 
 	public static boolean limitCanRent(Player p) {
 		if(p != null) {
-			String playername = p.getName();
+			String playername = p.getName().toLowerCase();
+			String worldname = p.getWorld().getName().toLowerCase();
 			if(limitroomplayers.containsKey(playername))
 				return (countPlayerRentRoom(p) < limitroomplayers.get(playername));
 			else if(p.getWorld() != null
-					&& limitroomworlds.containsKey(p.getWorld().getName())
-					&& limitroomworlds.get(p.getWorld().getName()) != -1)
-				return (countPlayerRentRoom(p) < limitroomworlds.get(p.getWorld().getName()));
+					&& limitroomworlds.containsKey(worldname)
+					&& limitroomworlds.get(worldname) != -1)
+				return (countPlayerRentRoom(p) < limitroomworlds.get(worldname));
 			else if(limitrooms != -1)
 				return (countPlayerRentRoom(p) < limitrooms);
 			return true;
