@@ -156,7 +156,7 @@ class BListener extends BlockListener {
 						}
 					}
 				}
-				
+
 				// If economy is disabled, do not search for a price, but the renttime
 				if(SimpleRegionMarket.enableEconomy) {
 					if (event.getLine(2).isEmpty()) {

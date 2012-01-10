@@ -25,7 +25,7 @@ class PListener extends PlayerListener {
 
 			if(!SimpleRegionMarket.enableEconomy || SimpleRegionMarket.getEconomicManager() != null) {
 				Player p = event.getPlayer();
-				
+
 				if(agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
 					if(agent.isRent()) {
 						if (agent.getRent().equals(p.getName())) {
@@ -68,7 +68,7 @@ class PListener extends PlayerListener {
 						}
 					}
 				}
-				
+
 				if(!SimpleRegionMarket.isAdmin(p)) {
 					if(agent.getMode() == SignAgent.MODE_SELL_REGION) {
 						if(!LimitHandler.limitCanBuy(p)) {

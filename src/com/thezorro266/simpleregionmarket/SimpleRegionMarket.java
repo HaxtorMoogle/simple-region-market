@@ -46,7 +46,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 				&& getWorldGuard().isEnabled()) {
 			for(World w: server.getWorlds()) {
 				RegionManager mgr = getWorldGuard().getGlobalRegionManager().get(w);
-				
+
 				try {
 					mgr.save();
 				} catch (IOException e) {
@@ -76,9 +76,9 @@ public class SimpleRegionMarket extends JavaPlugin {
 	}
 
 	public static Method getEconomicManager() {
-		if(Methods.hasMethod()) {
+		if(Methods.hasMethod())
 			return Methods.getMethod();
-		} else {
+		else {
 			LanguageHandler.langOutputConsole("ERR_NO_ECO", Level.SEVERE, null);
 			return null;
 		}
@@ -118,7 +118,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 		region.setMembers(new DefaultDomain());
 		region.setOwners(new DefaultDomain());
 		region.getOwners().addPlayer(getWorldGuard().wrapPlayer(p));
-		
+
 		Iterator<SignAgent> itr = getAgentManager().getAgentList().iterator();
 		if(removeBuyedSigns) {
 			while(itr.hasNext()) {
@@ -139,7 +139,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 				}
 			}
 		}
-		
+
 		saveAll();
 		if(logging) {
 			ArrayList<String> list = new ArrayList<String>();
@@ -461,6 +461,6 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 		LimitHandler.loadLimits();
 
-		LanguageHandler.outputConsole(Level.INFO, "loaded version " + getDescription().getVersion() + ",  Copyright (C) 2011  theZorro266");
+		LanguageHandler.outputConsole(Level.INFO, "loaded version " + getDescription().getVersion() + ",  Copyright (C) 2011-2012  theZorro266");
 	}
 }
