@@ -13,7 +13,6 @@ import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -174,9 +173,6 @@ public class SimpleRegionMarket extends JavaPlugin {
 			LanguageHandler.langOutputConsole("LOG_RENT_HOTEL", Level.INFO, list);
 		}
 	}
-
-	private BListener blockListener = new BListener();
-	private PListener playerListener = new PListener();
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
@@ -448,9 +444,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 			enableEconomy = false;
 		}
 
-		server.getPluginManager().registerEvent(Event.Type.BLOCK_BREAK, blockListener, Event.Priority.Normal, this);
-		server.getPluginManager().registerEvent(Event.Type.SIGN_CHANGE, blockListener, Event.Priority.Normal, this);
-		server.getPluginManager().registerEvent(Event.Type.PLAYER_INTERACT, playerListener, Event.Priority.Normal, this);
+		new ListenerHandler(this);
 
 		server.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
 			@Override
@@ -461,6 +455,6 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 		LimitHandler.loadLimits();
 
-		LanguageHandler.outputConsole(Level.INFO, "loaded version " + getDescription().getVersion() + ",  Copyright (C) 2011-2012  theZorro266");
+		LanguageHandler.outputConsole(Level.INFO, "loaded version " + getDescription().getVersion() + ",  Copyright (C) 2011-2012  Benedikt Ziemons aka theZorro266 - All rights reserved.");
 	}
 }
