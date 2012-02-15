@@ -26,7 +26,7 @@ public class ConfigHandler {
 		SimpleRegionMarket.language = confighandle.getString("language", "en");
 		SimpleRegionMarket.logging = confighandle.getBoolean("logging", true);
 		SimpleRegionMarket.removeBuyedSigns = confighandle.getBoolean("remove_buyed_signs", true);
-		SimpleRegionMarket.enableEconomy = confighandle.getBoolean("enable_economy", true);
+		SimpleRegionMarket.enableEconomy = (confighandle.getBoolean("enable_economy", true) ? 1 : 0);
 		SimpleRegionMarket.maxRentMultiplier = confighandle.getInt("max_rent_multiplier", 2);
 		SimpleRegionMarket.agentName = confighandle.getString("agent_name", "[AGENT]");
 		SimpleRegionMarket.hotelName = confighandle.getString("hotel_name", "[HOTEL]");
@@ -128,7 +128,7 @@ public class ConfigHandler {
 		confighandle.set("language", SimpleRegionMarket.language);
 		confighandle.set("logging", SimpleRegionMarket.logging);
 		confighandle.set("remove_buyed_signs", SimpleRegionMarket.removeBuyedSigns);
-		confighandle.set("enable_economy", SimpleRegionMarket.enableEconomy);
+		confighandle.set("enable_economy", (SimpleRegionMarket.enableEconomy > 0 ? true : false));
 		confighandle.set("max_rent_multiplier", SimpleRegionMarket.maxRentMultiplier);
 		confighandle.set("agent_name", SimpleRegionMarket.agentName);
 		confighandle.set("hotel_name", SimpleRegionMarket.hotelName);

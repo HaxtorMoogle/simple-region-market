@@ -28,7 +28,7 @@ public class LanguageHandler {
 					"ERR_ECO_TRANSFER: 'There was a problem with transfering the money.'\n" +
 					"ERR_NO_ECO_USER: 'The economic system was not found, please tell the server owner.'\n" +
 					"ERR_CREATE_ECO_ACCOUNT: 'Error: Could not create economy account \"$0\".'\n" +
-					"NO_REGISTER: 'Register was not found. Switching to economy-free version.'\n" +
+					"NO_REGISTER_VAULT: 'Neither Register nor Vault was found. Switching to economy-free mode.'\n" +
 					"CONFIG_SAVED: 'Config saved successfully.'\n" +
 					"PLUGIN_UNLOAD: 'Plugin successfully unloaded.'\n" +
 					"ERR_CONFIG_NOT_SAVED: 'Error: Config was not saved successfully.'\n" +
@@ -44,6 +44,7 @@ public class LanguageHandler {
 					"ERR_NO_PERM_RENT: 'You do not have the permission to rent a room.'\n" +
 					"ERR_NO_PERM_RENT_CREATE: 'You cannot create a hotel or rent a room.'\n" +
 					"ERR_PLACE_AGENT: 'The agent could not be created.'\n" +
+					"ERR_VAULT_ECONOMY: 'Vault >> Failed to find economy system. Switching to economy-free mode.'\n" +
 					"AGENT_WORLD_REMOVED: 'World \"$0\" got removed. Deleting all agents on that world.'\n" +
 					"AGENT_REGION_REMOVED: 'Region \"$0\" got removed. Deleting all agents on that region.'\n" +
 					"AGENT_BLOCK_REMOVED: 'The sign of the agent got removed somehow. Deleting that agent.'\n" +

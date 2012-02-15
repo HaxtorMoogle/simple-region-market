@@ -1,9 +1,10 @@
 name: SimpleRegionMarket
-version: 1.7.3
+version: 1.7.4
 author: theZorro266
-dev-url: http://dev.bukkit.org/server-mods/simple-region-market/
+website: http://srm.thezorro266.com
 main: com.thezorro266.simpleregionmarket.SimpleRegionMarket
 depend: ['WorldGuard']
+softdepend: ['Vault']
 
 commands:
   regionmarket:

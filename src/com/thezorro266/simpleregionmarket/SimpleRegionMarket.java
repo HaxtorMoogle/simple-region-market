@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
 
+import net.milkbowl.vault.economy.Economy;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
@@ -14,6 +16,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.nijikokun.register.payment.Method;
@@ -28,15 +31,18 @@ public class SimpleRegionMarket extends JavaPlugin {
 	private static ConfigHandler configuration;
 	private static AgentManager agentmanager;
 
+	// public static Permission permission = null;
+	public static Economy economy = null;
+
 	private boolean error = false;
 
 	public static int maxRentMultiplier = 2;
+	public static int enableEconomy = 1;
 	public static String plugin_dir = null;
 	public static String language = "en";
 	public static String agentName = "[AGENT]";
 	public static String hotelName = "[HOTEL]";
 	public static boolean removeBuyedSigns = true;
-	public static boolean enableEconomy = true;
 	public static boolean logging = true;
 	public static boolean unloading = false;
 
@@ -79,8 +85,60 @@ public class SimpleRegionMarket extends JavaPlugin {
 			return Methods.getMethod();
 		else {
 			LanguageHandler.langOutputConsole("ERR_NO_ECO", Level.SEVERE, null);
+			enableEconomy = 0;
 			return null;
 		}
+	}
+
+	public static boolean isEconomy() {
+		return (enableEconomy > 0 &&
+				(enableEconomy != 1 || getEconomicManager() != null));
+	}
+	
+	public static String econFormat(double price) {
+		String ret = String.valueOf(price);
+		if(enableEconomy == 1) {
+			if(getEconomicManager() != null) {
+				ret = getEconomicManager().format(price);
+			}
+		} else if(enableEconomy == 2) {
+			ret = economy.format(price);
+		}
+		return ret;
+	}
+
+	public static boolean econHasEnough(String account, double money) {
+		boolean ret = false;
+		if(enableEconomy == 1) {
+			if(getEconomicManager() != null) {
+				ret = getEconomicManager().getAccount(account).hasEnough(money);
+			}
+		} else if(enableEconomy == 2) {
+			ret = economy.has(account, money);
+		}
+		return ret;
+	}
+
+	public static boolean econGiveMoney(String account, double money) throws Exception {
+		boolean ret = true;
+		if(enableEconomy == 1) {
+			if(getEconomicManager() != null) {
+				if(money > 0)
+					getEconomicManager().getAccount(account).add(money);
+				else
+					getEconomicManager().getAccount(account).subtract(-money);
+			}
+		} else if(enableEconomy == 2) {
+			try {
+				if(money > 0)
+					economy.depositPlayer(account, money);
+				else
+					economy.withdrawPlayer(account, -money);
+			} catch(Exception e) {
+				throw e;
+			}
+		}
+		return ret;
 	}
 
 	public static boolean canBuy(Player player) {
@@ -102,6 +160,27 @@ public class SimpleRegionMarket extends JavaPlugin {
 	public static boolean isAdmin(Player player) {
 		return (player.hasPermission("simpleregionmarket.admin") || player.isOp());
 	}
+
+	private Boolean setupEconomy()
+	{
+		RegisteredServiceProvider<Economy> economyProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+		if (economyProvider != null) {
+			economy = economyProvider.getProvider();
+		}
+
+		return (economy != null);
+	}
+
+	/*
+	private Boolean setupPermissions()
+    {
+        RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+        if (permissionProvider != null) {
+            permission = permissionProvider.getProvider();
+        }
+        return (permission != null);
+    }
+	 */
 
 	public static void sellRegion(ProtectedRegion region, Player p) {
 		for (String player : region.getOwners().getPlayers()) {
@@ -248,8 +327,8 @@ public class SimpleRegionMarket extends JavaPlugin {
 					}
 
 					SignAgent agent = list.get(i);
-					if(enableEconomy) {
-						LanguageHandler.outputString(p, "Region: " + agent.getRegion() + " - " + getEconomicManager().format(agent.getPrice()));
+					if(isEconomy()) {
+						LanguageHandler.outputString(p, "Region: " + agent.getRegion() + " - " + econFormat(agent.getPrice()));
 					} else {
 						LanguageHandler.outputString(p, "Region: " + agent.getRegion());
 					}
@@ -439,9 +518,26 @@ public class SimpleRegionMarket extends JavaPlugin {
 			return;
 		}
 
-		if(server.getPluginManager().getPlugin("Register") == null && enableEconomy) {
-			LanguageHandler.langOutputConsole("NO_REGISTER", Level.WARNING, null);
-			enableEconomy = false;
+		if(enableEconomy > 0) {
+			if(server.getPluginManager().getPlugin("Register") == null
+					&& server.getPluginManager().getPlugin("Vault") == null) {
+				LanguageHandler.langOutputConsole("NO_REGISTER_VAULT", Level.WARNING, null);
+				enableEconomy = 0;
+			} else if(server.getPluginManager().getPlugin("Register") != null
+					&& server.getPluginManager().getPlugin("Vault") == null) {
+				enableEconomy = 1;
+			} else {
+				enableEconomy = 2;
+				/*
+				if(!setupPermissions()) {
+					LanguageHandler.langOutputConsole("ERR_VAULT_PERMISSIONS", Level.WARNING, null);
+				}
+				 */
+				if(!setupEconomy()) {
+					LanguageHandler.langOutputConsole("ERR_VAULT_ECONOMY", Level.WARNING, null);
+					enableEconomy = 0;
+				}
+			}
 		}
 
 		new ListenerHandler(this);

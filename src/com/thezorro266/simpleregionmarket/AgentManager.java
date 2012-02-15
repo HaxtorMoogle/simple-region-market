@@ -158,18 +158,18 @@ public class AgentManager {
 				if(event != null) {
 					event.setLine(0, SimpleRegionMarket.agentName);
 					event.setLine(1, agent.getRegion());
-					if(!SimpleRegionMarket.enableEconomy || agent.getPrice() == 0) {
+					if(!SimpleRegionMarket.isEconomy() || agent.getPrice() == 0) {
 						event.setLine(2, "FREE");
 					} else {
-						event.setLine(2, SimpleRegionMarket.getEconomicManager().format(agent.getPrice()));
+						event.setLine(2, SimpleRegionMarket.econFormat(agent.getPrice()));
 					}
 				} else {
 					agentsign.setLine(0, SimpleRegionMarket.agentName);
 					agentsign.setLine(1, agent.getRegion());
-					if(!SimpleRegionMarket.enableEconomy || agent.getPrice() == 0) {
+					if(!SimpleRegionMarket.isEconomy() || agent.getPrice() == 0) {
 						agentsign.setLine(2, "FREE");
 					} else {
-						agentsign.setLine(2, SimpleRegionMarket.getEconomicManager().format(agent.getPrice()));
+						agentsign.setLine(2, SimpleRegionMarket.econFormat(agent.getPrice()));
 					}
 				}
 			} else if(agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
@@ -189,17 +189,17 @@ public class AgentManager {
 					}
 				} else {
 					if(event != null) {
-						if(!SimpleRegionMarket.enableEconomy || agent.getPrice() == 0) {
+						if(!SimpleRegionMarket.isEconomy() || agent.getPrice() == 0) {
 							event.setLine(1, "FREE");
 						} else {
-							event.setLine(1, SimpleRegionMarket.getEconomicManager().format(agent.getPrice()));
+							event.setLine(1, SimpleRegionMarket.econFormat(agent.getPrice()));
 						}
 						event.setLine(2, getSignTime(agent.getRentTime()));
 					} else {
-						if(!SimpleRegionMarket.enableEconomy || agent.getPrice() == 0) {
+						if(!SimpleRegionMarket.isEconomy() || agent.getPrice() == 0) {
 							agentsign.setLine(1, "FREE");
 						} else {
-							agentsign.setLine(1, SimpleRegionMarket.getEconomicManager().format(agent.getPrice()));
+							agentsign.setLine(1, SimpleRegionMarket.econFormat(agent.getPrice()));
 						}
 						agentsign.setLine(2, getSignTime(agent.getRentTime()));
 					}
@@ -280,8 +280,8 @@ public class AgentManager {
 							LanguageHandler.outputError(p, "ERR_REGION_PRICE", null);
 							ArrayList<String> list = new ArrayList<String>();
 							list.add(region.getId());
-							list.add(SimpleRegionMarket.getEconomicManager().format(old));
-							list.add(SimpleRegionMarket.getEconomicManager().format(prices.get(i)));
+							list.add(SimpleRegionMarket.econFormat(old));
+							list.add(SimpleRegionMarket.econFormat(prices.get(i)));
 							LanguageHandler.outputError(p, "ERR_REGION_PRICE_SHOW", list);
 						}
 						return -1;
