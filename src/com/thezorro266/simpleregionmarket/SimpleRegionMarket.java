@@ -1,7 +1,6 @@
 package com.thezorro266.simpleregionmarket;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -23,6 +22,7 @@ import com.nijikokun.register.payment.Method;
 import com.nijikokun.register.payment.Methods;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
+import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
@@ -54,7 +54,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 				try {
 					mgr.save();
-				} catch (IOException e) {
+				} catch (ProtectionDatabaseException e) {
 					LanguageHandler.outputConsole(Level.SEVERE, "WorldGuard >> Failed to write regionsfile: " + e.getMessage());
 				}
 			}
