@@ -16,68 +16,115 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class ListenerHandler implements Listener {
 
-	public ListenerHandler(Plugin plugin) {
+	private final ConfigHandler configurationHandler;
+	private final LimitHandler limitHandler;
+	private final SimpleRegionMarket plugin;
+
+	public ListenerHandler(SimpleRegionMarket plugin, LimitHandler limitHandler, ConfigHandler configurationHandler) {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
+		this.plugin = plugin;
+		this.limitHandler = limitHandler;
+		this.configurationHandler = configurationHandler;
+	}
+
+	@EventHandler
+	public void onBlockBreak(final BlockBreakEvent event) {
+		final Block b = event.getBlock();
+		final SignAgent agent = plugin.getAgentManager().getAgent(
+				b.getLocation());
+
+		if (agent == null)
+			return;
+
+		final Player p = event.getPlayer();
+		final ProtectedRegion region = SimpleRegionMarket.getWorldGuard()
+				.getRegionManager(b.getLocation().getWorld())
+				.getRegion(agent.getRegion());
+		if (!plugin.getAgentManager().isOwner(p, region) && !plugin.isAdmin(p)) {
+			event.setCancelled(true);
+			((Sign) b.getState()).update();
+			return;
+		}
+
+		event.setCancelled(true);
+		if (p != null) {
+			agent.destroyAgent(true);
+			LanguageHandler.outputDebug(p, "AGENT_DELETE", null);
+		}
+		plugin.getAgentManager().removeAgent(agent);
+		plugin.saveAll();
 	}
 
 	@EventHandler
 	public void onPlayerInteract(final PlayerInteractEvent event) {
 		if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-			Block b = event.getClickedBlock();
-			SignAgent agent = SimpleRegionMarket.getAgentManager().getAgent(b.getLocation());
+			final Block b = event.getClickedBlock();
+			final SignAgent agent = plugin.getAgentManager().getAgent(
+					b.getLocation());
 
 			if (agent == null)
 				return;
 
-			Player p = event.getPlayer();
+			final Player p = event.getPlayer();
 
-			if(agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
-				if(agent.isRent()) {
+			if (agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
+				if (agent.isRent()) {
 					if (agent.getRent().equals(p.getName())) {
-						long newRentTime = agent.getExpireDate().getTime() + agent.getRentTime();
-						if(((newRentTime-System.currentTimeMillis()) / agent.getRentTime()) < SimpleRegionMarket.maxRentMultiplier) {
-							if(SimpleRegionMarket.isEconomy()) {
-								double price = agent.getPrice();
-								if (SimpleRegionMarket.econHasEnough(p.getName(), price)) {
-									String account = agent.getAccount();
+						final long newRentTime = agent.getExpireDate()
+								.getTime() + agent.getRentTime();
+						if ((newRentTime - System.currentTimeMillis())
+								/ agent.getRentTime() < configurationHandler.getConfig().getInt("max_rent_multiplier")) {
+							if (plugin.isEconomy()) {
+								final double price = agent.getPrice();
+								if (plugin.econHasEnough(p.getName(), price)) {
+									final String account = agent.getAccount();
 									try {
-										if(account.isEmpty()) {
-											SimpleRegionMarket.econGiveMoney(p.getName(), -price);
+										if (account.isEmpty()) {
+											plugin.econGiveMoney(p.getName(),
+													-price);
 										} else {
-											SimpleRegionMarket.econGiveMoney(p.getName(), -price);
-											SimpleRegionMarket.econGiveMoney(account, price);
+											plugin.econGiveMoney(p.getName(),
+													-price);
+											plugin.econGiveMoney(account, price);
 										}
-									} catch(Exception e) {
-										LanguageHandler.outputError(p, "ERR_TRANSACTION", null);
+									} catch (final Exception e) {
+										LanguageHandler.outputError(p,
+												"ERR_TRANSACTION", null);
 										return;
 									}
 									agent.setExpireDate(new Date(newRentTime));
-									SimpleRegionMarket.getAgentManager().actAgent(agent, null);
-									LanguageHandler.outputDebug(p, "HOTEL_SUCCESS_RERENT", null);
+									plugin.getAgentManager().actAgent(agent,
+											null);
+									LanguageHandler.outputDebug(p,
+											"HOTEL_SUCCESS_RERENT", null);
 								} else {
-									LanguageHandler.outputError(p, "ERR_NO_MONEY", null);
+									LanguageHandler.outputError(p,
+											"ERR_NO_MONEY", null);
 								}
 							} else {
 								agent.setExpireDate(new Date(newRentTime));
-								SimpleRegionMarket.getAgentManager().actAgent(agent, null);
-								LanguageHandler.outputDebug(p, "HOTEL_SUCCESS_RERENT", null);
+								plugin.getAgentManager().actAgent(agent, null);
+								LanguageHandler.outputDebug(p,
+										"HOTEL_SUCCESS_RERENT", null);
 							}
 						} else {
-							LanguageHandler.outputError(p, "ERR_RERENT_TOO_LONG", null);
+							LanguageHandler.outputError(p,
+									"ERR_RERENT_TOO_LONG", null);
 						}
 					} else {
-						LanguageHandler.outputError(p, "ERR_ALREADY_RENT", null);
+						LanguageHandler
+								.outputError(p, "ERR_ALREADY_RENT", null);
 					}
 					return;
 				} else {
-					if(agent.getProtectedRegion().getParent() != null) {
-						if(SimpleRegionMarket.getAgentManager().isOwner(p, agent.getProtectedRegion().getParent())) {
+					if (agent.getProtectedRegion().getParent() != null) {
+						if (plugin.getAgentManager().isOwner(p,
+								agent.getProtectedRegion().getParent())) {
 							LanguageHandler.outputDebug(p, "HOTEL_YOURS", null);
 							return;
 						}
@@ -85,104 +132,120 @@ public class ListenerHandler implements Listener {
 				}
 			}
 
-			if(!SimpleRegionMarket.isAdmin(p)) {
-				if(agent.getMode() == SignAgent.MODE_SELL_REGION) {
-					if(!LimitHandler.limitCanBuy(p)) {
-						LanguageHandler.outputError(p, "ERR_REGION_LIMIT", null);
+			if (!plugin.isAdmin(p)) {
+				if (agent.getMode() == SignAgent.MODE_SELL_REGION) {
+					if (!limitHandler.limitCanBuy(p)) {
+						LanguageHandler
+								.outputError(p, "ERR_REGION_LIMIT", null);
 						return;
 					}
-				} else if(agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
-					if(!LimitHandler.limitCanRent(p)) {
+				} else if (agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
+					if (!limitHandler.limitCanRent(p)) {
 						LanguageHandler.outputError(p, "ERR_HOTEL_LIMIT", null);
 						return;
 					}
 				}
 			}
 
-			ProtectedRegion region = SimpleRegionMarket.getWorldGuard().getRegionManager(b.getWorld()).getRegion(agent.getRegion());
+			final ProtectedRegion region = SimpleRegionMarket.getWorldGuard()
+					.getRegionManager(b.getWorld())
+					.getRegion(agent.getRegion());
 
-			if(agent.getMode() == SignAgent.MODE_SELL_REGION) {
-				if(!SimpleRegionMarket.canBuy(p)) {
+			if (agent.getMode() == SignAgent.MODE_SELL_REGION) {
+				if (!plugin.canBuy(p)) {
 					LanguageHandler.outputError(p, "ERR_NO_PERM_BUY", null);
-				} else if (SimpleRegionMarket.getAgentManager().isOwner(p, region)) {
-					if(!agent.getAccount().isEmpty()) {
-						if(p.getName().equals(agent.getAccount())) {
+				} else if (plugin.getAgentManager().isOwner(p, region)) {
+					if (!agent.getAccount().isEmpty()) {
+						if (p.getName().equals(agent.getAccount())) {
 							LanguageHandler.outputDebug(p, "AGENT_YOURS", null);
 						} else {
-							LanguageHandler.outputDebug(p, "ERR_REGION_BUY_YOURS", null);
+							LanguageHandler.outputDebug(p,
+									"ERR_REGION_BUY_YOURS", null);
 						}
 					} else {
-						LanguageHandler.outputDebug(p, "ERR_REGION_BUY_YOURS", null);
+						LanguageHandler.outputDebug(p, "ERR_REGION_BUY_YOURS",
+								null);
 					}
 				} else {
-					if(SimpleRegionMarket.isEconomy()) {
-						String account = agent.getAccount();
-						double price = agent.getPrice();
-						if (SimpleRegionMarket.econHasEnough(p.getName(), price)) {
+					if (plugin.isEconomy()) {
+						final String account = agent.getAccount();
+						final double price = agent.getPrice();
+						if (plugin.econHasEnough(p.getName(), price)) {
 							try {
-								if(account.isEmpty()) {
-									SimpleRegionMarket.econGiveMoney(p.getName(), -price);
-									SimpleRegionMarket.sellRegion(region, p);
-									ArrayList<String> list = new ArrayList<String>();
+								if (account.isEmpty()) {
+									plugin.econGiveMoney(p.getName(), -price);
+									plugin.sellRegion(region, p);
+									final ArrayList<String> list = new ArrayList<String>();
 									list.add(region.getId());
-									LanguageHandler.outputDebug(p, "REGION_BUYED_NONE", list);
+									LanguageHandler.outputDebug(p,
+											"REGION_BUYED_NONE", list);
 								} else {
-									SimpleRegionMarket.econGiveMoney(p.getName(), -price);
-									SimpleRegionMarket.econGiveMoney(account, price);
-									SimpleRegionMarket.sellRegion(region, p);
-									ArrayList<String> list = new ArrayList<String>();
+									plugin.econGiveMoney(p.getName(), -price);
+									plugin.econGiveMoney(account, price);
+									plugin.sellRegion(region, p);
+									final ArrayList<String> list = new ArrayList<String>();
 									list.add(region.getId());
 									list.add(account);
-									LanguageHandler.outputDebug(p, "REGION_BUYED_USER", list);
+									LanguageHandler.outputDebug(p,
+											"REGION_BUYED_USER", list);
 								}
-							} catch(Exception e) {
-								LanguageHandler.outputError(p, "ERR_TRANSACTION", null);
+							} catch (final Exception e) {
+								LanguageHandler.outputError(p,
+										"ERR_TRANSACTION", null);
 								return;
 							}
 						} else {
-							LanguageHandler.outputError(p, "ERR_NO_MONEY", null);
+							LanguageHandler
+									.outputError(p, "ERR_NO_MONEY", null);
 						}
 					} else {
-						SimpleRegionMarket.sellRegion(region, p);
-						ArrayList<String> list = new ArrayList<String>();
+						plugin.sellRegion(region, p);
+						final ArrayList<String> list = new ArrayList<String>();
 						list.add(region.getId());
-						LanguageHandler.outputDebug(p, "REGION_BUYED_NONE", list);
+						LanguageHandler.outputDebug(p, "REGION_BUYED_NONE",
+								list);
 					}
 				}
-			} else if(agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
-				if(!SimpleRegionMarket.canRent(p)) {
+			} else if (agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
+				if (!plugin.canRent(p)) {
 					LanguageHandler.outputError(p, "ERR_NO_PERM_RENT", null);
 				} else {
-					if(SimpleRegionMarket.isEconomy()) {
-						String account = agent.getAccount();
-						double price = agent.getPrice();
-						if (SimpleRegionMarket.econHasEnough(p.getName(), price)) {
+					if (plugin.isEconomy()) {
+						final String account = agent.getAccount();
+						final double price = agent.getPrice();
+						if (plugin.econHasEnough(p.getName(), price)) {
 							try {
-								if(account.isEmpty()) {
-									SimpleRegionMarket.econGiveMoney(p.getName(), -price);
-									SimpleRegionMarket.rentHotel(region, p, agent.getRentTime());
-									ArrayList<String> list = new ArrayList<String>();
+								if (account.isEmpty()) {
+									plugin.econGiveMoney(p.getName(), -price);
+									plugin.rentHotel(region, p,
+											agent.getRentTime());
+									final ArrayList<String> list = new ArrayList<String>();
 									list.add(region.getId());
-									LanguageHandler.outputDebug(p, "HOTEL_RENT_NONE", list);
+									LanguageHandler.outputDebug(p,
+											"HOTEL_RENT_NONE", list);
 								} else {
-									SimpleRegionMarket.econGiveMoney(p.getName(), -price);
-									SimpleRegionMarket.econGiveMoney(account, price);
-									SimpleRegionMarket.rentHotel(region, p, agent.getRentTime());
-									ArrayList<String> list = new ArrayList<String>();
+									plugin.econGiveMoney(p.getName(), -price);
+									plugin.econGiveMoney(account, price);
+									plugin.rentHotel(region, p,
+											agent.getRentTime());
+									final ArrayList<String> list = new ArrayList<String>();
 									list.add(region.getId());
 									list.add(account);
-									LanguageHandler.outputDebug(p, "HOTEL_RENT_USER", list);
+									LanguageHandler.outputDebug(p,
+											"HOTEL_RENT_USER", list);
 								}
-							} catch(Exception e) {
-								LanguageHandler.outputError(p, "ERR_TRANSACTION", null);
+							} catch (final Exception e) {
+								LanguageHandler.outputError(p,
+										"ERR_TRANSACTION", null);
 								return;
 							}
 						} else {
-							LanguageHandler.outputError(p, "ERR_NO_MONEY", null);
+							LanguageHandler
+									.outputError(p, "ERR_NO_MONEY", null);
 						}
 					} else {
-						SimpleRegionMarket.rentHotel(region, p, agent.getRentTime());
-						ArrayList<String> list = new ArrayList<String>();
+						plugin.rentHotel(region, p, agent.getRentTime());
+						final ArrayList<String> list = new ArrayList<String>();
 						list.add(region.getId());
 						LanguageHandler.outputDebug(p, "HOTEL_RENT_NONE", list);
 					}
@@ -192,51 +255,29 @@ public class ListenerHandler implements Listener {
 	}
 
 	@EventHandler
-	public void onBlockBreak(final BlockBreakEvent event) {
-		Block b = event.getBlock();
-		SignAgent agent = SimpleRegionMarket.getAgentManager().getAgent(b.getLocation());
-
-		if (agent == null)
-			return;
-
-		Player p = event.getPlayer();
-		ProtectedRegion region = SimpleRegionMarket.getWorldGuard().getRegionManager(b.getLocation().getWorld()).getRegion(agent.getRegion());
-		if (!SimpleRegionMarket.getAgentManager().isOwner(p, region) && !SimpleRegionMarket.isAdmin(p)) {
-			event.setCancelled(true);
-			((Sign)b.getState()).update();
-			return;
-		}
-
-		event.setCancelled(true);
-		if (p != null) {
-			agent.destroyAgent(true);
-			LanguageHandler.outputDebug(p, "AGENT_DELETE", null);
-		}
-		SimpleRegionMarket.getAgentManager().removeAgent(agent);
-		SimpleRegionMarket.saveAll();
-	}
-
-	@EventHandler
 	public void onSignChange(final SignChangeEvent event) {
-		if (event.getLine(0).equalsIgnoreCase("[AGENT]") || event.getLine(0).equalsIgnoreCase("[HOTEL]")) {
+		if (event.getLine(0).equalsIgnoreCase("[AGENT]")
+				|| event.getLine(0).equalsIgnoreCase("[HOTEL]")) {
 			ProtectedRegion region;
-			Location signloc = event.getBlock().getLocation();
+			final Location signloc = event.getBlock().getLocation();
 
 			// Get Mode from '[AGENT]' or '[HOTEL]'
 			int mode = 0;
-			if(event.getLine(0).equalsIgnoreCase("[AGENT]")) {
+			if (event.getLine(0).equalsIgnoreCase("[AGENT]")) {
 				mode = SignAgent.MODE_SELL_REGION;
 			} else if (event.getLine(0).equalsIgnoreCase("[HOTEL]")) {
 				mode = SignAgent.MODE_RENT_HOTEL;
 			}
 
-			Player p = event.getPlayer();
+			final Player p = event.getPlayer();
 
 			// Get Region from above or line 2 on the sign
 			if (event.getLine(1).isEmpty()) {
-				region = SimpleRegionMarket.getAgentManager().getRegion(signloc);
+				region = plugin.getAgentManager().getRegion(signloc);
 			} else {
-				region = SimpleRegionMarket.getWorldGuard().getRegionManager(signloc.getWorld()).getRegion(event.getLine(1));
+				region = SimpleRegionMarket.getWorldGuard()
+						.getRegionManager(signloc.getWorld())
+						.getRegion(event.getLine(1));
 			}
 
 			if (region == null) {
@@ -245,40 +286,52 @@ public class ListenerHandler implements Listener {
 				}
 				event.setCancelled(true);
 				event.getBlock().setType(Material.AIR);
-				signloc.getWorld().dropItem(signloc, new ItemStack(Material.SIGN, 1));
+				signloc.getWorld().dropItem(signloc,
+						new ItemStack(Material.SIGN, 1));
 				return;
 			}
 
 			// Check player permission
 			if (p != null) {
-				if(mode == SignAgent.MODE_SELL_REGION) {
-					if(!SimpleRegionMarket.canSell(p)) {
+				if (mode == SignAgent.MODE_SELL_REGION) {
+					if (!plugin.canSell(p)) {
 						event.setCancelled(true);
-						LanguageHandler.outputDebug(p, "ERR_NO_PERM_SELL", null);
+						LanguageHandler
+								.outputDebug(p, "ERR_NO_PERM_SELL", null);
 						event.getBlock().setType(Material.AIR);
-						signloc.getWorld().dropItem(signloc, new ItemStack(Material.SIGN, 1));
+						signloc.getWorld().dropItem(signloc,
+								new ItemStack(Material.SIGN, 1));
 						return;
 					}
-					if (!SimpleRegionMarket.isAdmin(p) && !SimpleRegionMarket.getAgentManager().isOwner(p, region)) {
-						LanguageHandler.outputError(p, "ERR_REGION_NO_OWNER", null);
+					if (!plugin.isAdmin(p)
+							&& !plugin.getAgentManager().isOwner(p, region)) {
+						LanguageHandler.outputError(p, "ERR_REGION_NO_OWNER",
+								null);
 						event.setCancelled(true);
 						event.getBlock().setType(Material.AIR);
-						signloc.getWorld().dropItem(signloc, new ItemStack(Material.SIGN, 1));
+						signloc.getWorld().dropItem(signloc,
+								new ItemStack(Material.SIGN, 1));
 						return;
 					}
-				} else if(mode == SignAgent.MODE_RENT_HOTEL) {
-					if(!SimpleRegionMarket.canCreate(p)) {
+				} else if (mode == SignAgent.MODE_RENT_HOTEL) {
+					if (!plugin.canLet(p)) {
 						event.setCancelled(true);
-						LanguageHandler.outputDebug(p, "ERR_NO_PERM_RENT_CREATE", null);
+						LanguageHandler.outputDebug(p,
+								"ERR_NO_PERM_RENT_CREATE", null);
 						event.getBlock().setType(Material.AIR);
-						signloc.getWorld().dropItem(signloc, new ItemStack(Material.SIGN, 1));
+						signloc.getWorld().dropItem(signloc,
+								new ItemStack(Material.SIGN, 1));
 						return;
 					}
-					if (!SimpleRegionMarket.isAdmin(p) && !SimpleRegionMarket.getAgentManager().isOwner(p, region.getParent())) {
-						LanguageHandler.outputError(p, "ERR_PARENT_NO_OWNER", null);
+					if (!plugin.isAdmin(p)
+							&& !plugin.getAgentManager().isOwner(p,
+									region.getParent())) {
+						LanguageHandler.outputError(p, "ERR_PARENT_NO_OWNER",
+								null);
 						event.setCancelled(true);
 						event.getBlock().setType(Material.AIR);
-						signloc.getWorld().dropItem(signloc, new ItemStack(Material.SIGN, 1));
+						signloc.getWorld().dropItem(signloc,
+								new ItemStack(Material.SIGN, 1));
 						return;
 					}
 				}
@@ -288,128 +341,150 @@ public class ListenerHandler implements Listener {
 			long renttime = 0;
 			double price = 0;
 			String[] linetwo = null;
-			if(mode == SignAgent.MODE_RENT_HOTEL) {
+			if (mode == SignAgent.MODE_RENT_HOTEL) {
 				linetwo = event.getLine(2).split(":");
-				if(linetwo.length == 1) {
+				if (linetwo.length == 1) {
 					try {
 						renttime = AgentManager.parseSignTime(linetwo[0]);
-					} catch(Exception e) {
+					} catch (final Exception e) {
 						if (p != null) {
-							LanguageHandler.outputError(p, "ERR_NO_RENTTIME", null);
+							LanguageHandler.outputError(p, "ERR_NO_RENTTIME",
+									null);
 						}
 						event.setCancelled(true);
 						event.getBlock().setType(Material.AIR);
-						signloc.getWorld().dropItem(signloc, new ItemStack(Material.SIGN, 1));
+						signloc.getWorld().dropItem(signloc,
+								new ItemStack(Material.SIGN, 1));
 						return;
 					}
-				} else if(linetwo.length > 2) {
+				} else if (linetwo.length > 2) {
 					if (p != null) {
-						LanguageHandler.outputError(p, "ERR_NO_PRICE_RENTTIME", null);
+						LanguageHandler.outputError(p, "ERR_NO_PRICE_RENTTIME",
+								null);
 					}
 					event.setCancelled(true);
 					event.getBlock().setType(Material.AIR);
-					signloc.getWorld().dropItem(signloc, new ItemStack(Material.SIGN, 1));
+					signloc.getWorld().dropItem(signloc,
+							new ItemStack(Material.SIGN, 1));
 					return;
-				} else if(linetwo.length == 2) {
+				} else if (linetwo.length == 2) {
 					try {
 						renttime = AgentManager.parseSignTime(linetwo[1]);
-					} catch(Exception e) {
+					} catch (final Exception e) {
 						if (p != null) {
-							LanguageHandler.outputError(p, "ERR_NO_RENTTIME", null);
+							LanguageHandler.outputError(p, "ERR_NO_RENTTIME",
+									null);
 						}
 						event.setCancelled(true);
 						event.getBlock().setType(Material.AIR);
-						signloc.getWorld().dropItem(signloc, new ItemStack(Material.SIGN, 1));
+						signloc.getWorld().dropItem(signloc,
+								new ItemStack(Material.SIGN, 1));
 						return;
 					}
 				}
 			}
 
-			// If economy is disabled, do not search for a price, but the renttime
-			if(SimpleRegionMarket.isEconomy()) {
+			// If economy is disabled, do not search for a price, but the
+			// renttime
+			if (plugin.isEconomy()) {
 				if (event.getLine(2).isEmpty()) {
-					if (SimpleRegionMarket.getAgentManager().countAgents(region) > 0) {
-						price = SimpleRegionMarket.getAgentManager().getRegionPrice(region, null);
+					if (plugin.getAgentManager().countAgents(region) > 0) {
+						price = plugin.getAgentManager().getRegionPrice(region,
+								null);
 					} else {
 						price = -1;
 					}
 					if (price < 0) {
 						if (p != null) {
-							LanguageHandler.outputError(p, "ERR_NO_PRICE", null);
+							LanguageHandler
+									.outputError(p, "ERR_NO_PRICE", null);
 						}
 						event.setCancelled(true);
 						event.getBlock().setType(Material.AIR);
-						signloc.getWorld().dropItem(signloc, new ItemStack(Material.SIGN, 1));
+						signloc.getWorld().dropItem(signloc,
+								new ItemStack(Material.SIGN, 1));
 						return;
 					}
-					if(mode == SignAgent.MODE_RENT_HOTEL) {
-						if (SimpleRegionMarket.getAgentManager().countAgents(region) > 0) {
-							renttime = SimpleRegionMarket.getAgentManager().getRegionRentTime(region);
+					if (mode == SignAgent.MODE_RENT_HOTEL) {
+						if (plugin.getAgentManager().countAgents(region) > 0) {
+							renttime = plugin.getAgentManager()
+									.getRegionRentTime(region);
 						} else {
 							renttime = -1;
 						}
 						if (renttime <= 0) {
 							if (p != null) {
-								LanguageHandler.outputError(p, "ERR_NO_RENTTIME", null);
+								LanguageHandler.outputError(p,
+										"ERR_NO_RENTTIME", null);
 							}
 							event.setCancelled(true);
 							event.getBlock().setType(Material.AIR);
-							signloc.getWorld().dropItem(signloc, new ItemStack(Material.SIGN, 1));
+							signloc.getWorld().dropItem(signloc,
+									new ItemStack(Material.SIGN, 1));
 							return;
 						}
 					}
 				} else {
-					if(mode == SignAgent.MODE_RENT_HOTEL) {
-						if(linetwo == null || linetwo.length == 1) {
+					if (mode == SignAgent.MODE_RENT_HOTEL) {
+						if (linetwo == null || linetwo.length == 1) {
 							if (p != null) {
-								LanguageHandler.outputError(p, "ERR_NO_PRICE", null);
+								LanguageHandler.outputError(p, "ERR_NO_PRICE",
+										null);
 							}
 							event.setCancelled(true);
 							event.getBlock().setType(Material.AIR);
-							signloc.getWorld().dropItem(signloc, new ItemStack(Material.SIGN, 1));
+							signloc.getWorld().dropItem(signloc,
+									new ItemStack(Material.SIGN, 1));
 							return;
 						}
 					}
 					try {
-						if(mode == SignAgent.MODE_RENT_HOTEL) {
+						if (mode == SignAgent.MODE_RENT_HOTEL) {
 							price = Double.parseDouble(linetwo[0]);
 						} else {
 							price = Double.parseDouble(event.getLine(2));
 						}
-					} catch (Exception e) {
+					} catch (final Exception e) {
 						if (p != null) {
-							LanguageHandler.outputError(p, "ERR_NO_PRICE", null);
+							LanguageHandler
+									.outputError(p, "ERR_NO_PRICE", null);
 						}
 						event.setCancelled(true);
 						event.getBlock().setType(Material.AIR);
-						signloc.getWorld().dropItem(signloc, new ItemStack(Material.SIGN, 1));
+						signloc.getWorld().dropItem(signloc,
+								new ItemStack(Material.SIGN, 1));
 						return;
 					}
 					if (price < 0) {
 						if (p != null) {
-							LanguageHandler.outputError(p, "ERR_PRICE_UNDER_ZERO", null);
+							LanguageHandler.outputError(p,
+									"ERR_PRICE_UNDER_ZERO", null);
 						}
 						event.setCancelled(true);
 						event.getBlock().setType(Material.AIR);
-						signloc.getWorld().dropItem(signloc, new ItemStack(Material.SIGN, 1));
+						signloc.getWorld().dropItem(signloc,
+								new ItemStack(Material.SIGN, 1));
 						return;
 					}
 				}
 			} else { // ..., but the renttime
 				if (event.getLine(2).isEmpty()) {
-					if(mode == SignAgent.MODE_RENT_HOTEL) {
-						if (SimpleRegionMarket.getAgentManager().countAgents(region) > 0) {
-							renttime = SimpleRegionMarket.getAgentManager().getRegionRentTime(region);
+					if (mode == SignAgent.MODE_RENT_HOTEL) {
+						if (plugin.getAgentManager().countAgents(region) > 0) {
+							renttime = plugin.getAgentManager()
+									.getRegionRentTime(region);
 						} else {
 							renttime = -1;
 						}
 						if (renttime <= 0) {
 							if (p != null) {
-								LanguageHandler.outputError(p, "ERR_NO_RENTTIME", null);
+								LanguageHandler.outputError(p,
+										"ERR_NO_RENTTIME", null);
 							}
 							event.setCancelled(true);
 							event.getBlock().setType(Material.AIR);
-							signloc.getWorld().dropItem(signloc, new ItemStack(Material.SIGN, 1));
+							signloc.getWorld().dropItem(signloc,
+									new ItemStack(Material.SIGN, 1));
 							return;
 						}
 					}
@@ -418,9 +493,9 @@ public class ListenerHandler implements Listener {
 
 			// Check account
 			String account = p.getName();
-			if(!event.getLine(3).isEmpty()) {
-				if(SimpleRegionMarket.isAdmin(p)) {
-					if(event.getLine(3).equalsIgnoreCase("none")) {
+			if (!event.getLine(3).isEmpty()) {
+				if (plugin.isAdmin(p)) {
+					if (event.getLine(3).equalsIgnoreCase("none")) {
 						account = "";
 					} else {
 						account = event.getLine(3);
@@ -429,48 +504,56 @@ public class ListenerHandler implements Listener {
 			}
 
 			// Create
-			SignAgent newagent = SimpleRegionMarket.getAgentManager().addAgent(mode, signloc, region, price, account, renttime);
+			final SignAgent newagent = plugin.getAgentManager().addAgent(mode,
+					signloc, region, price, account, renttime);
 
 			// Check and finalize
 			if (newagent != null) {
 				if (p != null) {
 
 					// Successful message
-					if(mode == SignAgent.MODE_SELL_REGION) {
-						if(account.isEmpty()) {
-							LanguageHandler.outputDebug(p, "REGION_OFFER_NONE", null);
+					if (mode == SignAgent.MODE_SELL_REGION) {
+						if (account.isEmpty()) {
+							LanguageHandler.outputDebug(p, "REGION_OFFER_NONE",
+									null);
 						} else {
-							LanguageHandler.outputDebug(p, "REGION_OFFER_USER", null);
+							LanguageHandler.outputDebug(p, "REGION_OFFER_USER",
+									null);
 						}
-					} else if(mode == SignAgent.MODE_RENT_HOTEL) {
-						if(account.isEmpty()) {
-							LanguageHandler.outputDebug(p, "HOTEL_OFFER_NONE", null);
+					} else if (mode == SignAgent.MODE_RENT_HOTEL) {
+						if (account.isEmpty()) {
+							LanguageHandler.outputDebug(p, "HOTEL_OFFER_NONE",
+									null);
 						} else {
-							LanguageHandler.outputDebug(p, "HOTEL_OFFER_USER", null);
+							LanguageHandler.outputDebug(p, "HOTEL_OFFER_USER",
+									null);
 						}
 					}
 
-					if(mode == SignAgent.MODE_SELL_REGION && SimpleRegionMarket.isEconomy()) {
-						SimpleRegionMarket.getAgentManager().getRegionPrice(region, p);
+					if (mode == SignAgent.MODE_SELL_REGION
+							&& plugin.isEconomy()) {
+						plugin.getAgentManager().getRegionPrice(region, p);
 					}
 
-					if (SimpleRegionMarket.getAgentManager().countAgents(region) > 1) {
-						ArrayList<String> list = new ArrayList<String>();
-						list.add(Integer.toString(SimpleRegionMarket.getAgentManager().countAgents(region)));
+					if (plugin.getAgentManager().countAgents(region) > 1) {
+						final ArrayList<String> list = new ArrayList<String>();
+						list.add(Integer.toString(plugin.getAgentManager()
+								.countAgents(region)));
 						LanguageHandler.outputDebug(p, "AGENT_PLACED", list);
 					}
 				}
 
-				SimpleRegionMarket.getAgentManager().actAgent(newagent, event);
+				plugin.getAgentManager().actAgent(newagent, event);
 
-				SimpleRegionMarket.saveAll();
+				plugin.saveAll();
 			} else {
 				if (p != null) {
 					LanguageHandler.outputError(p, "ERR_PLACE_AGENT", null);
 				}
 				event.setCancelled(true);
 				event.getBlock().setType(Material.AIR);
-				signloc.getWorld().dropItem(signloc, new ItemStack(Material.SIGN, 1));
+				signloc.getWorld().dropItem(signloc,
+						new ItemStack(Material.SIGN, 1));
 				return;
 			}
 		}

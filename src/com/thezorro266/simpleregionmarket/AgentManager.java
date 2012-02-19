@@ -16,19 +16,203 @@ import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class AgentManager {
-	private ArrayList<SignAgent> agents = new ArrayList<SignAgent>();
+	public static String getSignTime(long time) {
+		time = time / 1000; // From ms to sec
+		final int days = (int) (time / (24 * 60 * 60));
+		final int hours = (int) (time / (60 * 60));
+		final int minutes = (int) (time / 60);
+		if (days > 0) {
+			if (days == 1)
+				return days + " day";
+			else
+				return days + " days";
+		} else if (hours > 0) {
+			if (hours == 1)
+				return hours + " hour";
+			else
+				return hours + " hours";
+		} else if (minutes > 0) {
+			if (minutes == 1)
+				return minutes + " min";
+			else
+				return minutes + " mins";
+		}
+		return "< 1 min";
+	}
 
-	public SignAgent addAgent(int mode, Location location, ProtectedRegion region, double price, String account, long renttime) {
-		if (mode == SignAgent.MODE_SELL_REGION || mode == SignAgent.MODE_RENT_HOTEL) {
-			if(location != null) {
-				if(location.getWorld() != null) {
-					if(region != null) {
-						if(price >= 0) {
-							if(account == null) {
+	public static long parseSignTime(String timestring) {
+		long time = 0;
+		int i, u;
+
+		i = timestring.indexOf("d");
+		if (i > 0) {
+			if (timestring.charAt(i - 1) == ' ' && i > 1) {
+				i--;
+			}
+			u = i - 1;
+			while (u > 0 && Character.isDigit(timestring.charAt(u - 1))) {
+				u--;
+			}
+			time += Long.parseLong(timestring.substring(u, i)) * 24 * 60 * 60
+					* 1000;
+		}
+
+		i = timestring.indexOf("h");
+		if (i > 0) {
+			if (timestring.charAt(i - 1) == ' ' && i > 1) {
+				i--;
+			}
+			u = i - 1;
+			while (u > 0 && Character.isDigit(timestring.charAt(u - 1))) {
+				u--;
+			}
+			time += Long.parseLong(timestring.substring(u, i)) * 60 * 60 * 1000;
+		}
+
+		i = timestring.indexOf("m");
+		if (i > 0) {
+			if (timestring.charAt(i - 1) == ' ' && i > 1) {
+				i--;
+			}
+			u = i - 1;
+			while (u > 0 && Character.isDigit(timestring.charAt(u - 1))) {
+				u--;
+			}
+			time += Long.parseLong(timestring.substring(u, i)) * 60 * 1000;
+		}
+
+		return time;
+	}
+
+	private final ArrayList<SignAgent> agents = new ArrayList<SignAgent>();
+
+	private final SimpleRegionMarket plugin;
+	private final ConfigHandler configurationHandler;
+
+	public AgentManager(SimpleRegionMarket plugin, ConfigHandler configurationHandler) {
+		this.plugin = plugin;
+		this.configurationHandler = configurationHandler;
+	}
+
+	public void actAgent(SignAgent agent, SignChangeEvent event) {
+		if (agent != null) {
+			final Sign agentsign = (Sign) agent.getLocation().getBlock()
+					.getState();
+			if (agent.getMode() == SignAgent.MODE_SELL_REGION) {
+				if (event != null) {
+					event.setLine(0, configurationHandler.getConfig().getString("agent_name"));
+					event.setLine(1, agent.getRegion());
+					if (!plugin.isEconomy() || agent.getPrice() == 0) {
+						event.setLine(2, "FREE");
+					} else {
+						event.setLine(2, plugin.econFormat(agent.getPrice()));
+					}
+				} else {
+					agentsign.setLine(0, configurationHandler.getConfig().getString("agent_name"));
+					agentsign.setLine(1, agent.getRegion());
+					if (!plugin.isEconomy() || agent.getPrice() == 0) {
+						agentsign.setLine(2, "FREE");
+					} else {
+						agentsign.setLine(2,
+								plugin.econFormat(agent.getPrice()));
+					}
+				}
+			} else if (agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
+				if (event != null) {
+					event.setLine(0, configurationHandler.getConfig().getString("hotel_name"));
+				} else {
+					agentsign.setLine(0, configurationHandler.getConfig().getString("hotel_name"));
+				}
+
+				if (agent.isRent()) {
+					if (event != null) {
+						event.setLine(1, agent.getRent());
+						event.setLine(2, getSignTime(agent.getExpireDate()
+								.getTime() - System.currentTimeMillis())
+								+ " left");
+					} else {
+						agentsign.setLine(1, agent.getRent());
+						agentsign.setLine(2, getSignTime(agent.getExpireDate()
+								.getTime() - System.currentTimeMillis())
+								+ " left");
+					}
+				} else {
+					if (event != null) {
+						if (!plugin.isEconomy() || agent.getPrice() == 0) {
+							event.setLine(1, "FREE");
+						} else {
+							event.setLine(1,
+									plugin.econFormat(agent.getPrice()));
+						}
+						event.setLine(2, getSignTime(agent.getRentTime()));
+					} else {
+						if (!plugin.isEconomy() || agent.getPrice() == 0) {
+							agentsign.setLine(1, "FREE");
+						} else {
+							agentsign.setLine(1,
+									plugin.econFormat(agent.getPrice()));
+						}
+						agentsign.setLine(2, getSignTime(agent.getRentTime()));
+					}
+				}
+			}
+
+			final ProtectedRegion region = agent.getProtectedRegion();
+
+			int rightX = (int) region.getMaximumPoint().getX()
+					- (int) (region.getMinimumPoint().getX() - 1);
+			if (rightX < 0) {
+				rightX *= -1;
+			}
+
+			int rightY = (int) region.getMaximumPoint().getY()
+					- (int) (region.getMinimumPoint().getY() - 1);
+			if (rightY < 0) {
+				rightY *= -1;
+			}
+
+			int rightZ = (int) region.getMaximumPoint().getZ()
+					- (int) (region.getMinimumPoint().getZ() - 1);
+			if (rightZ < 0) {
+				rightZ *= -1;
+			}
+
+			if (event != null) {
+				event.setLine(
+						3,
+						Integer.toString(rightX) + " x "
+								+ Integer.toString(rightY) + " x "
+								+ Integer.toString(rightZ));
+			} else {
+				agentsign.setLine(
+						3,
+						Integer.toString(rightX) + " x "
+								+ Integer.toString(rightY) + " x "
+								+ Integer.toString(rightZ));
+			}
+
+			agentsign.update();
+		}
+	}
+
+	public SignAgent addAgent(int mode, Location location,
+			ProtectedRegion region, double price, String account, long renttime) {
+		if (mode == SignAgent.MODE_SELL_REGION
+				|| mode == SignAgent.MODE_RENT_HOTEL) {
+			if (location != null) {
+				if (location.getWorld() != null) {
+					if (region != null) {
+						if (price >= 0) {
+							if (account == null) {
 								account = "";
 							}
-							if((renttime == 0 && mode == SignAgent.MODE_SELL_REGION) || (renttime > 0 && mode == SignAgent.MODE_RENT_HOTEL)) {
-								SignAgent newagent = new SignAgent(mode, location, region.getId(), price, account, renttime);
+							if (renttime == 0
+									&& mode == SignAgent.MODE_SELL_REGION
+									|| renttime > 0
+									&& mode == SignAgent.MODE_RENT_HOTEL) {
+								final SignAgent newagent = new SignAgent(mode,
+										location, region.getId(), price,
+										account, renttime);
 								getAgentList().add(newagent);
 								return newagent;
 							}
@@ -40,10 +224,13 @@ public class AgentManager {
 		return null;
 	}
 
-	public SignAgent addAgent(int mode, Location location, ProtectedRegion region, double price, String account, long renttime, String rentby, Date expiredate) {
-		if(expiredate != null) {
-			SignAgent newagent = addAgent(mode, location, region, price, account, renttime);
-			if(newagent != null) {
+	public SignAgent addAgent(int mode, Location location,
+			ProtectedRegion region, double price, String account,
+			long renttime, String rentby, Date expiredate) {
+		if (expiredate != null) {
+			final SignAgent newagent = addAgent(mode, location, region, price,
+					account, renttime);
+			if (newagent != null) {
 				newagent.rentTo(rentby, expiredate);
 				return newagent;
 			}
@@ -52,50 +239,70 @@ public class AgentManager {
 	}
 
 	public void checkAgents() {
-		ArrayList<String> worlds_called = new ArrayList<String>();
-		ArrayList<String> regions_called = new ArrayList<String>();
-		ArrayList<String> player_hotel_expired = new ArrayList<String>();
-		Iterator<SignAgent> itr = getAgentList().iterator();
-		while(itr.hasNext()) {
-			SignAgent obj = itr.next();
+		final ArrayList<String> worlds_called = new ArrayList<String>();
+		final ArrayList<String> regions_called = new ArrayList<String>();
+		final ArrayList<String> player_hotel_expired = new ArrayList<String>();
+		final Iterator<SignAgent> itr = getAgentList().iterator();
+		while (itr.hasNext()) {
+			final SignAgent obj = itr.next();
 			if (obj.getWorldWorld() == null) { // world removed - remove agent
-				if(!worlds_called.contains(obj.getWorld())) { // not already called that world
-					ArrayList<String> list = new ArrayList<String>();
+				if (!worlds_called.contains(obj.getWorld())) { // not already
+																// called that
+																// world
+					final ArrayList<String> list = new ArrayList<String>();
 					list.add(obj.getWorld());
-					LanguageHandler.langOutputConsole("AGENT_WORLD_REMOVED", Level.WARNING, list);
+					LanguageHandler.langOutputConsole("AGENT_WORLD_REMOVED",
+							Level.WARNING, list);
 					worlds_called.add(obj.getWorld());
 				}
 				itr.remove();
-			} else if(obj.getProtectedRegion() == null) { // region removed - remove agent
-				if(!regions_called.contains(obj.getRegion())) { // not already called that region
-					ArrayList<String> list = new ArrayList<String>();
+			} else if (obj.getProtectedRegion() == null) { // region removed -
+															// remove agent
+				if (!regions_called.contains(obj.getRegion())) { // not already
+																	// called
+																	// that
+																	// region
+					final ArrayList<String> list = new ArrayList<String>();
 					list.add(obj.getRegion());
-					LanguageHandler.langOutputConsole("AGENT_REGION_REMOVED", Level.WARNING, list);
+					LanguageHandler.langOutputConsole("AGENT_REGION_REMOVED",
+							Level.WARNING, list);
 					regions_called.add(obj.getRegion());
 				}
 				obj.destroyAgent(false);
 				itr.remove();
-			} else if(obj.getLocation().getBlock() == null ||
-					(obj.getLocation().getBlock().getTypeId() != 63 &&
-					obj.getLocation().getBlock().getTypeId() != 68)) { // block is not a sign - remove agent
-				LanguageHandler.langOutputConsole("AGENT_BLOCK_REMOVED", Level.WARNING, null);
+			} else if (obj.getLocation().getBlock() == null
+					|| obj.getLocation().getBlock().getTypeId() != 63
+					&& obj.getLocation().getBlock().getTypeId() != 68) { // block
+																			// is
+																			// not
+																			// a
+																			// sign
+																			// -
+																			// remove
+																			// agent
+				LanguageHandler.langOutputConsole("AGENT_BLOCK_REMOVED",
+						Level.WARNING, null);
 				itr.remove();
 			} else {
-				if(obj.isRent()) {
-					if(obj.getExpireDate().getTime() < System.currentTimeMillis()) {
-						Player p = Bukkit.getPlayerExact(obj.getRent());
-						obj.getProtectedRegion().setMembers(new DefaultDomain());
+				if (obj.isRent()) {
+					if (obj.getExpireDate().getTime() < System
+							.currentTimeMillis()) {
+						final Player p = Bukkit.getPlayerExact(obj.getRent());
+						obj.getProtectedRegion()
+								.setMembers(new DefaultDomain());
 						obj.getProtectedRegion().setOwners(new DefaultDomain());
-						if(SimpleRegionMarket.logging) {
-							ArrayList<String> list = new ArrayList<String>();
+						if (configurationHandler.getConfig().getBoolean("logging")) {
+							final ArrayList<String> list = new ArrayList<String>();
 							list.add(obj.getRegion());
 							list.add(obj.getRent());
-							LanguageHandler.langOutputConsole("LOG_EXPIRED_HOTEL", Level.INFO, list);
+							LanguageHandler.langOutputConsole(
+									"LOG_EXPIRED_HOTEL", Level.INFO, list);
 						}
 						obj.rentTo("");
-						if(p != null) {
-							if(!player_hotel_expired.contains(p.getName())) {
-								LanguageHandler.outputDebug(p, "HOTEL_EXPIRED", null);
+						if (p != null) {
+							if (!player_hotel_expired.contains(p.getName())) {
+								LanguageHandler.outputDebug(p, "HOTEL_EXPIRED",
+										null);
 								player_hotel_expired.add(p.getName());
 							}
 						}
@@ -109,7 +316,7 @@ public class AgentManager {
 	public int countAgents(ProtectedRegion region) {
 		int count = 0;
 		if (region != null) {
-			for (SignAgent obj : getAgentList()) {
+			for (final SignAgent obj : getAgentList()) {
 				if (obj.getProtectedRegion() == region) {
 					count++;
 				}
@@ -120,7 +327,7 @@ public class AgentManager {
 
 	public SignAgent getAgent(Location loc) {
 		if (loc != null) {
-			for (SignAgent obj : getAgentList()) {
+			for (final SignAgent obj : getAgentList()) {
 				if (loc.equals(obj.getLocation()))
 					return obj;
 			}
@@ -128,137 +335,25 @@ public class AgentManager {
 		return null;
 	}
 
-	public boolean removeAgent(SignAgent agent) {
-		boolean ret = false;
-		if(agent != null) {
-			agent.destroyAgent(false);
-			getAgentList().remove(agent);
-			ret = true;
-		}
-		return ret;
-	}
-
-	public void rentRegionForPlayer(ProtectedRegion region, Player p, long renttime) {
-		if(region != null) {
-			Iterator<SignAgent> itr = getAgentList().iterator();
-			while(itr.hasNext()) {
-				SignAgent obj = itr.next();
-				if(obj.getProtectedRegion() == region) {
-					obj.rentTo(p.getName(), new Date(System.currentTimeMillis()+renttime));
-					actAgent(obj, null);
-				}
-			}
-		}
-	}
-
-	public void actAgent(SignAgent agent, SignChangeEvent event) {
-		if(agent != null) {
-			Sign agentsign = (Sign)agent.getLocation().getBlock().getState();
-			if(agent.getMode() == SignAgent.MODE_SELL_REGION) {
-				if(event != null) {
-					event.setLine(0, SimpleRegionMarket.agentName);
-					event.setLine(1, agent.getRegion());
-					if(!SimpleRegionMarket.isEconomy() || agent.getPrice() == 0) {
-						event.setLine(2, "FREE");
-					} else {
-						event.setLine(2, SimpleRegionMarket.econFormat(agent.getPrice()));
-					}
-				} else {
-					agentsign.setLine(0, SimpleRegionMarket.agentName);
-					agentsign.setLine(1, agent.getRegion());
-					if(!SimpleRegionMarket.isEconomy() || agent.getPrice() == 0) {
-						agentsign.setLine(2, "FREE");
-					} else {
-						agentsign.setLine(2, SimpleRegionMarket.econFormat(agent.getPrice()));
-					}
-				}
-			} else if(agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
-				if(event != null) {
-					event.setLine(0, SimpleRegionMarket.hotelName);
-				} else {
-					agentsign.setLine(0, SimpleRegionMarket.hotelName);
-				}
-
-				if(agent.isRent()) {
-					if(event != null) {
-						event.setLine(1, agent.getRent());
-						event.setLine(2, getSignTime(agent.getExpireDate().getTime()-System.currentTimeMillis()) + " left");
-					} else {
-						agentsign.setLine(1, agent.getRent());
-						agentsign.setLine(2, getSignTime(agent.getExpireDate().getTime()-System.currentTimeMillis()) + " left");
-					}
-				} else {
-					if(event != null) {
-						if(!SimpleRegionMarket.isEconomy() || agent.getPrice() == 0) {
-							event.setLine(1, "FREE");
-						} else {
-							event.setLine(1, SimpleRegionMarket.econFormat(agent.getPrice()));
-						}
-						event.setLine(2, getSignTime(agent.getRentTime()));
-					} else {
-						if(!SimpleRegionMarket.isEconomy() || agent.getPrice() == 0) {
-							agentsign.setLine(1, "FREE");
-						} else {
-							agentsign.setLine(1, SimpleRegionMarket.econFormat(agent.getPrice()));
-						}
-						agentsign.setLine(2, getSignTime(agent.getRentTime()));
-					}
-				}
-			}
-
-			ProtectedRegion region = agent.getProtectedRegion();
-
-			int rightX = (int) region.getMaximumPoint().getX() - (int) (region.getMinimumPoint().getX() - 1);
-			if (rightX < 0) {
-				rightX *= -1;
-			}
-
-			int rightY = (int) region.getMaximumPoint().getY() - (int) (region.getMinimumPoint().getY() - 1);
-			if (rightY < 0) {
-				rightY *= -1;
-			}
-
-			int rightZ = (int) region.getMaximumPoint().getZ() - (int) (region.getMinimumPoint().getZ() - 1);
-			if (rightZ < 0) {
-				rightZ *= -1;
-			}
-
-			if(event != null) {
-				event.setLine(3, Integer.toString(rightX) + " x " + Integer.toString(rightY) + " x " + Integer.toString(rightZ));
-			} else {
-				agentsign.setLine(3, Integer.toString(rightX) + " x " + Integer.toString(rightY) + " x " + Integer.toString(rightZ));
-			}
-
-
-			agentsign.update();
-		}
-	}
-
 	public ArrayList<SignAgent> getAgentList() {
 		return agents;
 	}
 
-	public boolean isOwner(Player player, ProtectedRegion region) {
-		if (region != null) {
-			if (player != null)
-				return region.getOwners().contains(SimpleRegionMarket.getWorldGuard().wrapPlayer(player));
-		}
-		return false;
-	}
-
 	public ProtectedRegion getRegion(Location loc) {
 		if (loc != null) {
-			Vector vec = new Vector(loc.getX(), loc.getY(), loc.getZ());
-			ArrayList<ProtectedRegion> regions = new ArrayList<ProtectedRegion>();
+			final Vector vec = new Vector(loc.getX(), loc.getY(), loc.getZ());
+			final ArrayList<ProtectedRegion> regions = new ArrayList<ProtectedRegion>();
 			int highestPrior = 0;
-			for(ProtectedRegion region: SimpleRegionMarket.getWorldGuard().getRegionManager(loc.getWorld()).getApplicableRegions(vec)) {
+			for (final ProtectedRegion region : SimpleRegionMarket
+					.getWorldGuard().getRegionManager(loc.getWorld())
+					.getApplicableRegions(vec)) {
 				regions.add(region);
-				if(region.getPriority() > highestPrior) {
+				if (region.getPriority() > highestPrior) {
 					highestPrior = region.getPriority();
 				}
 			}
 
-			if(regions.size() == 1)
+			if (regions.size() == 1)
 				return regions.get(0);
 		}
 		return null;
@@ -266,23 +361,25 @@ public class AgentManager {
 
 	public double getRegionPrice(ProtectedRegion region, Player p) {
 		if (region != null) {
-			ArrayList<Double> prices = new ArrayList<Double>();
-			for (SignAgent obj : getAgentList()) {
+			final ArrayList<Double> prices = new ArrayList<Double>();
+			for (final SignAgent obj : getAgentList()) {
 				if (obj.getProtectedRegion() == region) {
 					prices.add(obj.getPrice());
 				}
 			}
 			if (prices.size() > 0) {
-				double old = prices.get(0);
+				final double old = prices.get(0);
 				for (int i = 0; i < prices.size(); i++) {
 					if (prices.get(i) != old) {
-						if(p != null) {
-							LanguageHandler.outputError(p, "ERR_REGION_PRICE", null);
-							ArrayList<String> list = new ArrayList<String>();
+						if (p != null) {
+							LanguageHandler.outputError(p, "ERR_REGION_PRICE",
+									null);
+							final ArrayList<String> list = new ArrayList<String>();
 							list.add(region.getId());
-							list.add(SimpleRegionMarket.econFormat(old));
-							list.add(SimpleRegionMarket.econFormat(prices.get(i)));
-							LanguageHandler.outputError(p, "ERR_REGION_PRICE_SHOW", list);
+							list.add(plugin.econFormat(old));
+							list.add(plugin.econFormat(prices.get(i)));
+							LanguageHandler.outputError(p,
+									"ERR_REGION_PRICE_SHOW", list);
 						}
 						return -1;
 					}
@@ -295,14 +392,14 @@ public class AgentManager {
 
 	public long getRegionRentTime(ProtectedRegion region) {
 		if (region != null) {
-			ArrayList<Long> renttimes = new ArrayList<Long>();
-			for (SignAgent obj : getAgentList()) {
+			final ArrayList<Long> renttimes = new ArrayList<Long>();
+			for (final SignAgent obj : getAgentList()) {
 				if (obj.getProtectedRegion() == region) {
 					renttimes.add(obj.getRentTime());
 				}
 			}
 			if (renttimes.size() > 0) {
-				long old = renttimes.get(0);
+				final long old = renttimes.get(0);
 				for (int i = 0; i < renttimes.size(); i++) {
 					if (renttimes.get(i) != old)
 						return -1;
@@ -313,70 +410,37 @@ public class AgentManager {
 		return -1;
 	}
 
-	public static long parseSignTime(String timestring) {
-		long time = 0;
-		int i, u;
-
-		i = timestring.indexOf("d");
-		if(i > 0) {
-			if(timestring.charAt(i-1) == ' ' && i > 1) {
-				i--;
-			}
-			u = i-1;
-			while(u > 0 && Character.isDigit(timestring.charAt(u-1))) {
-				u--;
-			}
-			time += (Long.parseLong(timestring.substring(u, i)) * 24*60*60*1000);
+	public boolean isOwner(Player player, ProtectedRegion region) {
+		if (region != null) {
+			if (player != null)
+				return region.getOwners().contains(
+						SimpleRegionMarket.getWorldGuard().wrapPlayer(player));
 		}
-
-		i = timestring.indexOf("h");
-		if(i > 0) {
-			if(timestring.charAt(i-1) == ' ' && i > 1) {
-				i--;
-			}
-			u = i-1;
-			while(u > 0 && Character.isDigit(timestring.charAt(u-1))) {
-				u--;
-			}
-			time += (Long.parseLong(timestring.substring(u, i)) * 60*60*1000);
-		}
-
-		i = timestring.indexOf("m");
-		if(i > 0) {
-			if(timestring.charAt(i-1) == ' ' && i > 1) {
-				i--;
-			}
-			u = i-1;
-			while(u > 0 && Character.isDigit(timestring.charAt(u-1))) {
-				u--;
-			}
-			time += (Long.parseLong(timestring.substring(u, i)) * 60*1000);
-		}
-
-		return time;
+		return false;
 	}
 
-	public static String getSignTime(long time) {
-		time = time/1000; // From ms to sec
-		int days = (int) (time / (24*60*60));
-		int hours = (int) (time / (60*60));
-		int minutes = (int) (time / (60));
-		if(days > 0) {
-			if(days == 1)
-				return days + " day";
-			else
-				return days + " days";
-		} else if(hours > 0) {
-			if(hours == 1)
-				return hours + " hour";
-			else
-				return hours + " hours";
-		} else if(minutes > 0) {
-			if(minutes == 1)
-				return minutes + " min";
-			else
-				return minutes + " mins";
+	public boolean removeAgent(SignAgent agent) {
+		boolean ret = false;
+		if (agent != null) {
+			agent.destroyAgent(false);
+			getAgentList().remove(agent);
+			ret = true;
 		}
-		return "< 1 min";
+		return ret;
+	}
+
+	public void rentRegionForPlayer(ProtectedRegion region, Player p,
+			long renttime) {
+		if (region != null) {
+			final Iterator<SignAgent> itr = getAgentList().iterator();
+			while (itr.hasNext()) {
+				final SignAgent obj = itr.next();
+				if (obj.getProtectedRegion() == region) {
+					obj.rentTo(p.getName(), new Date(System.currentTimeMillis()
+							+ renttime));
+					actAgent(obj, null);
+				}
+			}
+		}
 	}
 }

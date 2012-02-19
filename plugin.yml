@@ -1,5 +1,5 @@
 name: SimpleRegionMarket
-version: 1.7.5
+version: 1.8
 author: theZorro266
 website: http://srm.thezorro266.com
 main: com.thezorro266.simpleregionmarket.SimpleRegionMarket
@@ -10,25 +10,29 @@ commands:
   regionmarket:
     description: Using Simple Region Market
     aliases: rm
-    usage: /regionmarket ? | list | limits | lang | logging | version
+    usage: /regionmarket limits | list | version
 
 permissions:
   simpleregionmarket.*:
-    description: Admin commands, Buying/Selling regions
+    description: Permission for buy/sell/rent/let
     children:
-      simpleregionmarket.admin: true
+      simpleregionmarket.admin: false
       simpleregionmarket.buy: true
       simpleregionmarket.sell: true
       simpleregionmarket.rent: true
       simpleregionmarket.create: true
   simpleregionmarket.admin:
-    description: Admin commands and all other permissions
+    description: Admin permissions
     default: op
   simpleregionmarket.buy:
     description: Buying regions
+    default: op
   simpleregionmarket.sell:
     description: Selling regions
+    default: op
   simpleregionmarket.rent:
-    description: Rent rooms
-  simpleregionmarket.create:
-    description: Create hotels/rooms
+    description: Renting rooms
+    default: op
+  simpleregionmarket.let:
+    description: Letting rooms
+    default: op
