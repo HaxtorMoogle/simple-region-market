@@ -25,7 +25,8 @@ public class ListenerHandler implements Listener {
 	private final LimitHandler limitHandler;
 	private final SimpleRegionMarket plugin;
 
-	public ListenerHandler(SimpleRegionMarket plugin, LimitHandler limitHandler, ConfigHandler configurationHandler) {
+	public ListenerHandler(SimpleRegionMarket plugin,
+			LimitHandler limitHandler, ConfigHandler configurationHandler) {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 		this.plugin = plugin;
 		this.limitHandler = limitHandler;
@@ -78,7 +79,8 @@ public class ListenerHandler implements Listener {
 						final long newRentTime = agent.getExpireDate()
 								.getTime() + agent.getRentTime();
 						if ((newRentTime - System.currentTimeMillis())
-								/ agent.getRentTime() < configurationHandler.getConfig().getInt("max_rent_multiplier")) {
+								/ agent.getRentTime() < configurationHandler
+								.getConfig().getInt("max_rent_multiplier")) {
 							if (plugin.isEconomy()) {
 								final double price = agent.getPrice();
 								if (plugin.econHasEnough(p.getName(), price)) {

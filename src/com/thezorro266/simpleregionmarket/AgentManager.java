@@ -86,10 +86,11 @@ public class AgentManager {
 
 	private final ArrayList<SignAgent> agents = new ArrayList<SignAgent>();
 
-	private final SimpleRegionMarket plugin;
 	private final ConfigHandler configurationHandler;
+	private final SimpleRegionMarket plugin;
 
-	public AgentManager(SimpleRegionMarket plugin, ConfigHandler configurationHandler) {
+	public AgentManager(SimpleRegionMarket plugin,
+			ConfigHandler configurationHandler) {
 		this.plugin = plugin;
 		this.configurationHandler = configurationHandler;
 	}
@@ -100,7 +101,8 @@ public class AgentManager {
 					.getState();
 			if (agent.getMode() == SignAgent.MODE_SELL_REGION) {
 				if (event != null) {
-					event.setLine(0, configurationHandler.getConfig().getString("agent_name"));
+					event.setLine(0, configurationHandler.getConfig()
+							.getString("agent_name"));
 					event.setLine(1, agent.getRegion());
 					if (!plugin.isEconomy() || agent.getPrice() == 0) {
 						event.setLine(2, "FREE");
@@ -108,7 +110,8 @@ public class AgentManager {
 						event.setLine(2, plugin.econFormat(agent.getPrice()));
 					}
 				} else {
-					agentsign.setLine(0, configurationHandler.getConfig().getString("agent_name"));
+					agentsign.setLine(0, configurationHandler.getConfig()
+							.getString("agent_name"));
 					agentsign.setLine(1, agent.getRegion());
 					if (!plugin.isEconomy() || agent.getPrice() == 0) {
 						agentsign.setLine(2, "FREE");
@@ -119,9 +122,11 @@ public class AgentManager {
 				}
 			} else if (agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
 				if (event != null) {
-					event.setLine(0, configurationHandler.getConfig().getString("hotel_name"));
+					event.setLine(0, configurationHandler.getConfig()
+							.getString("hotel_name"));
 				} else {
-					agentsign.setLine(0, configurationHandler.getConfig().getString("hotel_name"));
+					agentsign.setLine(0, configurationHandler.getConfig()
+							.getString("hotel_name"));
 				}
 
 				if (agent.isRent()) {
@@ -291,7 +296,8 @@ public class AgentManager {
 						obj.getProtectedRegion()
 								.setMembers(new DefaultDomain());
 						obj.getProtectedRegion().setOwners(new DefaultDomain());
-						if (configurationHandler.getConfig().getBoolean("logging")) {
+						if (configurationHandler.getConfig().getBoolean(
+								"logging")) {
 							final ArrayList<String> list = new ArrayList<String>();
 							list.add(obj.getRegion());
 							list.add(obj.getRent());

@@ -26,15 +26,25 @@ public class ConfigHandler {
 	public ConfigHandler(SimpleRegionMarket plugin) {
 		this.plugin = plugin;
 		config = plugin.getConfig();
+		/*
+		 * config.getString("language", "en");
+		 * config.getBoolean("logging",true);
+		 * config.getBoolean("remove_buyed_signs", true);
+		 * config.getBoolean("enable_economy", true);
+		 * config.getInt("max_rent_multiplier", 2);
+		 * config.getString("agent_name", "[AGENT]");
+		 * config.getString("hotel_name", "[HOTEL]");
+		 */
 	}
-	
+
 	public FileConfiguration getConfig() {
 		plugin.reloadConfig();
 		return config;
 	}
 
 	public void load() {
-		YamlConfiguration confighandle = YamlConfiguration.loadConfiguration(agents);
+		final YamlConfiguration confighandle = YamlConfiguration
+				.loadConfiguration(agents);
 
 		final ArrayList<String> worlds_called = new ArrayList<String>();
 		final ArrayList<String> regions_called = new ArrayList<String>();
@@ -161,7 +171,7 @@ public class ConfigHandler {
 	}
 
 	public void save() {
-		YamlConfiguration confighandle = new YamlConfiguration();
+		final YamlConfiguration confighandle = new YamlConfiguration();
 
 		int i = 0;
 		String path;

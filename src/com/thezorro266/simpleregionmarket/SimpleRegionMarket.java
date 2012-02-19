@@ -165,7 +165,8 @@ public class SimpleRegionMarket extends JavaPlugin {
 		configurationHandler = new ConfigHandler(this);
 		configurationHandler.load();
 
-		LanguageHandler.setLang(configurationHandler.getConfig().getString("language"));
+		LanguageHandler.setLang(configurationHandler.getConfig().getString(
+				"language"));
 
 		if (getWorldGuard() == null) {
 			error = true;
@@ -175,7 +176,8 @@ public class SimpleRegionMarket extends JavaPlugin {
 			return;
 		}
 
-		enableEconomy = (configurationHandler.getConfig().getBoolean("enable_economy") ? 1 : 0);
+		enableEconomy = configurationHandler.getConfig().getBoolean(
+				"enable_economy") ? 1 : 0;
 		if (enableEconomy > 0) {
 			if (server.getPluginManager().getPlugin("Register") == null
 					&& server.getPluginManager().getPlugin("Vault") == null) {
