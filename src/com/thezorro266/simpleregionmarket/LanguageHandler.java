@@ -10,16 +10,21 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 public class LanguageHandler {
+	private SimpleRegionMarket plugin;
 	private ConfigHandler configurationHandler;
-	private FileConfiguration languageFile = null;
+	private FileConfiguration languageFile = new YamlConfiguration();
 
 	public LanguageHandler(SimpleRegionMarket plugin,
 			ConfigHandler configurationHandler) {
+		this.plugin = plugin;
 		this.configurationHandler = configurationHandler;
-		plugin.saveResource("en.yml", false);
+		if(!new File(SimpleRegionMarket.plugin_dir + "en.yml").exists()) {
+			plugin.saveResource("en.yml", false);
+		}
 	}
 
 	public void langOutputConsole(String id, Level level,
@@ -52,20 +57,15 @@ public class LanguageHandler {
 		String string = id;
 		
 		String lang = configurationHandler.getConfig().getString("language");
-		if(!new File(SimpleRegionMarket.plugin_dir
-				+ lang
-				+ ".yml").exists()) {
-			ArrayList<String> list = new ArrayList<String>();
-			list.add(lang);
-			this.langOutputConsole("ERROR_LANG_NOT_FOUND", Level.WARNING, list);
+		if(!new File(SimpleRegionMarket.plugin_dir + lang + ".yml").exists()) {
+			outputConsole(Level.WARNING, "Language '" + lang + "' was not found.");
 			lang = "en";
 			configurationHandler.getConfig().set("language", lang);
+			plugin.saveConfig();
 		}
 		
 		try {
-			languageFile.load(SimpleRegionMarket.plugin_dir
-					+ lang
-					+ ".yml");
+			languageFile.load(SimpleRegionMarket.plugin_dir + lang + ".yml");
 		} catch (FileNotFoundException e1) {
 			outputConsole(Level.SEVERE, "No write permissions on '" + SimpleRegionMarket.plugin_dir + "'.");
 			e1.printStackTrace();

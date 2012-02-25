@@ -203,6 +203,9 @@ public class SimpleRegionMarket extends JavaPlugin {
 			}
 		}
 
+		limitHandler = new LimitHandler(this, langHandler);
+		limitHandler.loadLimits();
+
 		new ListenerHandler(this, limitHandler, configurationHandler, langHandler);
 
 		commandHandler = new CommandHandler(this, limitHandler, langHandler);
@@ -214,9 +217,6 @@ public class SimpleRegionMarket extends JavaPlugin {
 				getAgentManager().checkAgents();
 			}
 		}, 20L, 1200L);
-
-		limitHandler = new LimitHandler(this, langHandler);
-		limitHandler.loadLimits();
 
 		langHandler
 				.outputConsole(

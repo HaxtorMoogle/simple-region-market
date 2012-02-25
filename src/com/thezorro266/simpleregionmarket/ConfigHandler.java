@@ -30,19 +30,16 @@ public class ConfigHandler {
 		this.plugin = plugin;
 		config = plugin.getConfig();
 		this.langHandler = langHandler;
-		
-		if(!new File(SimpleRegionMarket.plugin_dir
-			+ "config.yml").exists()) {
-			Map<String,Object> defaultMap = new HashMap<String,Object>();
-			defaultMap.put("language"				,	"en"		);
-			defaultMap.put("logging"				,	true		);
-			defaultMap.put("remove_buyed_signs"		,	true		);
-			defaultMap.put("enable_economy"			,	true		);
-			defaultMap.put("max_rent_multiplier"	,	2			);
-			defaultMap.put("agent_name"				,	"[AGENT]"	);
-			defaultMap.put("hotel_name"				,	"[HOTEL]"	);
-			config.addDefaults(defaultMap);
-		}
+
+		Map<String,Object> defaultMap = new HashMap<String,Object>();
+		defaultMap.put("language"				,	"en"		);
+		defaultMap.put("logging"				,	true		);
+		defaultMap.put("remove_buyed_signs"		,	true		);
+		defaultMap.put("enable_economy"			,	true		);
+		defaultMap.put("max_rent_multiplier"	,	2			);
+		defaultMap.put("agent_name"				,	"[AGENT]"	);
+		defaultMap.put("hotel_name"				,	"[HOTEL]"	);
+		config.addDefaults(defaultMap);
 		
 		plugin.saveConfig();
 	}
