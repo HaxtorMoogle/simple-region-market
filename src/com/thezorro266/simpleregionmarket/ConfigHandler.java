@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -28,15 +30,21 @@ public class ConfigHandler {
 		this.plugin = plugin;
 		config = plugin.getConfig();
 		this.langHandler = langHandler;
-		/*
-		 * config.getString("language", "en");
-		 * config.getBoolean("logging",true);
-		 * config.getBoolean("remove_buyed_signs", true);
-		 * config.getBoolean("enable_economy", true);
-		 * config.getInt("max_rent_multiplier", 2);
-		 * config.getString("agent_name", "[AGENT]");
-		 * config.getString("hotel_name", "[HOTEL]");
-		 */
+		
+		if(!new File(SimpleRegionMarket.plugin_dir
+			+ "config.yml").exists()) {
+			Map<String,Object> defaultMap = new HashMap<String,Object>();
+			defaultMap.put("language"				,	"en"		);
+			defaultMap.put("logging"				,	true		);
+			defaultMap.put("remove_buyed_signs"		,	true		);
+			defaultMap.put("enable_economy"			,	true		);
+			defaultMap.put("max_rent_multiplier"	,	2			);
+			defaultMap.put("agent_name"				,	"[AGENT]"	);
+			defaultMap.put("hotel_name"				,	"[HOTEL]"	);
+			config.addDefaults(defaultMap);
+		}
+		
+		plugin.saveConfig();
 	}
 
 	public FileConfiguration getConfig() {

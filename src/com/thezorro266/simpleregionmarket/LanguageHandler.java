@@ -1,6 +1,7 @@
 package com.thezorro266.simpleregionmarket;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -18,26 +19,7 @@ public class LanguageHandler {
 	public LanguageHandler(SimpleRegionMarket plugin,
 			ConfigHandler configurationHandler) {
 		this.configurationHandler = configurationHandler;
-		if(!new File(SimpleRegionMarket.plugin_dir
-				+ "en.yml").exists()) {
-			try {
-				languageFile.load(plugin.getResource("res/en.yml"));
-			} catch (IOException e) {
-				outputConsole(Level.SEVERE, "Internal resource error: IO Exception.");
-				e.printStackTrace();
-			} catch (InvalidConfigurationException e) {
-				outputConsole(Level.SEVERE, "Internal resource error: Invalid configuration error.");
-				e.printStackTrace();
-			}
-			try {
-				languageFile.save(SimpleRegionMarket.plugin_dir
-					+ "en.yml");
-			} catch (IOException e) {
-				outputConsole(Level.SEVERE, "IO Exception.");
-				e.printStackTrace();
-			}
-			languageFile = null;
-		}
+		plugin.saveResource("en.yml", false);
 	}
 
 	public void langOutputConsole(String id, Level level,
@@ -68,6 +50,7 @@ public class LanguageHandler {
 
 	private String parseLanguageString(String id, ArrayList<String> args) {
 		String string = id;
+		
 		String lang = configurationHandler.getConfig().getString("language");
 		if(!new File(SimpleRegionMarket.plugin_dir
 				+ lang
@@ -77,6 +60,21 @@ public class LanguageHandler {
 			this.langOutputConsole("ERROR_LANG_NOT_FOUND", Level.WARNING, list);
 			lang = "en";
 			configurationHandler.getConfig().set("language", lang);
+		}
+		
+		try {
+			languageFile.load(SimpleRegionMarket.plugin_dir
+					+ lang
+					+ ".yml");
+		} catch (FileNotFoundException e1) {
+			outputConsole(Level.SEVERE, "No write permissions on '" + SimpleRegionMarket.plugin_dir + "'.");
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			outputConsole(Level.SEVERE, "IO Exception in language system.");
+			e1.printStackTrace();
+		} catch (InvalidConfigurationException e1) {
+			outputConsole(Level.SEVERE, "Language file corrupt (Invalid YAML).");
+			e1.printStackTrace();
 		}
 
 		for (int i = string.length() - 1; i >= 0; i--) {
