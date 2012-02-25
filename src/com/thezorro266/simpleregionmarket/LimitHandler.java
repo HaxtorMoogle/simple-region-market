@@ -56,9 +56,11 @@ public class LimitHandler {
 	// TODO Parent region limits
 
 	private final SimpleRegionMarket plugin;
+	private final LanguageHandler langHandler;
 
-	public LimitHandler(SimpleRegionMarket plugin) {
+	public LimitHandler(SimpleRegionMarket plugin, LanguageHandler langHandler) {
 		this.plugin = plugin;
+		this.langHandler = langHandler;
 	}
 
 	private int countPlayerOwnRegion(Player p) {
@@ -235,7 +237,7 @@ public class LimitHandler {
 		try {
 			limitConfig.save(SimpleRegionMarket.plugin_dir + "limits.yml");
 		} catch (final IOException e) {
-			LanguageHandler.outputConsole(Level.SEVERE,
+			langHandler.outputConsole(Level.SEVERE,
 					"Could not save limits.");
 		}
 	}

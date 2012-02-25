@@ -22,10 +22,12 @@ public class ConfigHandler {
 			+ "agents_fail.yml");
 	private final FileConfiguration config;
 	private final SimpleRegionMarket plugin;
+	private final LanguageHandler langHandler;
 
-	public ConfigHandler(SimpleRegionMarket plugin) {
+	public ConfigHandler(SimpleRegionMarket plugin, LanguageHandler langHandler) {
 		this.plugin = plugin;
 		config = plugin.getConfig();
+		this.langHandler = langHandler;
 		/*
 		 * config.getString("language", "en");
 		 * config.getBoolean("logging",true);
@@ -105,7 +107,7 @@ public class ConfigHandler {
 					if (newagent == null) {
 						if (world_world == null) {
 							if (!worlds_called.contains(world)) {
-								LanguageHandler
+								langHandler
 										.outputConsole(
 												Level.WARNING,
 												"World '"
@@ -115,7 +117,7 @@ public class ConfigHandler {
 							}
 						} else if (protectedregion_region == null) {
 							if (!regions_called.contains(region)) {
-								LanguageHandler
+								langHandler
 										.outputConsole(
 												Level.WARNING,
 												"Region '"
@@ -124,7 +126,7 @@ public class ConfigHandler {
 								regions_called.add(region);
 							}
 						} else {
-							LanguageHandler
+							langHandler
 									.outputConsole(
 											Level.WARNING,
 											"Agent '"
@@ -160,7 +162,7 @@ public class ConfigHandler {
 							try {
 								tempconfighandle.save(agents_fail);
 							} catch (final IOException e) {
-								LanguageHandler.outputConsole(Level.SEVERE,
+								langHandler.outputConsole(Level.SEVERE,
 										"Could not backup that agent.");
 							}
 						}
@@ -198,7 +200,7 @@ public class ConfigHandler {
 		try {
 			confighandle.save(agents);
 		} catch (final IOException e) {
-			LanguageHandler.outputConsole(Level.SEVERE,
+			langHandler.outputConsole(Level.SEVERE,
 					"Could not save agents.");
 		}
 	}

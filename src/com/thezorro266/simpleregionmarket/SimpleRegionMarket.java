@@ -47,6 +47,8 @@ public class SimpleRegionMarket extends JavaPlugin {
 	private CommandHandler commandHandler;
 
 	private ConfigHandler configurationHandler;
+	
+	private LanguageHandler langHandler;
 
 	private boolean error = false;
 
@@ -128,7 +130,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 		if (Methods.hasMethod())
 			return Methods.getMethod();
 		else {
-			LanguageHandler.langOutputConsole("ERR_NO_ECO", Level.SEVERE, null);
+			langHandler.langOutputConsole("ERR_NO_ECO", Level.SEVERE, null);
 			enableEconomy = 0;
 			return null;
 		}
@@ -147,11 +149,11 @@ public class SimpleRegionMarket extends JavaPlugin {
 	public void onDisable() {
 		unloading = true;
 		if (error) {
-			LanguageHandler.langOutputConsole("ERR_PLUGIN_UNLOAD",
+			langHandler.langOutputConsole("ERR_PLUGIN_UNLOAD",
 					Level.SEVERE, null);
 		} else {
 			saveAll();
-			LanguageHandler
+			langHandler
 					.langOutputConsole("PLUGIN_UNLOAD", Level.INFO, null);
 		}
 	}
@@ -159,18 +161,17 @@ public class SimpleRegionMarket extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		server = getServer();
-		agentManager = new AgentManager(this, configurationHandler);
+		agentManager = new AgentManager(this, configurationHandler, langHandler);
 		plugin_dir = getDataFolder() + File.separator;
 
-		configurationHandler = new ConfigHandler(this);
+		configurationHandler = new ConfigHandler(this, langHandler);
 		configurationHandler.load();
-
-		LanguageHandler.setLang(configurationHandler.getConfig().getString(
-				"language"));
+		
+		langHandler = new LanguageHandler(this, configurationHandler);
 
 		if (getWorldGuard() == null) {
 			error = true;
-			LanguageHandler.langOutputConsole("ERR_NO_WORLDGUARD",
+			langHandler.langOutputConsole("ERR_NO_WORLDGUARD",
 					Level.SEVERE, null);
 			server.getPluginManager().disablePlugin(this);
 			return;
@@ -181,7 +182,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 		if (enableEconomy > 0) {
 			if (server.getPluginManager().getPlugin("Register") == null
 					&& server.getPluginManager().getPlugin("Vault") == null) {
-				LanguageHandler.langOutputConsole("NO_REGISTER_VAULT",
+				langHandler.langOutputConsole("NO_REGISTER_VAULT",
 						Level.WARNING, null);
 				enableEconomy = 0;
 			} else if (server.getPluginManager().getPlugin("Register") != null
@@ -191,20 +192,20 @@ public class SimpleRegionMarket extends JavaPlugin {
 				enableEconomy = 2;
 				/*
 				 * if(!setupPermissions()) {
-				 * LanguageHandler.langOutputConsole("ERR_VAULT_PERMISSIONS",
+				 * langHandler.langOutputConsole("ERR_VAULT_PERMISSIONS",
 				 * Level.WARNING, null); }
 				 */
 				if (!setupEconomy()) {
-					LanguageHandler.langOutputConsole("ERR_VAULT_ECONOMY",
+					langHandler.langOutputConsole("ERR_VAULT_ECONOMY",
 							Level.WARNING, null);
 					enableEconomy = 0;
 				}
 			}
 		}
 
-		new ListenerHandler(this, limitHandler, configurationHandler);
+		new ListenerHandler(this, limitHandler, configurationHandler, langHandler);
 
-		commandHandler = new CommandHandler(this, limitHandler);
+		commandHandler = new CommandHandler(this, limitHandler, langHandler);
 		getCommand("regionmarket").setExecutor(commandHandler);
 
 		server.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
@@ -214,15 +215,15 @@ public class SimpleRegionMarket extends JavaPlugin {
 			}
 		}, 20L, 1200L);
 
-		limitHandler = new LimitHandler(this);
+		limitHandler = new LimitHandler(this, langHandler);
 		limitHandler.loadLimits();
 
-		LanguageHandler
+		langHandler
 				.outputConsole(
 						Level.INFO,
 						"loaded version "
 								+ getDescription().getVersion()
-								+ ",  Copyright (C) 2011-2012  Benedikt Ziemons aka theZorro266 - All rights reserved.");
+								+ ",  " + getCopyright());
 	}
 
 	/*
@@ -244,7 +245,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 					final ArrayList<String> list = new ArrayList<String>();
 					list.add(region.getId());
 					list.add(p.getName());
-					LanguageHandler.outputDebug(powner, "HOTEL_RENT", list);
+					langHandler.outputDebug(powner, "HOTEL_RENT", list);
 				}
 			}
 		}
@@ -257,7 +258,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 			final ArrayList<String> list = new ArrayList<String>();
 			list.add(region.getId());
 			list.add(p.getName());
-			LanguageHandler.langOutputConsole("LOG_RENT_HOTEL", Level.INFO,
+			langHandler.langOutputConsole("LOG_RENT_HOTEL", Level.INFO,
 					list);
 		}
 	}
@@ -271,7 +272,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 				try {
 					mgr.save();
 				} catch (final ProtectionDatabaseException e) {
-					LanguageHandler.outputConsole(
+					langHandler.outputConsole(
 							Level.SEVERE,
 							"WorldGuard >> Failed to write regionsfile: "
 									+ e.getMessage());
@@ -279,7 +280,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 			}
 		} else {
 			if (!unloading) {
-				LanguageHandler.outputConsole(Level.SEVERE,
+				langHandler.outputConsole(Level.SEVERE,
 						"Saving WorldGuard failed, because it is not loaded.");
 			}
 		}
@@ -294,7 +295,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 				final ArrayList<String> list = new ArrayList<String>();
 				list.add(region.getId());
 				list.add(p.getName());
-				LanguageHandler.outputDebug(powner, "REGION_SOLD", list);
+				langHandler.outputDebug(powner, "REGION_SOLD", list);
 			}
 		}
 		region.setMembers(new DefaultDomain());
@@ -329,7 +330,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 			final ArrayList<String> list = new ArrayList<String>();
 			list.add(region.getId());
 			list.add(p.getName());
-			LanguageHandler.langOutputConsole("LOG_SOLD_REGION", Level.INFO,
+			langHandler.langOutputConsole("LOG_SOLD_REGION", Level.INFO,
 					list);
 		}
 	}

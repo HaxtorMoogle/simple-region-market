@@ -12,10 +12,12 @@ import org.bukkit.entity.Player;
 public class CommandHandler implements CommandExecutor {
 	private final LimitHandler limitHandler;
 	private final SimpleRegionMarket plugin;
+	private final LanguageHandler langHandler;
 
-	public CommandHandler(SimpleRegionMarket plugin, LimitHandler limitHandler) {
+	public CommandHandler(SimpleRegionMarket plugin, LimitHandler limitHandler, LanguageHandler langHandler) {
 		this.plugin = plugin;
 		this.limitHandler = limitHandler;
+		this.langHandler = langHandler;
 	}
 
 	@Override
@@ -32,12 +34,12 @@ public class CommandHandler implements CommandExecutor {
 
 		if (args[0].equalsIgnoreCase("version")
 				|| args[0].equalsIgnoreCase("v")) {
-			LanguageHandler.outputString(p,
+			langHandler.outputString(p,
 					"loaded version " + plugin.getDescription().getVersion()
 							+ ",  " + plugin.getCopyright());
 		} else if (args[0].equalsIgnoreCase("list")) {
 			if (plugin.getAgentManager().getAgentList().size() > 200) {
-				LanguageHandler.outputError(p, "CMD_LIST_TOO_MANY_REGIONS",
+				langHandler.outputError(p, "CMD_LIST_TOO_MANY_REGIONS",
 						null);
 			} else {
 				final ArrayList<SignAgent> list = new ArrayList<SignAgent>();
@@ -60,7 +62,7 @@ public class CommandHandler implements CommandExecutor {
 				}
 
 				if (list.size() < 1) {
-					LanguageHandler.outputDebug(p, "CMD_LIST_NO_REGIONS", null);
+					langHandler.outputDebug(p, "CMD_LIST_NO_REGIONS", null);
 					return true;
 				}
 
@@ -69,13 +71,13 @@ public class CommandHandler implements CommandExecutor {
 					try {
 						initsite = Integer.parseInt(args[1]);
 					} catch (final Exception e) {
-						LanguageHandler.outputError(p, "CMD_LIST_WRONG_ARG",
+						langHandler.outputError(p, "CMD_LIST_WRONG_ARG",
 								null);
 						return true;
 					}
 
 					if (initsite < 1) {
-						LanguageHandler.outputError(p, "CMD_LIST_WRONG_ARG",
+						langHandler.outputError(p, "CMD_LIST_WRONG_ARG",
 								null);
 						return true;
 					}
@@ -91,7 +93,7 @@ public class CommandHandler implements CommandExecutor {
 					showsite = initsite;
 				}
 
-				LanguageHandler.outputString(p, "Site " + showsite + " of "
+				langHandler.outputString(p, "Site " + showsite + " of "
 						+ site);
 				initsite--;
 				initsite *= 8;
@@ -102,12 +104,12 @@ public class CommandHandler implements CommandExecutor {
 
 					final SignAgent agent = list.get(i);
 					if (plugin.isEconomy()) {
-						LanguageHandler.outputString(
+						langHandler.outputString(
 								p,
 								"Region: " + agent.getRegion() + " - "
 										+ plugin.econFormat(agent.getPrice()));
 					} else {
-						LanguageHandler.outputString(p,
+						langHandler.outputString(p,
 								"Region: " + agent.getRegion());
 					}
 				}
@@ -116,7 +118,7 @@ public class CommandHandler implements CommandExecutor {
 				|| args[0].equalsIgnoreCase("limit")) {
 			if (plugin.isAdmin(p)) {
 				if (args.length < 2) { // limits
-					LanguageHandler.outputDebug(p, "CMD_LIMITS_NO_ARG", null);
+					langHandler.outputDebug(p, "CMD_LIMITS_NO_ARG", null);
 					return true;
 				} else {
 					int mode;
@@ -127,7 +129,7 @@ public class CommandHandler implements CommandExecutor {
 							|| args[1].equalsIgnoreCase("rooms")) {
 						mode = 1;
 					} else {
-						LanguageHandler.outputError(p, "CMD_LIMITS_WRONG_ARG",
+						langHandler.outputError(p, "CMD_LIMITS_WRONG_ARG",
 								null);
 						return true;
 					}
@@ -142,7 +144,7 @@ public class CommandHandler implements CommandExecutor {
 							list.add(Integer.toString(limitHandler
 									.getGlobalRentLimit()));
 						}
-						LanguageHandler.outputDebug(p,
+						langHandler.outputDebug(p,
 								"CMD_LIMITS_OUTPUT_LIMIT", list);
 					} else { // limits buy|rent <limit>|<...>
 						try {
@@ -154,7 +156,7 @@ public class CommandHandler implements CommandExecutor {
 							}
 							final ArrayList<String> list = new ArrayList<String>();
 							list.add(Integer.toString(limit));
-							LanguageHandler.outputDebug(p,
+							langHandler.outputDebug(p,
 									"CMD_LIMITS_SET_LIMIT", list);
 						} catch (final Exception e) {
 							if (args[2].equalsIgnoreCase("world")) {
@@ -162,7 +164,7 @@ public class CommandHandler implements CommandExecutor {
 								if (w != null) {
 									if (args.length < 4) { // limits buy|rent
 															// world
-										LanguageHandler.outputError(p,
+										langHandler.outputError(p,
 												"CMD_LIMITS_NO_WORLD", null);
 									} else if (args.length < 5) { // limits
 																	// buy|rent
@@ -176,7 +178,7 @@ public class CommandHandler implements CommandExecutor {
 											list.add(Integer.toString(limitHandler
 													.getRentWorldLimit(w)));
 										}
-										LanguageHandler
+										langHandler
 												.outputDebug(
 														p,
 														"CMD_LIMITS_OUTPUT_LIMIT",
@@ -194,17 +196,17 @@ public class CommandHandler implements CommandExecutor {
 											}
 											final ArrayList<String> list = new ArrayList<String>();
 											list.add(Integer.toString(limit));
-											LanguageHandler.outputDebug(p,
+											langHandler.outputDebug(p,
 													"CMD_LIMITS_SET_LIMIT",
 													list);
 										} catch (final Exception e2) {
-											LanguageHandler.outputError(p,
+											langHandler.outputError(p,
 													"CMD_LIMITS_WRONG_ARG",
 													null);
 										}
 									}
 								} else {
-									LanguageHandler.outputError(p,
+									langHandler.outputError(p,
 											"CMD_LIMITS_NO_WORLD", null);
 								}
 							} else if (args[2].equalsIgnoreCase("player")) {
@@ -212,7 +214,7 @@ public class CommandHandler implements CommandExecutor {
 								if (p2 != null) {
 									if (args.length < 4) { // limits buy|rent
 															// player
-										LanguageHandler.outputError(p,
+										langHandler.outputError(p,
 												"CMD_LIMITS_NO_PLAYER", null);
 									} else if (args.length < 5) { // limits
 																	// buy|rent
@@ -226,7 +228,7 @@ public class CommandHandler implements CommandExecutor {
 											list.add(Integer.toString(limitHandler
 													.getRentPlayerLimit(p2)));
 										}
-										LanguageHandler
+										langHandler
 												.outputDebug(
 														p,
 														"CMD_LIMITS_OUTPUT_LIMIT",
@@ -245,21 +247,21 @@ public class CommandHandler implements CommandExecutor {
 											}
 											final ArrayList<String> list = new ArrayList<String>();
 											list.add(Integer.toString(limit));
-											LanguageHandler.outputDebug(p,
+											langHandler.outputDebug(p,
 													"CMD_LIMITS_SET_LIMIT",
 													list);
 										} catch (final Exception e2) {
-											LanguageHandler.outputError(p,
+											langHandler.outputError(p,
 													"CMD_LIMITS_WRONG_ARG",
 													null);
 										}
 									}
 								} else {
-									LanguageHandler.outputError(p,
+									langHandler.outputError(p,
 											"CMD_LIMITS_NO_PLAYER", null);
 								}
 							} else {
-								LanguageHandler.outputError(p,
+								langHandler.outputError(p,
 										"CMD_LIMITS_WRONG_ARG", null);
 							}
 						}
@@ -268,7 +270,7 @@ public class CommandHandler implements CommandExecutor {
 
 				limitHandler.saveLimits();
 			} else {
-				LanguageHandler.outputError(p, "ERR_NO_PERM", null);
+				langHandler.outputError(p, "ERR_NO_PERM", null);
 			}
 		} else
 			return false;

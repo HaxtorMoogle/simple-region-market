@@ -88,11 +88,13 @@ public class AgentManager {
 
 	private final ConfigHandler configurationHandler;
 	private final SimpleRegionMarket plugin;
+	private final LanguageHandler langHandler;
 
 	public AgentManager(SimpleRegionMarket plugin,
-			ConfigHandler configurationHandler) {
+			ConfigHandler configurationHandler, LanguageHandler langHandler) {
 		this.plugin = plugin;
 		this.configurationHandler = configurationHandler;
+		this.langHandler = langHandler;
 	}
 
 	public void actAgent(SignAgent agent, SignChangeEvent event) {
@@ -256,7 +258,7 @@ public class AgentManager {
 																// world
 					final ArrayList<String> list = new ArrayList<String>();
 					list.add(obj.getWorld());
-					LanguageHandler.langOutputConsole("AGENT_WORLD_REMOVED",
+					langHandler.langOutputConsole("AGENT_WORLD_REMOVED",
 							Level.WARNING, list);
 					worlds_called.add(obj.getWorld());
 				}
@@ -269,7 +271,7 @@ public class AgentManager {
 																	// region
 					final ArrayList<String> list = new ArrayList<String>();
 					list.add(obj.getRegion());
-					LanguageHandler.langOutputConsole("AGENT_REGION_REMOVED",
+					langHandler.langOutputConsole("AGENT_REGION_REMOVED",
 							Level.WARNING, list);
 					regions_called.add(obj.getRegion());
 				}
@@ -285,7 +287,7 @@ public class AgentManager {
 																			// -
 																			// remove
 																			// agent
-				LanguageHandler.langOutputConsole("AGENT_BLOCK_REMOVED",
+				langHandler.langOutputConsole("AGENT_BLOCK_REMOVED",
 						Level.WARNING, null);
 				itr.remove();
 			} else {
@@ -301,13 +303,13 @@ public class AgentManager {
 							final ArrayList<String> list = new ArrayList<String>();
 							list.add(obj.getRegion());
 							list.add(obj.getRent());
-							LanguageHandler.langOutputConsole(
+							langHandler.langOutputConsole(
 									"LOG_EXPIRED_HOTEL", Level.INFO, list);
 						}
 						obj.rentTo("");
 						if (p != null) {
 							if (!player_hotel_expired.contains(p.getName())) {
-								LanguageHandler.outputDebug(p, "HOTEL_EXPIRED",
+								langHandler.outputDebug(p, "HOTEL_EXPIRED",
 										null);
 								player_hotel_expired.add(p.getName());
 							}
@@ -378,13 +380,13 @@ public class AgentManager {
 				for (int i = 0; i < prices.size(); i++) {
 					if (prices.get(i) != old) {
 						if (p != null) {
-							LanguageHandler.outputError(p, "ERR_REGION_PRICE",
+							langHandler.outputError(p, "ERR_REGION_PRICE",
 									null);
 							final ArrayList<String> list = new ArrayList<String>();
 							list.add(region.getId());
 							list.add(plugin.econFormat(old));
 							list.add(plugin.econFormat(prices.get(i)));
-							LanguageHandler.outputError(p,
+							langHandler.outputError(p,
 									"ERR_REGION_PRICE_SHOW", list);
 						}
 						return -1;
