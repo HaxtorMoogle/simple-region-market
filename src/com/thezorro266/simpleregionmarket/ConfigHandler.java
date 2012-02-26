@@ -20,7 +20,7 @@ public class ConfigHandler {
 			+ "agents.yml");
 	private final File agents_fail = new File(SimpleRegionMarket.plugin_dir
 			+ "agents_fail.yml");
-	private final FileConfiguration config;
+	private FileConfiguration config;
 	private final SimpleRegionMarket plugin;
 	private final LanguageHandler langHandler;
 
@@ -30,6 +30,7 @@ public class ConfigHandler {
 		this.langHandler = langHandler;
 		
 		if(!new File(SimpleRegionMarket.plugin_dir + "config.yml").exists()) {
+			
 			config.set("language"				,	"en"		);
 			config.set("logging"				,	true		);
 			config.set("remove_buyed_signs"		,	true		);
@@ -50,6 +51,7 @@ public class ConfigHandler {
 
 	public FileConfiguration getConfig() {
 		plugin.reloadConfig();
+		config = plugin.getConfig();
 		return config;
 	}
 

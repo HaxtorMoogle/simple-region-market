@@ -66,6 +66,7 @@ public class LanguageHandler {
 		
 		try {
 			languageFile.load(SimpleRegionMarket.plugin_dir + lang + ".yml");
+			string = languageFile.getString(id);
 		} catch (FileNotFoundException e1) {
 			outputConsole(Level.SEVERE, "No write permissions on '" + SimpleRegionMarket.plugin_dir + "'.");
 			e1.printStackTrace();
@@ -75,8 +76,14 @@ public class LanguageHandler {
 		} catch (InvalidConfigurationException e1) {
 			outputConsole(Level.SEVERE, "Language file corrupt (Invalid YAML).");
 			e1.printStackTrace();
+		} catch (Exception e1) {
+			e1.printStackTrace();
 		}
-
+		
+		if(string == null || string.isEmpty()) {
+			string = id;
+		}
+		
 		for (int i = string.length() - 1; i >= 0; i--) {
 			if (string.charAt(i) == '$') {
 				if (string.charAt(i - 1) == '$') {

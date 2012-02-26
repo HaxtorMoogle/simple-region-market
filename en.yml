@@ -2,6 +2,7 @@ ERR_NO_WORLDGUARD: 'Error: WorldGuard was not found.'
 ERR_NO_ECO: 'Error: Economic System was not found.'
 ERR_ECO_TRANSFER: There was a problem with transfering the money.
 ERR_NO_ECO_USER: The economic system was not found, please tell the server owner.
+ERR_VAULT_ECONOMY: You do not have an economy system besides Vault running.
 ERR_CREATE_ECO_ACCOUNT: 'Error: Could not create economy account "$0".'
 NO_REGISTER: Register was not found. Switching to economy-free version.
 CONFIG_SAVED: Config saved successfully.

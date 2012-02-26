@@ -1,5 +1,5 @@
 name: SimpleRegionMarket
-version: 1.8-pre1
+version: 1.8-pre2
 author: theZorro266
 website: http://srm.thezorro266.com
 main: com.thezorro266.simpleregionmarket.SimpleRegionMarket
@@ -23,16 +23,11 @@ permissions:
       simpleregionmarket.create: true
   simpleregionmarket.admin:
     description: Admin permissions
-    default: op
   simpleregionmarket.buy:
     description: Buying regions
-    default: op
   simpleregionmarket.sell:
     description: Selling regions
-    default: op
   simpleregionmarket.rent:
     description: Renting rooms
-    default: op
   simpleregionmarket.let:
     description: Letting rooms
-    default: op

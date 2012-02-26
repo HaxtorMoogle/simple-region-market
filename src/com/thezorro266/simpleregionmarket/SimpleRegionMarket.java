@@ -55,19 +55,19 @@ public class SimpleRegionMarket extends JavaPlugin {
 	private LimitHandler limitHandler;
 
 	public boolean canBuy(Player player) {
-		return configurationHandler.getConfig().getBoolean("defp_player_buy") || player.hasPermission("simpleregionmarket.buy");
+		return (configurationHandler.getConfig().getBoolean("defp_player_buy") || player.hasPermission("simpleregionmarket.buy"));
 	}
 
 	public boolean canLet(Player player) {
-		return configurationHandler.getConfig().getBoolean("defp_player_let") || player.hasPermission("simpleregionmarket.let");
+		return (configurationHandler.getConfig().getBoolean("defp_player_let") || player.hasPermission("simpleregionmarket.let"));
 	}
 
 	public boolean canRent(Player player) {
-		return configurationHandler.getConfig().getBoolean("defp_player_rent") || player.hasPermission("simpleregionmarket.rent");
+		return (configurationHandler.getConfig().getBoolean("defp_player_rent") || player.hasPermission("simpleregionmarket.rent"));
 	}
 
 	public boolean canSell(Player player) {
-		return configurationHandler.getConfig().getBoolean("defp_player_sell") || player.hasPermission("simpleregionmarket.sell");
+		return (configurationHandler.getConfig().getBoolean("defp_player_sell") || player.hasPermission("simpleregionmarket.sell"));
 	}
 
 	public String econFormat(double price) {
@@ -137,12 +137,11 @@ public class SimpleRegionMarket extends JavaPlugin {
 	}
 
 	public boolean isAdmin(Player player) {
-		return player.hasPermission("simpleregionmarket.admin");
+		return (player.isOp() || player.hasPermission("simpleregionmarket.admin"));
 	}
 
 	public boolean isEconomy() {
-		return enableEconomy > 0
-				&& (enableEconomy != 1 || getEconomicManager() != null);
+		return enableEconomy > 0 && (enableEconomy != 1 || getEconomicManager() != null);
 	}
 
 	@Override
@@ -153,15 +152,13 @@ public class SimpleRegionMarket extends JavaPlugin {
 					Level.SEVERE, null);
 		} else {
 			saveAll();
-			langHandler
-					.langOutputConsole("PLUGIN_UNLOAD", Level.INFO, null);
+			langHandler.langOutputConsole("PLUGIN_UNLOAD", Level.INFO, null);
 		}
 	}
 
 	@Override
 	public void onEnable() {
 		server = getServer();
-		agentManager = new AgentManager(this, configurationHandler, langHandler);
 		plugin_dir = getDataFolder() + File.separator;
 
 		configurationHandler = new ConfigHandler(this, langHandler);
@@ -196,12 +193,13 @@ public class SimpleRegionMarket extends JavaPlugin {
 				 * Level.WARNING, null); }
 				 */
 				if (!setupEconomy()) {
-					langHandler.langOutputConsole("ERR_VAULT_ECONOMY",
-							Level.WARNING, null);
+					langHandler.langOutputConsole("ERR_VAULT_ECONOMY", Level.WARNING, null);
 					enableEconomy = 0;
 				}
 			}
 		}
+
+		agentManager = new AgentManager(this, configurationHandler, langHandler);
 
 		limitHandler = new LimitHandler(this, langHandler);
 		limitHandler.loadLimits();
@@ -218,12 +216,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 			}
 		}, 20L, 1200L);
 
-		langHandler
-				.outputConsole(
-						Level.INFO,
-						"loaded version "
-								+ getDescription().getVersion()
-								+ ",  " + getCopyright());
+		langHandler.outputConsole(Level.INFO, "loaded version " + getDescription().getVersion() + ",  " + getCopyright());
 	}
 
 	/*
@@ -289,6 +282,8 @@ public class SimpleRegionMarket extends JavaPlugin {
 			}
 		}
 		limitHandler.saveLimits();
+
+		configurationHandler.save();
 	}
 
 	public void sellRegion(ProtectedRegion region, Player p) {
