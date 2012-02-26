@@ -7,6 +7,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
@@ -221,6 +222,10 @@ public class AgentManager {
 										location, region.getId(), price,
 										account, renttime);
 								getAgentList().add(newagent);
+								if(location.getBlock().getType() != Material.SIGN_POST && location.getBlock().getType() != Material.WALL_SIGN) {
+									location.getBlock().setType(Material.SIGN_POST);
+									actAgent(newagent, null);
+								}
 								return newagent;
 							}
 						}

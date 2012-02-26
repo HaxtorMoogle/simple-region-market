@@ -108,8 +108,6 @@ public class SignAgent {
 		rentby = playername;
 	}
 
-	// --- END Methods About Variables ---
-
 	public void rentTo(String playername, Date expiredate) {
 		rentby = playername;
 		this.expiredate = expiredate;

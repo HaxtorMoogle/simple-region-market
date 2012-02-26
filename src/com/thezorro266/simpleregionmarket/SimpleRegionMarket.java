@@ -55,19 +55,19 @@ public class SimpleRegionMarket extends JavaPlugin {
 	private LimitHandler limitHandler;
 
 	public boolean canBuy(Player player) {
-		return player.hasPermission("simpleregionmarket.buy");
+		return configurationHandler.getConfig().getBoolean("defp_player_buy") || player.hasPermission("simpleregionmarket.buy");
 	}
 
 	public boolean canLet(Player player) {
-		return player.hasPermission("simpleregionmarket.let");
+		return configurationHandler.getConfig().getBoolean("defp_player_let") || player.hasPermission("simpleregionmarket.let");
 	}
 
 	public boolean canRent(Player player) {
-		return player.hasPermission("simpleregionmarket.rent");
+		return configurationHandler.getConfig().getBoolean("defp_player_rent") || player.hasPermission("simpleregionmarket.rent");
 	}
 
 	public boolean canSell(Player player) {
-		return player.hasPermission("simpleregionmarket.sell");
+		return configurationHandler.getConfig().getBoolean("defp_player_sell") || player.hasPermission("simpleregionmarket.sell");
 	}
 
 	public String econFormat(double price) {
@@ -251,7 +251,11 @@ public class SimpleRegionMarket extends JavaPlugin {
 		}
 		region.setMembers(new DefaultDomain());
 		region.setOwners(new DefaultDomain());
-		region.getMembers().addPlayer(getWorldGuard().wrapPlayer(p));
+		if(configurationHandler.getConfig().getBoolean("renter_get_owner")) {
+			region.getOwners().addPlayer(getWorldGuard().wrapPlayer(p));
+		} else {
+			region.getMembers().addPlayer(getWorldGuard().wrapPlayer(p));
+		}
 		getAgentManager().rentRegionForPlayer(region, p, renttime);
 		saveAll();
 		if (configurationHandler.getConfig().getBoolean("logging")) {
@@ -300,7 +304,11 @@ public class SimpleRegionMarket extends JavaPlugin {
 		}
 		region.setMembers(new DefaultDomain());
 		region.setOwners(new DefaultDomain());
-		region.getOwners().addPlayer(getWorldGuard().wrapPlayer(p));
+		if(configurationHandler.getConfig().getBoolean("buyer_get_owner")) {
+			region.getOwners().addPlayer(getWorldGuard().wrapPlayer(p));
+		} else {
+			region.getMembers().addPlayer(getWorldGuard().wrapPlayer(p));
+		}
 
 		final Iterator<SignAgent> itr = getAgentManager().getAgentList()
 				.iterator();

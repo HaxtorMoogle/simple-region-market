@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -30,18 +28,24 @@ public class ConfigHandler {
 		this.plugin = plugin;
 		config = plugin.getConfig();
 		this.langHandler = langHandler;
-
-		Map<String,Object> defaultMap = new HashMap<String,Object>();
-		defaultMap.put("language"				,	"en"		);
-		defaultMap.put("logging"				,	true		);
-		defaultMap.put("remove_buyed_signs"		,	true		);
-		defaultMap.put("enable_economy"			,	true		);
-		defaultMap.put("max_rent_multiplier"	,	2			);
-		defaultMap.put("agent_name"				,	"[AGENT]"	);
-		defaultMap.put("hotel_name"				,	"[HOTEL]"	);
-		config.addDefaults(defaultMap);
 		
-		plugin.saveConfig();
+		if(!new File(SimpleRegionMarket.plugin_dir + "config.yml").exists()) {
+			config.set("language"				,	"en"		);
+			config.set("logging"				,	true		);
+			config.set("remove_buyed_signs"		,	true		);
+			config.set("enable_economy"			,	true		);
+			config.set("max_rent_multiplier"	,	2			);
+			config.set("buyer_get_owner"		,	true		);
+			config.set("renter_get_owner"		,	false		);
+			config.set("agent_name"				,	"[AGENT]"	);
+			config.set("hotel_name"				,	"[HOTEL]"	);
+			config.set("defp_player_buy"		,	false		);
+			config.set("defp_player_rent"		,	false		);
+			config.set("defp_player_sell"		,	false		);
+			config.set("defp_player_let"		,	false		);
+			
+			plugin.saveConfig();
+		}
 	}
 
 	public FileConfiguration getConfig() {
