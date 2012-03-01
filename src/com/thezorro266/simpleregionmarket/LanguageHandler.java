@@ -14,21 +14,17 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 public class LanguageHandler {
-	private SimpleRegionMarket plugin;
-	private ConfigHandler configurationHandler;
-	private FileConfiguration languageFile = new YamlConfiguration();
+	private final FileConfiguration languageFile = new YamlConfiguration();
+	private final SimpleRegionMarket plugin;
 
-	public LanguageHandler(SimpleRegionMarket plugin,
-			ConfigHandler configurationHandler) {
+	public LanguageHandler(SimpleRegionMarket plugin) {
 		this.plugin = plugin;
-		this.configurationHandler = configurationHandler;
-		if(!new File(SimpleRegionMarket.plugin_dir + "en.yml").exists()) {
+		if (!new File(SimpleRegionMarket.plugin_dir + "en.yml").exists()) {
 			plugin.saveResource("en.yml", false);
 		}
 	}
 
-	public void langOutputConsole(String id, Level level,
-			ArrayList<String> args) {
+	public void langOutputConsole(String id, Level level, ArrayList<String> args) {
 		outputConsole(level, parseLanguageString(id, args));
 	}
 
@@ -55,35 +51,38 @@ public class LanguageHandler {
 
 	private String parseLanguageString(String id, ArrayList<String> args) {
 		String string = id;
-		
-		String lang = configurationHandler.getConfig().getString("language");
-		if(!new File(SimpleRegionMarket.plugin_dir + lang + ".yml").exists()) {
-			outputConsole(Level.WARNING, "Language '" + lang + "' was not found.");
+
+		String lang = plugin.getConfigurationHandler().getConfig()
+				.getString("language");
+		if (!new File(SimpleRegionMarket.plugin_dir + lang + ".yml").exists()) {
+			outputConsole(Level.WARNING, "Language '" + lang
+					+ "' was not found.");
 			lang = "en";
-			configurationHandler.getConfig().set("language", lang);
+			plugin.getConfigurationHandler().getConfig().set("language", lang);
 			plugin.saveConfig();
 		}
-		
+
 		try {
 			languageFile.load(SimpleRegionMarket.plugin_dir + lang + ".yml");
 			string = languageFile.getString(id);
-		} catch (FileNotFoundException e1) {
-			outputConsole(Level.SEVERE, "No write permissions on '" + SimpleRegionMarket.plugin_dir + "'.");
+		} catch (final FileNotFoundException e1) {
+			outputConsole(Level.SEVERE, "No write permissions on '"
+					+ SimpleRegionMarket.plugin_dir + "'.");
 			e1.printStackTrace();
-		} catch (IOException e1) {
+		} catch (final IOException e1) {
 			outputConsole(Level.SEVERE, "IO Exception in language system.");
 			e1.printStackTrace();
-		} catch (InvalidConfigurationException e1) {
+		} catch (final InvalidConfigurationException e1) {
 			outputConsole(Level.SEVERE, "Language file corrupt (Invalid YAML).");
 			e1.printStackTrace();
-		} catch (Exception e1) {
+		} catch (final Exception e1) {
 			e1.printStackTrace();
 		}
-		
-		if(string == null || string.isEmpty()) {
+
+		if (string == null || string.isEmpty()) {
 			string = id;
 		}
-		
+
 		for (int i = string.length() - 1; i >= 0; i--) {
 			if (string.charAt(i) == '$') {
 				if (string.charAt(i - 1) == '$') {

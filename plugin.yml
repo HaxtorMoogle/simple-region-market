@@ -1,7 +1,7 @@
 name: SimpleRegionMarket
-version: 1.8-pre2
+version: 1.7.6
 author: theZorro266
-website: http://srm.thezorro266.com
+website: http://www.theZorro266.com/plugin-simpleregionmarket.html
 main: com.thezorro266.simpleregionmarket.SimpleRegionMarket
 depend: ['WorldGuard']
 softdepend: ['Vault']

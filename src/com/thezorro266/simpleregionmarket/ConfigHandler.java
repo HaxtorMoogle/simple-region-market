@@ -21,30 +21,30 @@ public class ConfigHandler {
 	private final File agents_fail = new File(SimpleRegionMarket.plugin_dir
 			+ "agents_fail.yml");
 	private FileConfiguration config;
-	private final SimpleRegionMarket plugin;
 	private final LanguageHandler langHandler;
+	private final SimpleRegionMarket plugin;
 
 	public ConfigHandler(SimpleRegionMarket plugin, LanguageHandler langHandler) {
 		this.plugin = plugin;
 		config = plugin.getConfig();
 		this.langHandler = langHandler;
-		
-		if(!new File(SimpleRegionMarket.plugin_dir + "config.yml").exists()) {
-			
-			config.set("language"				,	"en"		);
-			config.set("logging"				,	true		);
-			config.set("remove_buyed_signs"		,	true		);
-			config.set("enable_economy"			,	true		);
-			config.set("max_rent_multiplier"	,	2			);
-			config.set("buyer_get_owner"		,	true		);
-			config.set("renter_get_owner"		,	false		);
-			config.set("agent_name"				,	"[AGENT]"	);
-			config.set("hotel_name"				,	"[HOTEL]"	);
-			config.set("defp_player_buy"		,	false		);
-			config.set("defp_player_rent"		,	false		);
-			config.set("defp_player_sell"		,	false		);
-			config.set("defp_player_let"		,	false		);
-			
+
+		if (!new File(SimpleRegionMarket.plugin_dir + "config.yml").exists()) {
+
+			config.set("language", "en");
+			config.set("logging", true);
+			config.set("remove_buyed_signs", true);
+			config.set("enable_economy", true);
+			config.set("max_rent_multiplier", 2);
+			config.set("buyer_get_owner", true);
+			config.set("renter_get_owner", false);
+			config.set("agent_name", "[AGENT]");
+			config.set("hotel_name", "[HOTEL]");
+			config.set("defp_player_buy", false);
+			config.set("defp_player_rent", false);
+			config.set("defp_player_sell", false);
+			config.set("defp_player_let", false);
+
 			plugin.saveConfig();
 		}
 	}
@@ -211,8 +211,7 @@ public class ConfigHandler {
 		try {
 			confighandle.save(agents);
 		} catch (final IOException e) {
-			langHandler.outputConsole(Level.SEVERE,
-					"Could not save agents.");
+			langHandler.outputConsole(Level.SEVERE, "Could not save agents.");
 		}
 	}
 }

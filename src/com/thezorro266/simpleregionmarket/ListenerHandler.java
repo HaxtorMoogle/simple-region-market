@@ -21,17 +21,15 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class ListenerHandler implements Listener {
 
-	private final ConfigHandler configurationHandler;
+	private final LanguageHandler langHandler;
 	private final LimitHandler limitHandler;
 	private final SimpleRegionMarket plugin;
-	private final LanguageHandler langHandler;
 
 	public ListenerHandler(SimpleRegionMarket plugin,
-			LimitHandler limitHandler, ConfigHandler configurationHandler, LanguageHandler langHandler) {
+			LimitHandler limitHandler, LanguageHandler langHandler) {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 		this.plugin = plugin;
 		this.limitHandler = limitHandler;
-		this.configurationHandler = configurationHandler;
 		this.langHandler = langHandler;
 	}
 
@@ -81,8 +79,9 @@ public class ListenerHandler implements Listener {
 						final long newRentTime = agent.getExpireDate()
 								.getTime() + agent.getRentTime();
 						if ((newRentTime - System.currentTimeMillis())
-								/ agent.getRentTime() < configurationHandler
-								.getConfig().getInt("max_rent_multiplier")) {
+								/ agent.getRentTime() < plugin
+								.getConfigurationHandler().getConfig()
+								.getInt("max_rent_multiplier")) {
 							if (plugin.isEconomy()) {
 								final double price = agent.getPrice();
 								if (plugin.econHasEnough(p.getName(), price)) {
@@ -107,8 +106,8 @@ public class ListenerHandler implements Listener {
 									langHandler.outputDebug(p,
 											"HOTEL_SUCCESS_RERENT", null);
 								} else {
-									langHandler.outputError(p,
-											"ERR_NO_MONEY", null);
+									langHandler.outputError(p, "ERR_NO_MONEY",
+											null);
 								}
 							} else {
 								agent.setExpireDate(new Date(newRentTime));
@@ -117,12 +116,11 @@ public class ListenerHandler implements Listener {
 										"HOTEL_SUCCESS_RERENT", null);
 							}
 						} else {
-							langHandler.outputError(p,
-									"ERR_RERENT_TOO_LONG", null);
+							langHandler.outputError(p, "ERR_RERENT_TOO_LONG",
+									null);
 						}
 					} else {
-						langHandler
-								.outputError(p, "ERR_ALREADY_RENT", null);
+						langHandler.outputError(p, "ERR_ALREADY_RENT", null);
 					}
 					return;
 				} else {
@@ -139,8 +137,7 @@ public class ListenerHandler implements Listener {
 			if (!plugin.isAdmin(p)) {
 				if (agent.getMode() == SignAgent.MODE_SELL_REGION) {
 					if (!limitHandler.limitCanBuy(p)) {
-						langHandler
-								.outputError(p, "ERR_REGION_LIMIT", null);
+						langHandler.outputError(p, "ERR_REGION_LIMIT", null);
 						return;
 					}
 				} else if (agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
@@ -163,12 +160,12 @@ public class ListenerHandler implements Listener {
 						if (p.getName().equals(agent.getAccount())) {
 							langHandler.outputDebug(p, "AGENT_YOURS", null);
 						} else {
-							langHandler.outputDebug(p,
-									"ERR_REGION_BUY_YOURS", null);
+							langHandler.outputDebug(p, "ERR_REGION_BUY_YOURS",
+									null);
 						}
 					} else {
-						langHandler.outputDebug(p, "ERR_REGION_BUY_YOURS",
-								null);
+						langHandler
+								.outputDebug(p, "ERR_REGION_BUY_YOURS", null);
 					}
 				} else {
 					if (plugin.isEconomy()) {
@@ -194,20 +191,18 @@ public class ListenerHandler implements Listener {
 											"REGION_BUYED_USER", list);
 								}
 							} catch (final Exception e) {
-								langHandler.outputError(p,
-										"ERR_TRANSACTION", null);
+								langHandler.outputError(p, "ERR_TRANSACTION",
+										null);
 								return;
 							}
 						} else {
-							langHandler
-									.outputError(p, "ERR_NO_MONEY", null);
+							langHandler.outputError(p, "ERR_NO_MONEY", null);
 						}
 					} else {
 						plugin.sellRegion(region, p);
 						final ArrayList<String> list = new ArrayList<String>();
 						list.add(region.getId());
-						langHandler.outputDebug(p, "REGION_BUYED_NONE",
-								list);
+						langHandler.outputDebug(p, "REGION_BUYED_NONE", list);
 					}
 				}
 			} else if (agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
@@ -239,13 +234,12 @@ public class ListenerHandler implements Listener {
 											"HOTEL_RENT_USER", list);
 								}
 							} catch (final Exception e) {
-								langHandler.outputError(p,
-										"ERR_TRANSACTION", null);
+								langHandler.outputError(p, "ERR_TRANSACTION",
+										null);
 								return;
 							}
 						} else {
-							langHandler
-									.outputError(p, "ERR_NO_MONEY", null);
+							langHandler.outputError(p, "ERR_NO_MONEY", null);
 						}
 					} else {
 						plugin.rentHotel(region, p, agent.getRentTime());
@@ -300,8 +294,7 @@ public class ListenerHandler implements Listener {
 				if (mode == SignAgent.MODE_SELL_REGION) {
 					if (!plugin.canSell(p)) {
 						event.setCancelled(true);
-						langHandler
-								.outputDebug(p, "ERR_NO_PERM_SELL", null);
+						langHandler.outputDebug(p, "ERR_NO_PERM_SELL", null);
 						event.getBlock().setType(Material.AIR);
 						signloc.getWorld().dropItem(signloc,
 								new ItemStack(Material.SIGN, 1));
@@ -309,8 +302,7 @@ public class ListenerHandler implements Listener {
 					}
 					if (!plugin.isAdmin(p)
 							&& !plugin.getAgentManager().isOwner(p, region)) {
-						langHandler.outputError(p, "ERR_REGION_NO_OWNER",
-								null);
+						langHandler.outputError(p, "ERR_REGION_NO_OWNER", null);
 						event.setCancelled(true);
 						event.getBlock().setType(Material.AIR);
 						signloc.getWorld().dropItem(signloc,
@@ -320,8 +312,8 @@ public class ListenerHandler implements Listener {
 				} else if (mode == SignAgent.MODE_RENT_HOTEL) {
 					if (!plugin.canLet(p)) {
 						event.setCancelled(true);
-						langHandler.outputDebug(p,
-								"ERR_NO_PERM_RENT_CREATE", null);
+						langHandler.outputDebug(p, "ERR_NO_PERM_RENT_CREATE",
+								null);
 						event.getBlock().setType(Material.AIR);
 						signloc.getWorld().dropItem(signloc,
 								new ItemStack(Material.SIGN, 1));
@@ -330,8 +322,7 @@ public class ListenerHandler implements Listener {
 					if (!plugin.isAdmin(p)
 							&& !plugin.getAgentManager().isOwner(p,
 									region.getParent())) {
-						langHandler.outputError(p, "ERR_PARENT_NO_OWNER",
-								null);
+						langHandler.outputError(p, "ERR_PARENT_NO_OWNER", null);
 						event.setCancelled(true);
 						event.getBlock().setType(Material.AIR);
 						signloc.getWorld().dropItem(signloc,
@@ -352,8 +343,7 @@ public class ListenerHandler implements Listener {
 						renttime = AgentManager.parseSignTime(linetwo[0]);
 					} catch (final Exception e) {
 						if (p != null) {
-							langHandler.outputError(p, "ERR_NO_RENTTIME",
-									null);
+							langHandler.outputError(p, "ERR_NO_RENTTIME", null);
 						}
 						event.setCancelled(true);
 						event.getBlock().setType(Material.AIR);
@@ -376,8 +366,7 @@ public class ListenerHandler implements Listener {
 						renttime = AgentManager.parseSignTime(linetwo[1]);
 					} catch (final Exception e) {
 						if (p != null) {
-							langHandler.outputError(p, "ERR_NO_RENTTIME",
-									null);
+							langHandler.outputError(p, "ERR_NO_RENTTIME", null);
 						}
 						event.setCancelled(true);
 						event.getBlock().setType(Material.AIR);
@@ -400,8 +389,7 @@ public class ListenerHandler implements Listener {
 					}
 					if (price < 0) {
 						if (p != null) {
-							langHandler
-									.outputError(p, "ERR_NO_PRICE", null);
+							langHandler.outputError(p, "ERR_NO_PRICE", null);
 						}
 						event.setCancelled(true);
 						event.getBlock().setType(Material.AIR);
@@ -418,8 +406,8 @@ public class ListenerHandler implements Listener {
 						}
 						if (renttime <= 0) {
 							if (p != null) {
-								langHandler.outputError(p,
-										"ERR_NO_RENTTIME", null);
+								langHandler.outputError(p, "ERR_NO_RENTTIME",
+										null);
 							}
 							event.setCancelled(true);
 							event.getBlock().setType(Material.AIR);
@@ -432,8 +420,8 @@ public class ListenerHandler implements Listener {
 					if (mode == SignAgent.MODE_RENT_HOTEL) {
 						if (linetwo == null || linetwo.length == 1) {
 							if (p != null) {
-								langHandler.outputError(p, "ERR_NO_PRICE",
-										null);
+								langHandler
+										.outputError(p, "ERR_NO_PRICE", null);
 							}
 							event.setCancelled(true);
 							event.getBlock().setType(Material.AIR);
@@ -450,8 +438,7 @@ public class ListenerHandler implements Listener {
 						}
 					} catch (final Exception e) {
 						if (p != null) {
-							langHandler
-									.outputError(p, "ERR_NO_PRICE", null);
+							langHandler.outputError(p, "ERR_NO_PRICE", null);
 						}
 						event.setCancelled(true);
 						event.getBlock().setType(Material.AIR);
@@ -461,8 +448,8 @@ public class ListenerHandler implements Listener {
 					}
 					if (price < 0) {
 						if (p != null) {
-							langHandler.outputError(p,
-									"ERR_PRICE_UNDER_ZERO", null);
+							langHandler.outputError(p, "ERR_PRICE_UNDER_ZERO",
+									null);
 						}
 						event.setCancelled(true);
 						event.getBlock().setType(Material.AIR);
@@ -482,8 +469,8 @@ public class ListenerHandler implements Listener {
 						}
 						if (renttime <= 0) {
 							if (p != null) {
-								langHandler.outputError(p,
-										"ERR_NO_RENTTIME", null);
+								langHandler.outputError(p, "ERR_NO_RENTTIME",
+										null);
 							}
 							event.setCancelled(true);
 							event.getBlock().setType(Material.AIR);
@@ -526,11 +513,11 @@ public class ListenerHandler implements Listener {
 						}
 					} else if (mode == SignAgent.MODE_RENT_HOTEL) {
 						if (account.isEmpty()) {
-							langHandler.outputDebug(p, "HOTEL_OFFER_NONE",
-									null);
+							langHandler
+									.outputDebug(p, "HOTEL_OFFER_NONE", null);
 						} else {
-							langHandler.outputDebug(p, "HOTEL_OFFER_USER",
-									null);
+							langHandler
+									.outputDebug(p, "HOTEL_OFFER_USER", null);
 						}
 					}
 

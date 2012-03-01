@@ -87,14 +87,11 @@ public class AgentManager {
 
 	private final ArrayList<SignAgent> agents = new ArrayList<SignAgent>();
 
-	private final ConfigHandler configurationHandler;
-	private final SimpleRegionMarket plugin;
 	private final LanguageHandler langHandler;
+	private final SimpleRegionMarket plugin;
 
-	public AgentManager(SimpleRegionMarket plugin,
-			ConfigHandler configurationHandler, LanguageHandler langHandler) {
+	public AgentManager(SimpleRegionMarket plugin, LanguageHandler langHandler) {
 		this.plugin = plugin;
-		this.configurationHandler = configurationHandler;
 		this.langHandler = langHandler;
 	}
 
@@ -104,8 +101,8 @@ public class AgentManager {
 					.getState();
 			if (agent.getMode() == SignAgent.MODE_SELL_REGION) {
 				if (event != null) {
-					event.setLine(0, configurationHandler.getConfig()
-							.getString("agent_name"));
+					event.setLine(0, plugin.getConfigurationHandler()
+							.getConfig().getString("agent_name"));
 					event.setLine(1, agent.getRegion());
 					if (!plugin.isEconomy() || agent.getPrice() == 0) {
 						event.setLine(2, "FREE");
@@ -113,8 +110,8 @@ public class AgentManager {
 						event.setLine(2, plugin.econFormat(agent.getPrice()));
 					}
 				} else {
-					agentsign.setLine(0, configurationHandler.getConfig()
-							.getString("agent_name"));
+					agentsign.setLine(0, plugin.getConfigurationHandler()
+							.getConfig().getString("agent_name"));
 					agentsign.setLine(1, agent.getRegion());
 					if (!plugin.isEconomy() || agent.getPrice() == 0) {
 						agentsign.setLine(2, "FREE");
@@ -125,11 +122,11 @@ public class AgentManager {
 				}
 			} else if (agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
 				if (event != null) {
-					event.setLine(0, configurationHandler.getConfig()
-							.getString("hotel_name"));
+					event.setLine(0, plugin.getConfigurationHandler()
+							.getConfig().getString("hotel_name"));
 				} else {
-					agentsign.setLine(0, configurationHandler.getConfig()
-							.getString("hotel_name"));
+					agentsign.setLine(0, plugin.getConfigurationHandler()
+							.getConfig().getString("hotel_name"));
 				}
 
 				if (agent.isRent()) {
@@ -222,8 +219,10 @@ public class AgentManager {
 										location, region.getId(), price,
 										account, renttime);
 								getAgentList().add(newagent);
-								if(location.getBlock().getType() != Material.SIGN_POST && location.getBlock().getType() != Material.WALL_SIGN) {
-									location.getBlock().setType(Material.SIGN_POST);
+								if (location.getBlock().getType() != Material.SIGN_POST
+										&& location.getBlock().getType() != Material.WALL_SIGN) {
+									location.getBlock().setType(
+											Material.SIGN_POST);
 									actAgent(newagent, null);
 								}
 								return newagent;
@@ -303,13 +302,13 @@ public class AgentManager {
 						obj.getProtectedRegion()
 								.setMembers(new DefaultDomain());
 						obj.getProtectedRegion().setOwners(new DefaultDomain());
-						if (configurationHandler.getConfig().getBoolean(
-								"logging")) {
+						if (plugin.getConfigurationHandler().getConfig()
+								.getBoolean("logging")) {
 							final ArrayList<String> list = new ArrayList<String>();
 							list.add(obj.getRegion());
 							list.add(obj.getRent());
-							langHandler.langOutputConsole(
-									"LOG_EXPIRED_HOTEL", Level.INFO, list);
+							langHandler.langOutputConsole("LOG_EXPIRED_HOTEL",
+									Level.INFO, list);
 						}
 						obj.rentTo("");
 						if (p != null) {
@@ -385,14 +384,14 @@ public class AgentManager {
 				for (int i = 0; i < prices.size(); i++) {
 					if (prices.get(i) != old) {
 						if (p != null) {
-							langHandler.outputError(p, "ERR_REGION_PRICE",
-									null);
+							langHandler
+									.outputError(p, "ERR_REGION_PRICE", null);
 							final ArrayList<String> list = new ArrayList<String>();
 							list.add(region.getId());
 							list.add(plugin.econFormat(old));
 							list.add(plugin.econFormat(prices.get(i)));
-							langHandler.outputError(p,
-									"ERR_REGION_PRICE_SHOW", list);
+							langHandler.outputError(p, "ERR_REGION_PRICE_SHOW",
+									list);
 						}
 						return -1;
 					}

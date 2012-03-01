@@ -47,27 +47,31 @@ public class SimpleRegionMarket extends JavaPlugin {
 	private CommandHandler commandHandler;
 
 	private ConfigHandler configurationHandler;
-	
-	private LanguageHandler langHandler;
 
 	private boolean error = false;
+
+	private LanguageHandler langHandler;
 
 	private LimitHandler limitHandler;
 
 	public boolean canBuy(Player player) {
-		return (configurationHandler.getConfig().getBoolean("defp_player_buy") || player.hasPermission("simpleregionmarket.buy"));
+		return (configurationHandler.getConfig().getBoolean("defp_player_buy") || player
+				.hasPermission("simpleregionmarket.buy"));
 	}
 
 	public boolean canLet(Player player) {
-		return (configurationHandler.getConfig().getBoolean("defp_player_let") || player.hasPermission("simpleregionmarket.let"));
+		return (configurationHandler.getConfig().getBoolean("defp_player_let") || player
+				.hasPermission("simpleregionmarket.let"));
 	}
 
 	public boolean canRent(Player player) {
-		return (configurationHandler.getConfig().getBoolean("defp_player_rent") || player.hasPermission("simpleregionmarket.rent"));
+		return (configurationHandler.getConfig().getBoolean("defp_player_rent") || player
+				.hasPermission("simpleregionmarket.rent"));
 	}
 
 	public boolean canSell(Player player) {
-		return (configurationHandler.getConfig().getBoolean("defp_player_sell") || player.hasPermission("simpleregionmarket.sell"));
+		return (configurationHandler.getConfig().getBoolean("defp_player_sell") || player
+				.hasPermission("simpleregionmarket.sell"));
 	}
 
 	public String econFormat(double price) {
@@ -122,6 +126,10 @@ public class SimpleRegionMarket extends JavaPlugin {
 		return agentManager;
 	}
 
+	public ConfigHandler getConfigurationHandler() {
+		return configurationHandler;
+	}
+
 	public String getCopyright() {
 		return "Copyright (C) 2011-2012  Benedikt Ziemons aka theZorro266 - All rights reserved.";
 	}
@@ -137,19 +145,21 @@ public class SimpleRegionMarket extends JavaPlugin {
 	}
 
 	public boolean isAdmin(Player player) {
-		return (player.isOp() || player.hasPermission("simpleregionmarket.admin"));
+		return (player.isOp() || player
+				.hasPermission("simpleregionmarket.admin"));
 	}
 
 	public boolean isEconomy() {
-		return enableEconomy > 0 && (enableEconomy != 1 || getEconomicManager() != null);
+		return enableEconomy > 0
+				&& (enableEconomy != 1 || getEconomicManager() != null);
 	}
 
 	@Override
 	public void onDisable() {
 		unloading = true;
 		if (error) {
-			langHandler.langOutputConsole("ERR_PLUGIN_UNLOAD",
-					Level.SEVERE, null);
+			langHandler.langOutputConsole("ERR_PLUGIN_UNLOAD", Level.SEVERE,
+					null);
 		} else {
 			saveAll();
 			langHandler.langOutputConsole("PLUGIN_UNLOAD", Level.INFO, null);
@@ -161,15 +171,17 @@ public class SimpleRegionMarket extends JavaPlugin {
 		server = getServer();
 		plugin_dir = getDataFolder() + File.separator;
 
+		langHandler = new LanguageHandler(this);
+
+		agentManager = new AgentManager(this, langHandler);
+
 		configurationHandler = new ConfigHandler(this, langHandler);
 		configurationHandler.load();
-		
-		langHandler = new LanguageHandler(this, configurationHandler);
 
 		if (getWorldGuard() == null) {
 			error = true;
-			langHandler.langOutputConsole("ERR_NO_WORLDGUARD",
-					Level.SEVERE, null);
+			langHandler.langOutputConsole("ERR_NO_WORLDGUARD", Level.SEVERE,
+					null);
 			server.getPluginManager().disablePlugin(this);
 			return;
 		}
@@ -193,18 +205,17 @@ public class SimpleRegionMarket extends JavaPlugin {
 				 * Level.WARNING, null); }
 				 */
 				if (!setupEconomy()) {
-					langHandler.langOutputConsole("ERR_VAULT_ECONOMY", Level.WARNING, null);
+					langHandler.langOutputConsole("ERR_VAULT_ECONOMY",
+							Level.WARNING, null);
 					enableEconomy = 0;
 				}
 			}
 		}
 
-		agentManager = new AgentManager(this, configurationHandler, langHandler);
-
 		limitHandler = new LimitHandler(this, langHandler);
 		limitHandler.loadLimits();
 
-		new ListenerHandler(this, limitHandler, configurationHandler, langHandler);
+		new ListenerHandler(this, limitHandler, langHandler);
 
 		commandHandler = new CommandHandler(this, limitHandler, langHandler);
 		getCommand("regionmarket").setExecutor(commandHandler);
@@ -216,7 +227,8 @@ public class SimpleRegionMarket extends JavaPlugin {
 			}
 		}, 20L, 1200L);
 
-		langHandler.outputConsole(Level.INFO, "loaded version " + getDescription().getVersion() + ",  " + getCopyright());
+		langHandler.outputConsole(Level.INFO, "loaded version "
+				+ getDescription().getVersion() + ",  " + getCopyright());
 	}
 
 	/*
@@ -244,7 +256,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 		}
 		region.setMembers(new DefaultDomain());
 		region.setOwners(new DefaultDomain());
-		if(configurationHandler.getConfig().getBoolean("renter_get_owner")) {
+		if (configurationHandler.getConfig().getBoolean("renter_get_owner")) {
 			region.getOwners().addPlayer(getWorldGuard().wrapPlayer(p));
 		} else {
 			region.getMembers().addPlayer(getWorldGuard().wrapPlayer(p));
@@ -255,8 +267,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 			final ArrayList<String> list = new ArrayList<String>();
 			list.add(region.getId());
 			list.add(p.getName());
-			langHandler.langOutputConsole("LOG_RENT_HOTEL", Level.INFO,
-					list);
+			langHandler.langOutputConsole("LOG_RENT_HOTEL", Level.INFO, list);
 		}
 	}
 
@@ -299,7 +310,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 		}
 		region.setMembers(new DefaultDomain());
 		region.setOwners(new DefaultDomain());
-		if(configurationHandler.getConfig().getBoolean("buyer_get_owner")) {
+		if (configurationHandler.getConfig().getBoolean("buyer_get_owner")) {
 			region.getOwners().addPlayer(getWorldGuard().wrapPlayer(p));
 		} else {
 			region.getMembers().addPlayer(getWorldGuard().wrapPlayer(p));
@@ -333,8 +344,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 			final ArrayList<String> list = new ArrayList<String>();
 			list.add(region.getId());
 			list.add(p.getName());
-			langHandler.langOutputConsole("LOG_SOLD_REGION", Level.INFO,
-					list);
+			langHandler.langOutputConsole("LOG_SOLD_REGION", Level.INFO, list);
 		}
 	}
 

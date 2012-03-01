@@ -55,8 +55,8 @@ public class LimitHandler {
 	// TODO General permission groups with Vault
 	// TODO Parent region limits
 
-	private final SimpleRegionMarket plugin;
 	private final LanguageHandler langHandler;
+	private final SimpleRegionMarket plugin;
 
 	public LimitHandler(SimpleRegionMarket plugin, LanguageHandler langHandler) {
 		this.plugin = plugin;
@@ -237,8 +237,7 @@ public class LimitHandler {
 		try {
 			limitConfig.save(SimpleRegionMarket.plugin_dir + "limits.yml");
 		} catch (final IOException e) {
-			langHandler.outputConsole(Level.SEVERE,
-					"Could not save limits.");
+			langHandler.outputConsole(Level.SEVERE, "Could not save limits.");
 		}
 	}
 
