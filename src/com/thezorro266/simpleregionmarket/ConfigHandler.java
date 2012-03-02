@@ -28,25 +28,48 @@ public class ConfigHandler {
 		this.plugin = plugin;
 		config = plugin.getConfig();
 		this.langHandler = langHandler;
-
-		if (!new File(SimpleRegionMarket.plugin_dir + "config.yml").exists()) {
-
+		
+		if(config.get("language") == null) {
 			config.set("language", "en");
-			config.set("logging", true);
-			config.set("remove_buyed_signs", true);
-			config.set("enable_economy", true);
-			config.set("max_rent_multiplier", 2);
-			config.set("buyer_get_owner", true);
-			config.set("renter_get_owner", false);
-			config.set("agent_name", "[AGENT]");
-			config.set("hotel_name", "[HOTEL]");
-			config.set("defp_player_buy", false);
-			config.set("defp_player_rent", false);
-			config.set("defp_player_sell", false);
-			config.set("defp_player_let", false);
-
-			plugin.saveConfig();
 		}
+		if(config.get("logging") == null) {
+			config.set("logging", true);
+		}
+		if(config.get("remove_buyed_signs") == null) {
+			config.set("remove_buyed_signs", true);
+		}
+		if(config.get("enable_economy") == null) {
+			config.set("enable_economy", true);
+		}
+		if(config.get("max_rent_multiplier") == null) {
+			config.set("max_rent_multiplier", 2);
+		}
+		if(config.get("buyer_get_owner") == null) {
+			config.set("buyer_get_owner", true);
+		}
+		if(config.get("renter_get_owner") == null) {
+			config.set("renter_get_owner", false);
+		}
+		if(config.get("agent_name") == null) {
+			config.set("agent_name", "[AGENT]");
+		}
+		if(config.get("hotel_name") == null) {
+			config.set("hotel_name", "[HOTEL]");
+		}
+		if(config.get("defp_player_buy") == null) {
+			config.set("defp_player_buy", false);
+		}
+		if(config.get("defp_player_rent") == null) {
+			config.set("defp_player_rent", false);
+		}
+		if(config.get("defp_player_sell") == null) {
+			config.set("defp_player_sell", false);
+		}
+		if(config.get("defp_player_let") == null) {
+			config.set("defp_player_let", false);
+		}
+
+		plugin.saveConfig();
 	}
 
 	public FileConfiguration getConfig() {
