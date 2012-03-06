@@ -28,44 +28,44 @@ public class ConfigHandler {
 		this.plugin = plugin;
 		config = plugin.getConfig();
 		this.langHandler = langHandler;
-		
-		if(config.get("language") == null) {
+
+		if (config.get("language") == null) {
 			config.set("language", "en");
 		}
-		if(config.get("logging") == null) {
+		if (config.get("logging") == null) {
 			config.set("logging", true);
 		}
-		if(config.get("remove_buyed_signs") == null) {
+		if (config.get("remove_buyed_signs") == null) {
 			config.set("remove_buyed_signs", true);
 		}
-		if(config.get("enable_economy") == null) {
+		if (config.get("enable_economy") == null) {
 			config.set("enable_economy", true);
 		}
-		if(config.get("max_rent_multiplier") == null) {
+		if (config.get("max_rent_multiplier") == null) {
 			config.set("max_rent_multiplier", 2);
 		}
-		if(config.get("buyer_get_owner") == null) {
+		if (config.get("buyer_get_owner") == null) {
 			config.set("buyer_get_owner", true);
 		}
-		if(config.get("renter_get_owner") == null) {
+		if (config.get("renter_get_owner") == null) {
 			config.set("renter_get_owner", false);
 		}
-		if(config.get("agent_name") == null) {
+		if (config.get("agent_name") == null) {
 			config.set("agent_name", "[AGENT]");
 		}
-		if(config.get("hotel_name") == null) {
+		if (config.get("hotel_name") == null) {
 			config.set("hotel_name", "[HOTEL]");
 		}
-		if(config.get("defp_player_buy") == null) {
+		if (config.get("defp_player_buy") == null) {
 			config.set("defp_player_buy", false);
 		}
-		if(config.get("defp_player_rent") == null) {
+		if (config.get("defp_player_rent") == null) {
 			config.set("defp_player_rent", false);
 		}
-		if(config.get("defp_player_sell") == null) {
+		if (config.get("defp_player_sell") == null) {
 			config.set("defp_player_sell", false);
 		}
-		if(config.get("defp_player_let") == null) {
+		if (config.get("defp_player_let") == null) {
 			config.set("defp_player_let", false);
 		}
 

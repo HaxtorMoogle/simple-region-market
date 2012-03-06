@@ -46,7 +46,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 	private CommandHandler commandHandler;
 
-	private ConfigHandler configurationHandler;
+	private ConfigHandler configurationHandler = null;
 
 	private boolean error = false;
 
@@ -171,13 +171,6 @@ public class SimpleRegionMarket extends JavaPlugin {
 		server = getServer();
 		plugin_dir = getDataFolder() + File.separator;
 
-		langHandler = new LanguageHandler(this);
-
-		agentManager = new AgentManager(this, langHandler);
-
-		configurationHandler = new ConfigHandler(this, langHandler);
-		configurationHandler.load();
-
 		if (getWorldGuard() == null) {
 			error = true;
 			langHandler.langOutputConsole("ERR_NO_WORLDGUARD", Level.SEVERE,
@@ -185,6 +178,12 @@ public class SimpleRegionMarket extends JavaPlugin {
 			server.getPluginManager().disablePlugin(this);
 			return;
 		}
+
+		langHandler = new LanguageHandler(this);
+
+		agentManager = new AgentManager(this, langHandler);
+
+		configurationHandler = new ConfigHandler(this, langHandler);
 
 		enableEconomy = configurationHandler.getConfig().getBoolean(
 				"enable_economy") ? 1 : 0;
@@ -219,6 +218,8 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 		commandHandler = new CommandHandler(this, limitHandler, langHandler);
 		getCommand("regionmarket").setExecutor(commandHandler);
+		
+		configurationHandler.load();
 
 		server.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
 			@Override
@@ -250,7 +251,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 					final ArrayList<String> list = new ArrayList<String>();
 					list.add(region.getId());
 					list.add(p.getName());
-					langHandler.outputDebug(powner, "HOTEL_RENT", list);
+					langHandler.outputMessage(powner, "HOTEL_RENT", list);
 				}
 			}
 		}
@@ -305,7 +306,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 				final ArrayList<String> list = new ArrayList<String>();
 				list.add(region.getId());
 				list.add(p.getName());
-				langHandler.outputDebug(powner, "REGION_SOLD", list);
+				langHandler.outputMessage(powner, "REGION_SOLD", list);
 			}
 		}
 		region.setMembers(new DefaultDomain());

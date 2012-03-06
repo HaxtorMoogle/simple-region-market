@@ -256,10 +256,8 @@ public class AgentManager {
 		final Iterator<SignAgent> itr = getAgentList().iterator();
 		while (itr.hasNext()) {
 			final SignAgent obj = itr.next();
-			if (obj.getWorldWorld() == null) { // world removed - remove agent
-				if (!worlds_called.contains(obj.getWorld())) { // not already
-																// called that
-																// world
+			if (obj.getWorldWorld() == null) {
+				if (!worlds_called.contains(obj.getWorld())) {
 					final ArrayList<String> list = new ArrayList<String>();
 					list.add(obj.getWorld());
 					langHandler.langOutputConsole("AGENT_WORLD_REMOVED",
@@ -267,12 +265,8 @@ public class AgentManager {
 					worlds_called.add(obj.getWorld());
 				}
 				itr.remove();
-			} else if (obj.getProtectedRegion() == null) { // region removed -
-															// remove agent
-				if (!regions_called.contains(obj.getRegion())) { // not already
-																	// called
-																	// that
-																	// region
+			} else if (obj.getProtectedRegion() == null) {
+				if (!regions_called.contains(obj.getRegion())) {
 					final ArrayList<String> list = new ArrayList<String>();
 					list.add(obj.getRegion());
 					langHandler.langOutputConsole("AGENT_REGION_REMOVED",
@@ -283,14 +277,7 @@ public class AgentManager {
 				itr.remove();
 			} else if (obj.getLocation().getBlock() == null
 					|| obj.getLocation().getBlock().getTypeId() != 63
-					&& obj.getLocation().getBlock().getTypeId() != 68) { // block
-																			// is
-																			// not
-																			// a
-																			// sign
-																			// -
-																			// remove
-																			// agent
+					&& obj.getLocation().getBlock().getTypeId() != 68) {
 				langHandler.langOutputConsole("AGENT_BLOCK_REMOVED",
 						Level.WARNING, null);
 				itr.remove();
@@ -313,7 +300,7 @@ public class AgentManager {
 						obj.rentTo("");
 						if (p != null) {
 							if (!player_hotel_expired.contains(p.getName())) {
-								langHandler.outputDebug(p, "HOTEL_EXPIRED",
+								langHandler.outputMessage(p, "HOTEL_EXPIRED",
 										null);
 								player_hotel_expired.add(p.getName());
 							}

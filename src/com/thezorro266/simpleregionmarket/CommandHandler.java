@@ -76,7 +76,7 @@ public class CommandHandler implements CommandExecutor {
 				}
 
 				if (list.size() < 1) {
-					langHandler.outputDebug(p, "CMD_LIST_NO_REGIONS", null);
+					langHandler.outputMessage(p, "CMD_LIST_NO_REGIONS", null);
 					return true;
 				}
 
@@ -130,7 +130,7 @@ public class CommandHandler implements CommandExecutor {
 			if (p == null || plugin.isAdmin(p)) {
 				if (args.length < 2) { // limits
 					if (p != null) {
-						langHandler.outputDebug(p, "CMD_LIMITS_NO_ARG", null);
+						langHandler.outputMessage(p, "CMD_LIMITS_NO_ARG", null);
 					}
 					return true;
 				} else {
@@ -160,7 +160,7 @@ public class CommandHandler implements CommandExecutor {
 								list.add(Integer.toString(limitHandler
 										.getGlobalRentLimit()));
 							}
-							langHandler.outputDebug(p,
+							langHandler.outputMessage(p,
 									"CMD_LIMITS_OUTPUT_LIMIT", list);
 						}
 					} else { // limits buy|rent <limit>|<...>
@@ -174,7 +174,7 @@ public class CommandHandler implements CommandExecutor {
 							final ArrayList<String> list = new ArrayList<String>();
 							list.add(Integer.toString(limit));
 							if (p != null) {
-								langHandler.outputDebug(p,
+								langHandler.outputMessage(p,
 										"CMD_LIMITS_SET_LIMIT", list);
 							}
 						} catch (final Exception e) {
@@ -203,7 +203,7 @@ public class CommandHandler implements CommandExecutor {
 													.getRentWorldLimit(w)));
 										}
 										if (p != null) {
-											langHandler.outputDebug(p,
+											langHandler.outputMessage(p,
 													"CMD_LIMITS_OUTPUT_LIMIT",
 													list);
 										}
@@ -221,7 +221,7 @@ public class CommandHandler implements CommandExecutor {
 											final ArrayList<String> list = new ArrayList<String>();
 											list.add(Integer.toString(limit));
 											if (p != null) {
-												langHandler.outputDebug(p,
+												langHandler.outputMessage(p,
 														"CMD_LIMITS_SET_LIMIT",
 														list);
 											}
@@ -262,7 +262,7 @@ public class CommandHandler implements CommandExecutor {
 													.getRentPlayerLimit(p2)));
 										}
 										if (p != null) {
-											langHandler.outputDebug(p,
+											langHandler.outputMessage(p,
 													"CMD_LIMITS_OUTPUT_LIMIT",
 													list);
 										}
@@ -281,7 +281,7 @@ public class CommandHandler implements CommandExecutor {
 											final ArrayList<String> list = new ArrayList<String>();
 											list.add(Integer.toString(limit));
 											if (p != null) {
-												langHandler.outputDebug(p,
+												langHandler.outputMessage(p,
 														"CMD_LIMITS_SET_LIMIT",
 														list);
 											}

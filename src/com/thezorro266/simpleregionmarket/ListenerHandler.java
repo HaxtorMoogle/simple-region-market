@@ -55,7 +55,7 @@ public class ListenerHandler implements Listener {
 		event.setCancelled(true);
 		if (p != null) {
 			agent.destroyAgent(true);
-			langHandler.outputDebug(p, "AGENT_DELETE", null);
+			langHandler.outputMessage(p, "AGENT_DELETE", null);
 		}
 		plugin.getAgentManager().removeAgent(agent);
 		plugin.saveAll();
@@ -103,7 +103,7 @@ public class ListenerHandler implements Listener {
 									agent.setExpireDate(new Date(newRentTime));
 									plugin.getAgentManager().actAgent(agent,
 											null);
-									langHandler.outputDebug(p,
+									langHandler.outputMessage(p,
 											"HOTEL_SUCCESS_RERENT", null);
 								} else {
 									langHandler.outputError(p, "ERR_NO_MONEY",
@@ -112,7 +112,7 @@ public class ListenerHandler implements Listener {
 							} else {
 								agent.setExpireDate(new Date(newRentTime));
 								plugin.getAgentManager().actAgent(agent, null);
-								langHandler.outputDebug(p,
+								langHandler.outputMessage(p,
 										"HOTEL_SUCCESS_RERENT", null);
 							}
 						} else {
@@ -127,7 +127,7 @@ public class ListenerHandler implements Listener {
 					if (agent.getProtectedRegion().getParent() != null) {
 						if (plugin.getAgentManager().isOwner(p,
 								agent.getProtectedRegion().getParent())) {
-							langHandler.outputDebug(p, "HOTEL_YOURS", null);
+							langHandler.outputMessage(p, "HOTEL_YOURS", null);
 							return;
 						}
 					}
@@ -158,14 +158,14 @@ public class ListenerHandler implements Listener {
 				} else if (plugin.getAgentManager().isOwner(p, region)) {
 					if (!agent.getAccount().isEmpty()) {
 						if (p.getName().equals(agent.getAccount())) {
-							langHandler.outputDebug(p, "AGENT_YOURS", null);
+							langHandler.outputMessage(p, "AGENT_YOURS", null);
 						} else {
-							langHandler.outputDebug(p, "ERR_REGION_BUY_YOURS",
-									null);
+							langHandler.outputMessage(p,
+									"ERR_REGION_BUY_YOURS", null);
 						}
 					} else {
-						langHandler
-								.outputDebug(p, "ERR_REGION_BUY_YOURS", null);
+						langHandler.outputMessage(p, "ERR_REGION_BUY_YOURS",
+								null);
 					}
 				} else {
 					if (plugin.isEconomy()) {
@@ -178,7 +178,7 @@ public class ListenerHandler implements Listener {
 									plugin.sellRegion(region, p);
 									final ArrayList<String> list = new ArrayList<String>();
 									list.add(region.getId());
-									langHandler.outputDebug(p,
+									langHandler.outputMessage(p,
 											"REGION_BUYED_NONE", list);
 								} else {
 									plugin.econGiveMoney(p.getName(), -price);
@@ -187,7 +187,7 @@ public class ListenerHandler implements Listener {
 									final ArrayList<String> list = new ArrayList<String>();
 									list.add(region.getId());
 									list.add(account);
-									langHandler.outputDebug(p,
+									langHandler.outputMessage(p,
 											"REGION_BUYED_USER", list);
 								}
 							} catch (final Exception e) {
@@ -202,7 +202,7 @@ public class ListenerHandler implements Listener {
 						plugin.sellRegion(region, p);
 						final ArrayList<String> list = new ArrayList<String>();
 						list.add(region.getId());
-						langHandler.outputDebug(p, "REGION_BUYED_NONE", list);
+						langHandler.outputMessage(p, "REGION_BUYED_NONE", list);
 					}
 				}
 			} else if (agent.getMode() == SignAgent.MODE_RENT_HOTEL) {
@@ -220,7 +220,7 @@ public class ListenerHandler implements Listener {
 											agent.getRentTime());
 									final ArrayList<String> list = new ArrayList<String>();
 									list.add(region.getId());
-									langHandler.outputDebug(p,
+									langHandler.outputMessage(p,
 											"HOTEL_RENT_NONE", list);
 								} else {
 									plugin.econGiveMoney(p.getName(), -price);
@@ -230,7 +230,7 @@ public class ListenerHandler implements Listener {
 									final ArrayList<String> list = new ArrayList<String>();
 									list.add(region.getId());
 									list.add(account);
-									langHandler.outputDebug(p,
+									langHandler.outputMessage(p,
 											"HOTEL_RENT_USER", list);
 								}
 							} catch (final Exception e) {
@@ -245,7 +245,7 @@ public class ListenerHandler implements Listener {
 						plugin.rentHotel(region, p, agent.getRentTime());
 						final ArrayList<String> list = new ArrayList<String>();
 						list.add(region.getId());
-						langHandler.outputDebug(p, "HOTEL_RENT_NONE", list);
+						langHandler.outputMessage(p, "HOTEL_RENT_NONE", list);
 					}
 				}
 			}
@@ -294,7 +294,7 @@ public class ListenerHandler implements Listener {
 				if (mode == SignAgent.MODE_SELL_REGION) {
 					if (!plugin.canSell(p)) {
 						event.setCancelled(true);
-						langHandler.outputDebug(p, "ERR_NO_PERM_SELL", null);
+						langHandler.outputMessage(p, "ERR_NO_PERM_SELL", null);
 						event.getBlock().setType(Material.AIR);
 						signloc.getWorld().dropItem(signloc,
 								new ItemStack(Material.SIGN, 1));
@@ -312,7 +312,7 @@ public class ListenerHandler implements Listener {
 				} else if (mode == SignAgent.MODE_RENT_HOTEL) {
 					if (!plugin.canLet(p)) {
 						event.setCancelled(true);
-						langHandler.outputDebug(p, "ERR_NO_PERM_RENT_CREATE",
+						langHandler.outputMessage(p, "ERR_NO_PERM_RENT_CREATE",
 								null);
 						event.getBlock().setType(Material.AIR);
 						signloc.getWorld().dropItem(signloc,
@@ -505,19 +505,19 @@ public class ListenerHandler implements Listener {
 					// Successful message
 					if (mode == SignAgent.MODE_SELL_REGION) {
 						if (account.isEmpty()) {
-							langHandler.outputDebug(p, "REGION_OFFER_NONE",
+							langHandler.outputMessage(p, "REGION_OFFER_NONE",
 									null);
 						} else {
-							langHandler.outputDebug(p, "REGION_OFFER_USER",
+							langHandler.outputMessage(p, "REGION_OFFER_USER",
 									null);
 						}
 					} else if (mode == SignAgent.MODE_RENT_HOTEL) {
 						if (account.isEmpty()) {
-							langHandler
-									.outputDebug(p, "HOTEL_OFFER_NONE", null);
+							langHandler.outputMessage(p, "HOTEL_OFFER_NONE",
+									null);
 						} else {
-							langHandler
-									.outputDebug(p, "HOTEL_OFFER_USER", null);
+							langHandler.outputMessage(p, "HOTEL_OFFER_USER",
+									null);
 						}
 					}
 
@@ -530,7 +530,7 @@ public class ListenerHandler implements Listener {
 						final ArrayList<String> list = new ArrayList<String>();
 						list.add(Integer.toString(plugin.getAgentManager()
 								.countAgents(region)));
-						langHandler.outputDebug(p, "AGENT_PLACED", list);
+						langHandler.outputMessage(p, "AGENT_PLACED", list);
 					}
 				}
 

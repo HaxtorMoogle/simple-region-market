@@ -32,7 +32,7 @@ public class LanguageHandler {
 		Bukkit.getLogger().log(level, "[SimpleRegionMarket] " + string);
 	}
 
-	public void outputDebug(Player p, String id, ArrayList<String> args) {
+	public void outputMessage(Player p, String id, ArrayList<String> args) {
 		p.sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_BLUE + "SRM"
 				+ ChatColor.WHITE + "] " + ChatColor.YELLOW
 				+ parseLanguageString(id, args));
