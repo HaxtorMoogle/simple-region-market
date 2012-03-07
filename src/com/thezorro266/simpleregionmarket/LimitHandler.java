@@ -75,8 +75,7 @@ public class LimitHandler {
 	private int countPlayerRentRoom(Player p) {
 		int count = 0;
 		for (int i = 0; i < plugin.getAgentManager().getAgentList().size(); i++) {
-			final SignAgent now = plugin.getAgentManager().getAgentList()
-					.get(i);
+			final SignAgent now = plugin.getAgentManager().getAgentList().get(i);
 			if (now != null && now.getMode() == SignAgent.MODE_RENT_HOTEL
 					&& now.getRent().equalsIgnoreCase(p.getName())) {
 				count++;

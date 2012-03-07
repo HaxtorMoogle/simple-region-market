@@ -16,7 +16,6 @@ permissions:
   simpleregionmarket.*:
     description: Permission for buy/sell/rent/let
     children:
-      simpleregionmarket.admin: false
       simpleregionmarket.buy: true
       simpleregionmarket.sell: true
       simpleregionmarket.rent: true
