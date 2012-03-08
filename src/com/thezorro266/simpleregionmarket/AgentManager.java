@@ -200,33 +200,25 @@ public class AgentManager {
 		}
 	}
 
-	public SignAgent addAgent(int mode, Location location,
-			ProtectedRegion region, double price, String account, long renttime) {
-		if (mode == SignAgent.MODE_SELL_REGION
-				|| mode == SignAgent.MODE_RENT_HOTEL) {
+	public SignAgent addAgent(int mode, Location location, ProtectedRegion region, double price, String account, long renttime) {
+		if (mode == SignAgent.MODE_SELL_REGION || mode == SignAgent.MODE_RENT_HOTEL) {
 			if (location != null) {
 				if (location.getWorld() != null) {
 					if (region != null) {
 						if (price >= 0) {
-							if (account == null) {
+							if(account == null) {
 								account = "";
 							}
-							if (renttime == 0
-									&& mode == SignAgent.MODE_SELL_REGION
-									|| renttime > 0
-									&& mode == SignAgent.MODE_RENT_HOTEL) {
-								final SignAgent newagent = new SignAgent(mode,
-										location, region.getId(), price,
-										account, renttime);
-								getAgentList().add(newagent);
-								if (location.getBlock().getType() != Material.SIGN_POST
-										&& location.getBlock().getType() != Material.WALL_SIGN) {
-									location.getBlock().setType(
-											Material.SIGN_POST);
-									actAgent(newagent, null);
-								}
-								return newagent;
+							if(renttime < 0) {
+								renttime = 86400000; // Reset to 1 day
 							}
+							final SignAgent newagent = new SignAgent(mode, location, region.getId(), price, account, renttime);
+							getAgentList().add(newagent);
+							if (location.getBlock().getType() != Material.SIGN_POST && location.getBlock().getType() != Material.WALL_SIGN) {
+								location.getBlock().setType(Material.SIGN_POST);
+								actAgent(newagent, null);
+							}
+							return newagent;
 						}
 					}
 				}

@@ -120,84 +120,62 @@ public class ConfigHandler {
 					if (expiredate != null) {
 						newagent = plugin.getAgentManager().addAgent(
 								path.getInt("Mode", 0),
-								new Location(world_world, path
-										.getDouble("X", 0), path.getDouble("Y",
-										0), path.getDouble("Z", 0)),
+								new Location(world_world,
+										path.getDouble("X", 0),
+										path.getDouble("Y",	0),
+										path.getDouble("Z", 0)),
 								protectedregion_region,
-								path.getDouble("Price"), account,
-								path.getInt("RentTime", 0),
-								path.getString("RentBy"), expiredate);
+								path.getDouble("Price"),
+								account,
+								path.getLong("RentTime", -1),
+								path.getString("RentBy"),
+								expiredate);
 					} else {
 						newagent = plugin.getAgentManager().addAgent(
 								path.getInt("Mode", 0),
-								new Location(world_world, path
-										.getDouble("X", 0), path.getDouble("Y",
-										0), path.getDouble("Z", 0)),
+								new Location(world_world,
+										path.getDouble("X", 0),
+										path.getDouble("Y", 0),
+										path.getDouble("Z", 0)),
 								protectedregion_region,
-								path.getDouble("Price"), account,
-								path.getInt("RentTime", 0));
+								path.getDouble("Price"),
+								account,
+								path.getLong("RentTime", -1));
 					}
 
 					if (newagent == null) {
 						if (world_world == null) {
 							if (!worlds_called.contains(world)) {
-								langHandler
-										.outputConsole(
-												Level.WARNING,
-												"World '"
-														+ world
-														+ "' was deleted. All agents on this world got deleted aswell.");
+								langHandler.outputConsole(Level.WARNING, "World '" + world + "' was deleted. All agents on this world got deleted aswell.");
 								worlds_called.add(world);
 							}
 						} else if (protectedregion_region == null) {
 							if (!regions_called.contains(region)) {
-								langHandler
-										.outputConsole(
-												Level.WARNING,
-												"Region '"
-														+ region
-														+ "' was deleted. All agents on this region got deleted aswell.");
+								langHandler.outputConsole(Level.WARNING, "Region '" + region + "' was deleted. All agents on this region got deleted aswell.");
 								regions_called.add(region);
 							}
 						} else {
-							langHandler
-									.outputConsole(
-											Level.WARNING,
-											"Agent '"
-													+ path.toString()
-													+ "' from 'agents.yml' was not loaded properly. Adding to 'agents_fail.yml'");
-							final YamlConfiguration tempconfighandle = YamlConfiguration
-									.loadConfiguration(agents_fail);
-							tempconfighandle.set(path.getCurrentPath()
-									+ ".Mode", path.getInt("Mode", 0));
-							tempconfighandle.set(path.getCurrentPath() + ".X",
-									path.getDouble("X", 0));
-							tempconfighandle.set(path.getCurrentPath() + ".Y",
-									path.getDouble("Y", 0));
-							tempconfighandle.set(path.getCurrentPath() + ".Z",
-									path.getDouble("Z", 0));
-							tempconfighandle.set(path.getCurrentPath()
-									+ ".Price", path.getDouble("Price"));
-							tempconfighandle.set(path.getCurrentPath()
-									+ ".Account", account);
-							tempconfighandle.set(path.getCurrentPath()
-									+ ".RentTime", path.getInt("RentTime", 0));
+							langHandler.outputConsole(Level.WARNING, "Agent '" + path.toString() + "' from 'agents.yml' was not loaded properly. Adding to 'agents_fail.yml'");
+							final YamlConfiguration tempconfighandle = YamlConfiguration.loadConfiguration(agents_fail);
+							tempconfighandle.set(path.getCurrentPath() + ".Mode", path.getInt("Mode", 0));
+							tempconfighandle.set(path.getCurrentPath() + ".X", path.getDouble("X", 0));
+							tempconfighandle.set(path.getCurrentPath() + ".Y", path.getDouble("Y", 0));
+							tempconfighandle.set(path.getCurrentPath() + ".Z", path.getDouble("Z", 0));
+							tempconfighandle.set(path.getCurrentPath() + ".Price", path.getDouble("Price"));
+							tempconfighandle.set(path.getCurrentPath() + ".Account", account);
+							tempconfighandle.set(path.getCurrentPath() + ".RentTime", path.getLong("RentTime", 0));
 							if (path.isSet("RentBy")) {
-								tempconfighandle.set(path.getCurrentPath()
-										+ ".RentBy", path.getString("RentBy"));
+								tempconfighandle.set(path.getCurrentPath() + ".RentBy", path.getString("RentBy"));
 							}
 
 							if (path.isSet("ExpireDate")) {
-								tempconfighandle.set(path.getCurrentPath()
-										+ ".ExpireDate",
-										path.getLong("ExpireDate"));
+								tempconfighandle.set(path.getCurrentPath() + ".ExpireDate", path.getLong("ExpireDate"));
 							}
 
 							try {
 								tempconfighandle.save(agents_fail);
 							} catch (final IOException e) {
-								langHandler.outputConsole(Level.SEVERE,
-										"Could not backup that agent.");
+								langHandler.outputConsole(Level.SEVERE, "Could not backup that agent.");
 							}
 						}
 					}

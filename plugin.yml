@@ -1,7 +1,7 @@
 name: SimpleRegionMarket
-version: 1.7.6-beta
+version: 1.7.7
 author: theZorro266
-website: http://www.theZorro266.com/plugin-simpleregionmarket.html
+website: http://srm.theZorro266.com/
 main: com.thezorro266.simpleregionmarket.SimpleRegionMarket
 depend: ['WorldGuard']
 softdepend: ['Vault']

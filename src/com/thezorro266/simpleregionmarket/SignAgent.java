@@ -36,8 +36,6 @@ public class SignAgent {
 		expiredate = null;
 	}
 
-	// --- START Methods About Variables ---
-
 	public void destroyAgent(boolean drop) {
 		getLocation().getBlock().setType(Material.AIR);
 		if (drop) {
