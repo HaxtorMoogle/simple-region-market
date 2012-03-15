@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
 
 import com.sk89q.worldedit.Vector;
-import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class AgentManager {
@@ -270,30 +269,16 @@ public class AgentManager {
 			} else if (obj.getLocation().getBlock() == null
 					|| obj.getLocation().getBlock().getTypeId() != 63
 					&& obj.getLocation().getBlock().getTypeId() != 68) {
-				langHandler.langOutputConsole("AGENT_BLOCK_REMOVED",
-						Level.WARNING, null);
+				langHandler.langOutputConsole("AGENT_BLOCK_REMOVED", Level.WARNING, null);
 				itr.remove();
 			} else {
 				if (obj.isRent()) {
-					if (obj.getExpireDate().getTime() < System
-							.currentTimeMillis()) {
+					if (obj.getExpireDate().getTime() < System.currentTimeMillis()) {
+						plugin.unrentHotel(obj);
 						final Player p = Bukkit.getPlayerExact(obj.getRent());
-						obj.getProtectedRegion()
-								.setMembers(new DefaultDomain());
-						obj.getProtectedRegion().setOwners(new DefaultDomain());
-						if (plugin.getConfigurationHandler().getConfig()
-								.getBoolean("logging")) {
-							final ArrayList<String> list = new ArrayList<String>();
-							list.add(obj.getRegion());
-							list.add(obj.getRent());
-							langHandler.langOutputConsole("LOG_EXPIRED_HOTEL",
-									Level.INFO, list);
-						}
-						obj.rentTo("");
 						if (p != null) {
 							if (!player_hotel_expired.contains(p.getName())) {
-								langHandler.outputMessage(p, "HOTEL_EXPIRED",
-										null);
+								langHandler.outputMessage(p, "HOTEL_EXPIRED", null);
 								player_hotel_expired.add(p.getName());
 							}
 						}

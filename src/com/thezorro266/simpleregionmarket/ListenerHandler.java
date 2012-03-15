@@ -216,26 +216,21 @@ public class ListenerHandler implements Listener {
 							try {
 								if (account.isEmpty()) {
 									plugin.econGiveMoney(p.getName(), -price);
-									plugin.rentHotel(region, p,
-											agent.getRentTime());
+									plugin.rentHotel(region, p, agent.getRentTime());
 									final ArrayList<String> list = new ArrayList<String>();
 									list.add(region.getId());
-									langHandler.outputMessage(p,
-											"HOTEL_RENT_NONE", list);
+									langHandler.outputMessage(p, "HOTEL_RENT_NONE", list);
 								} else {
 									plugin.econGiveMoney(p.getName(), -price);
 									plugin.econGiveMoney(account, price);
-									plugin.rentHotel(region, p,
-											agent.getRentTime());
+									plugin.rentHotel(region, p, agent.getRentTime());
 									final ArrayList<String> list = new ArrayList<String>();
 									list.add(region.getId());
 									list.add(account);
-									langHandler.outputMessage(p,
-											"HOTEL_RENT_USER", list);
+									langHandler.outputMessage(p, "HOTEL_RENT_USER", list);
 								}
 							} catch (final Exception e) {
-								langHandler.outputError(p, "ERR_TRANSACTION",
-										null);
+								langHandler.outputError(p, "ERR_TRANSACTION", null);
 								return;
 							}
 						} else {

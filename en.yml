@@ -71,3 +71,4 @@ LOG_SWITCHED: Logging was switched to $0
 LOG_SOLD_REGION: Region $0 was sold to $1
 LOG_RENT_HOTEL: Hotel $0 was rent to $1
 LOG_EXPIRED_HOTEL: Hotel $0 was rent by $1 and just expired
+HOOKED_CHESTSHOP: Successfully hooked into ChestShop.

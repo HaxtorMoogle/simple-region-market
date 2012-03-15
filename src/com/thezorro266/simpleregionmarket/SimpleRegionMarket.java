@@ -10,14 +10,18 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.Acrobot.ChestShop.ChestShop;
+import com.Acrobot.ChestShop.Utils.uBlock;
 import com.nijikokun.register.payment.Method;
 import com.nijikokun.register.payment.Methods;
+import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
@@ -53,25 +57,23 @@ public class SimpleRegionMarket extends JavaPlugin {
 	private LanguageHandler langHandler;
 
 	private LimitHandler limitHandler;
+	
+	private ChestShop chestShop;
 
 	public boolean canBuy(Player player) {
-		return (configurationHandler.getConfig().getBoolean("defp_player_buy") || player
-				.hasPermission("simpleregionmarket.buy"));
+		return (configurationHandler.getConfig().getBoolean("defp_player_buy") || player.hasPermission("simpleregionmarket.buy"));
 	}
 
 	public boolean canLet(Player player) {
-		return (configurationHandler.getConfig().getBoolean("defp_player_let") || player
-				.hasPermission("simpleregionmarket.let"));
+		return (configurationHandler.getConfig().getBoolean("defp_player_let") || player.hasPermission("simpleregionmarket.let"));
 	}
 
 	public boolean canRent(Player player) {
-		return (configurationHandler.getConfig().getBoolean("defp_player_rent") || player
-				.hasPermission("simpleregionmarket.rent"));
+		return (configurationHandler.getConfig().getBoolean("defp_player_rent") || player.hasPermission("simpleregionmarket.rent"));
 	}
 
 	public boolean canSell(Player player) {
-		return (configurationHandler.getConfig().getBoolean("defp_player_sell") || player
-				.hasPermission("simpleregionmarket.sell"));
+		return (configurationHandler.getConfig().getBoolean("defp_player_sell") || player.hasPermission("simpleregionmarket.sell"));
 	}
 
 	public String econFormat(double price) {
@@ -131,7 +133,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 	}
 
 	public String getCopyright() {
-		return "Copyright (C) 2011-2012  Benedikt Ziemons aka theZorro266 - All rights reserved.";
+		return "Copyright (C) 2011-2012  www.theZorro266.com - All rights reserved.";
 	}
 
 	public Method getEconomicManager() {
@@ -145,8 +147,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 	}
 
 	public boolean isAdmin(Player player) {
-		return (player.isOp() || player
-				.hasPermission("simpleregionmarket.admin"));
+		return (player.isOp() || player.hasPermission("simpleregionmarket.admin"));
 	}
 
 	public boolean isEconomy() {
@@ -220,6 +221,11 @@ public class SimpleRegionMarket extends JavaPlugin {
 		getCommand("regionmarket").setExecutor(commandHandler);
 		
 		configurationHandler.load();
+		
+		chestShop = (ChestShop) Bukkit.getPluginManager().getPlugin("ChestShop");
+		if(chestShop != null) {
+			langHandler.langOutputConsole("HOOKED_CHESTSHOP", Level.INFO, null);
+		}
 
 		server.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
 			@Override
@@ -228,8 +234,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 			}
 		}, 20L, 1200L);
 
-		langHandler.outputConsole(Level.INFO, "loaded version "
-				+ getDescription().getVersion() + ",  " + getCopyright());
+		langHandler.outputConsole(Level.INFO, "loaded version " + getDescription().getVersion() + ",  " + getCopyright());
 	}
 
 	/*
@@ -240,6 +245,22 @@ public class SimpleRegionMarket extends JavaPlugin {
 	 * (permissionProvider != null) { permission =
 	 * permissionProvider.getProvider(); } return (permission != null); }
 	 */
+	
+	public void unrentHotel(SignAgent hotel) {
+		if(chestShop != null) {
+			ProtectedRegion region = hotel.getProtectedRegion();
+			uBlock.findSign2(Block);
+		}
+		hotel.getProtectedRegion().setMembers(new DefaultDomain());
+		hotel.getProtectedRegion().setOwners(new DefaultDomain());
+		if (getConfigurationHandler().getConfig().getBoolean("logging")) {
+			final ArrayList<String> list = new ArrayList<String>();
+			list.add(hotel.getRegion());
+			list.add(hotel.getRent());
+			langHandler.langOutputConsole("LOG_EXPIRED_HOTEL", Level.INFO, list);
+		}
+		hotel.rentTo("");
+	}
 
 	public void rentHotel(ProtectedRegion region, Player p, long renttime) {
 		if (region.getParent() != null) {
@@ -275,22 +296,17 @@ public class SimpleRegionMarket extends JavaPlugin {
 	public void saveAll() {
 		if (getWorldGuard() != null && getWorldGuard().isEnabled()) {
 			for (final World w : server.getWorlds()) {
-				final RegionManager mgr = getWorldGuard()
-						.getGlobalRegionManager().get(w);
+				final RegionManager mgr = getWorldGuard().getGlobalRegionManager().get(w);
 
 				try {
 					mgr.save();
 				} catch (final ProtectionDatabaseException e) {
-					langHandler.outputConsole(
-							Level.SEVERE,
-							"WorldGuard >> Failed to write regionsfile: "
-									+ e.getMessage());
+					langHandler.outputConsole(Level.SEVERE, "WorldGuard >> Failed to write regionsfile: " + e.getMessage());
 				}
 			}
 		} else {
 			if (!unloading) {
-				langHandler.outputConsole(Level.SEVERE,
-						"Saving WorldGuard failed, because it is not loaded.");
+				langHandler.outputConsole(Level.SEVERE, "Saving WorldGuard failed, because it is not loaded.");
 			}
 		}
 		limitHandler.saveLimits();
