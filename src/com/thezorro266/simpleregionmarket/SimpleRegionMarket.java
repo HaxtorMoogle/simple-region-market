@@ -10,7 +10,6 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -18,10 +17,8 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.Acrobot.ChestShop.ChestShop;
-import com.Acrobot.ChestShop.Utils.uBlock;
 import com.nijikokun.register.payment.Method;
 import com.nijikokun.register.payment.Methods;
-import com.sk89q.worldedit.BlockVector2D;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
@@ -74,6 +71,14 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 	public boolean canSell(Player player) {
 		return (configurationHandler.getConfig().getBoolean("defp_player_sell") || player.hasPermission("simpleregionmarket.sell"));
+	}
+
+	public boolean canAddOwner(Player player) {
+		return (configurationHandler.getConfig().getBoolean("defp_player_addowner") || player.hasPermission("simpleregionmarket.addowner"));
+	}
+
+	public boolean canAddMember(Player player) {
+		return (configurationHandler.getConfig().getBoolean("defp_player_addmember") || player.hasPermission("simpleregionmarket.addmember"));
 	}
 
 	public String econFormat(double price) {
@@ -247,10 +252,6 @@ public class SimpleRegionMarket extends JavaPlugin {
 	 */
 	
 	public void unrentHotel(SignAgent hotel) {
-		if(chestShop != null) {
-			ProtectedRegion region = hotel.getProtectedRegion();
-			uBlock.findSign2(Block);
-		}
 		hotel.getProtectedRegion().setMembers(new DefaultDomain());
 		hotel.getProtectedRegion().setOwners(new DefaultDomain());
 		if (getConfigurationHandler().getConfig().getBoolean("logging")) {

@@ -83,11 +83,10 @@ public class LanguageHandler {
 			string = id;
 		}
 
-		for (int i = string.length() - 1; i >= 0; i--) {
+		for (int i = string.length() - 1; i > -1; i--) {
 			if (string.charAt(i) == '$') {
-				if (string.charAt(i - 1) == '$') {
-					string = string.substring(0, i)
-							+ string.substring(i + 1, string.length());
+				if (i != 0 && string.charAt(i - 1) == '$') {
+					string = string.substring(0, i) + string.substring(i + 1, string.length());
 				} else if (Character.isDigit(string.charAt(i + 1))) {
 					int argi;
 					try {

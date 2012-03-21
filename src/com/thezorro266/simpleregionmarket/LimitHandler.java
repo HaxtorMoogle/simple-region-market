@@ -63,7 +63,7 @@ public class LimitHandler {
 		this.langHandler = langHandler;
 	}
 
-	private int countPlayerOwnRegion(Player p) {
+	public int countPlayerOwnRegion(Player p) {
 		if (p != null) {
 			final WorldGuardPlugin tmp = SimpleRegionMarket.getWorldGuard();
 			return tmp.getGlobalRegionManager().get(p.getWorld())
@@ -72,7 +72,7 @@ public class LimitHandler {
 		return 0;
 	}
 
-	private int countPlayerRentRoom(Player p) {
+	public int countPlayerRentRoom(Player p) {
 		int count = 0;
 		for (int i = 0; i < plugin.getAgentManager().getAgentList().size(); i++) {
 			final SignAgent now = plugin.getAgentManager().getAgentList().get(i);

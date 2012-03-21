@@ -4,13 +4,16 @@ ERR_ECO_TRANSFER: There was a problem with transfering the money.
 ERR_NO_ECO_USER: The economic system was not found, please tell the server owner.
 ERR_VAULT_ECONOMY: You do not have an economy system besides Vault running.
 ERR_CREATE_ECO_ACCOUNT: 'Error: Could not create economy account "$0".'
-NO_REGISTER: Register was not found. Switching to economy-free version.
+NO_REGISTER_VAULT: Neither Register nor Vault was found. Switching to economy-free version.
 CONFIG_SAVED: Config saved successfully.
 PLUGIN_UNLOAD: Plugin successfully unloaded.
 ERR_CONFIG_NOT_SAVED: 'Error: Config was not saved successfully.'
 ERR_PLUGIN_UNLOAD: 'Error: Plugin unloaded. There was an error with the other plugins.'
 ERR_NO_MONEY: You do not have enough money.
 ERR_NO_PRICE: Price not found.
+ERR_NO_PLAYER: 'The player "$0" was not found.'
+ERR_NO_REGION: You do not own a region.
+ERR_SPECIFY_REGION: Please specify the region, you have more than one.
 ERR_PRICE_UNDER_ZERO: The price cannot be lower than zero.
 ERR_NO_RENTTIME: Renttime not found.
 ERR_NO_PRICE_RENTTIME: Price and renttime not found.
@@ -67,8 +70,26 @@ CMD_LANG_NO_LANG: Language not found.
 CMD_LOGGING_NO_ARG: Logging is set to $0. To enable logging use "/rm logging true", otherwise use "false" instead.
 CMD_LOGGING_SET: Logging was set to $0.
 CMD_LOGGING_ALREADY_SET: Logging already set to $0.
+CMD_ADDMEMBER_NO_ARG: Use /rm addmember <playername> (<region>) to add a member to your region.
+CMD_ADDMEMBER_SUCCESS: You successfully added $0 as member to your region $1.
+CMD_ADDMEMBER_NEWMEMBER: $0 added you as member to the region $1.
+CMD_REMMEMBER_NO_ARG: Use /rm rem(ove)member <playername> (<region>) to remove a member from your region.
+CMD_REMMEMBER_SUCCESS: You removed $0 from the region $1 as member.
+CMD_REMMEMBER_OLDMEMBER: $0 removed you from the region $1 as member.
+CMD_ADDOWNER_NO_ARG: Use /rm addowner <playername> (<region>) to add an owner to your region.
+CMD_ADDOWNER_SUCCESS: You successfully added $0 as owner to your region $1.
+CMD_ADDOWNER_NEWOWNER: $0 added you as owner to the region $1.
+CMD_REMOWNER_NO_ARG: Use /rm rem(ove)owner <playername> (<region>) to remove an owner from your region.
+CMD_REMOWNER_SUCCESS: You removed $0 from the region $1 as owner.
+CMD_REMOWNER_OLDOWNER: $0 removed you from the region $1 as owner.
+CMD_ERR_ADD_YOURSELF: You cannot add yourself to your region.
+CMD_ERR_REM_YOURSELF: You cannot remove yourself from your region.
 LOG_SWITCHED: Logging was switched to $0
 LOG_SOLD_REGION: Region $0 was sold to $1
 LOG_RENT_HOTEL: Hotel $0 was rent to $1
 LOG_EXPIRED_HOTEL: Hotel $0 was rent by $1 and just expired
+LOG_ADDMEMBER: $0 added $1 as member to the region $2.
+LOG_REMMEMBER: $0 removed $1 as member from the region $2.
+LOG_ADDOWNER: $0 added $1 as owner to the region $2.
+LOG_REMOWNER: $0 removed $1 as owner from the region $2.
 HOOKED_CHESTSHOP: Successfully hooked into ChestShop.

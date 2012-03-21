@@ -1,14 +1,19 @@
 package com.thezorro266.simpleregionmarket;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import com.sk89q.worldguard.LocalPlayer;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class CommandHandler implements CommandExecutor {
 	private final LanguageHandler langHandler;
@@ -314,6 +319,384 @@ public class CommandHandler implements CommandExecutor {
 				if (p != null) {
 					langHandler.outputError(p, "ERR_NO_PERM", null);
 				}
+			}
+		} else if (args[0].equalsIgnoreCase("addmember")) {
+			if (p == null || plugin.canAddMember(p)) {
+				if(args.length < 2) {
+					langHandler.outputMessage(p, "CMD_ADDMEMBER_NO_ARG", null);
+					return true;
+				}
+				Player p2add = Bukkit.getPlayer(args[1]);
+				if(p2add == p) {
+					langHandler.outputError(p, "CMD_ERR_ADD_YOURSELF", null);
+				} else {
+					if(p2add == null) {
+						ArrayList<String> list = new ArrayList<String>();
+						list.add(args[1]);
+						langHandler.outputError(p, "ERR_NO_PLAYER", list);
+					} else {
+						int countRegions = limitHandler.countPlayerOwnRegion(p) + limitHandler.countPlayerRentRoom(p);
+						if(countRegions < 1) {
+							langHandler.outputError(p, "ERR_NO_REGION", null);
+						} else {
+							if(args.length < 3 && countRegions > 1) {
+								langHandler.outputError(p, "ERR_SPECIFY_REGION", null);
+								langHandler.outputMessage(p, "CMD_ADDMEMBER_NO_ARG", null);
+								return true;
+							}
+
+							LocalPlayer p2addLocal = SimpleRegionMarket.getWorldGuard().wrapPlayer(p2add);
+							LocalPlayer pLocal = SimpleRegionMarket.getWorldGuard().wrapPlayer(p);
+							ProtectedRegion foundRegion = null;
+
+							for(SignAgent a : plugin.getAgentManager().getAgentList()) {
+								if(a.getMode() == SignAgent.MODE_RENT_HOTEL && a.getRent().equalsIgnoreCase(p.getName()) && (args.length < 3 ? true : a.getRegion().equalsIgnoreCase(args[2]))) {
+									if(foundRegion != null) {
+										langHandler.outputError(p, "ERR_SPECIFY_REGION", null);
+										return true;
+									}
+									foundRegion = a.getProtectedRegion();
+								}
+							}
+							
+							for(World w : Bukkit.getWorlds()) {
+								if(args.length < 3) {
+									Map<String, ProtectedRegion> m = SimpleRegionMarket.getWorldGuard().getRegionManager(w).getRegions();
+									for(String key : m.keySet()) {
+										langHandler.outputConsole(Level.INFO, "No region given, " + w.getName() + " | " + m.get(key));
+										if(m.get(key).getOwners().contains(pLocal)) {
+											if(foundRegion != null) {
+												langHandler.outputError(p, "ERR_SPECIFY_REGION", null);
+												return true;
+											}
+											foundRegion = m.get(key);
+										}
+									}
+								} else {
+									ProtectedRegion r2add = SimpleRegionMarket.getWorldGuard().getRegionManager(w).getRegion(args[2]);
+									langHandler.outputConsole(Level.INFO, "Region given, " + w.getName() + " | " + args[2] + " " + (r2add == null ? "false" : "true"));
+									if(r2add != null) {
+										if(r2add.getOwners().contains(pLocal)) {
+											if(foundRegion != null) {
+												langHandler.outputError(p, "ERR_SPECIFY_REGION", null);
+												return true;
+											}
+											foundRegion = r2add;
+										}
+									}
+								}
+							}
+							
+							if(foundRegion != null) {
+								foundRegion.getMembers().addPlayer(p2addLocal);
+								ArrayList<String> list = new ArrayList<String>();
+								list.add(p2add.getName());
+								list.add(foundRegion.getId());
+								langHandler.outputMessage(p, "CMD_ADDMEMBER_SUCCESS", list);
+								ArrayList<String> list2 = new ArrayList<String>();
+								list2.add(p.getName());
+								list2.add(foundRegion.getId());
+								langHandler.outputMessage(p2add, "CMD_ADDMEMBER_NEWMEMBER", list2);
+								ArrayList<String> list3 = new ArrayList<String>();
+								list3.add(p.getName());
+								list3.add(p2add.getName());
+								list3.add(foundRegion.getId());
+								langHandler.langOutputConsole("LOG_ADDMEMBER", Level.INFO, list3);
+							} else {
+								langHandler.outputError(p, "ERR_REGION_NAME", null);
+								langHandler.outputMessage(p, "CMD_ADDMEMBER_NO_ARG", null);
+							}
+						}
+					}
+				}
+			} else {
+				langHandler.outputError(p, "ERR_NO_PERM", null);
+			}
+		} else if (args[0].equalsIgnoreCase("remmember") || args[0].equalsIgnoreCase("removemember")) {
+			if (p == null || plugin.canAddMember(p)) {
+				if(args.length < 2) {
+					langHandler.outputMessage(p, "CMD_REMMEMBER_NO_ARG", null);
+					return true;
+				}
+				OfflinePlayer p2rem = Bukkit.getOfflinePlayer(args[1]);
+				if(p2rem.getPlayer() == p) {
+					langHandler.outputError(p, "CMD_ERR_REM_YOURSELF", null);
+				} else {
+					int countRegions = limitHandler.countPlayerOwnRegion(p) + limitHandler.countPlayerRentRoom(p);
+					if(countRegions < 1) {
+						langHandler.outputError(p, "ERR_NO_REGION", null);
+					} else {
+						if(args.length < 3 && countRegions > 1) {
+							langHandler.outputError(p, "ERR_SPECIFY_REGION", null);
+							langHandler.outputMessage(p, "CMD_REMMEMBER_NO_ARG", null);
+							return true;
+						}
+
+						LocalPlayer pLocal = SimpleRegionMarket.getWorldGuard().wrapPlayer(p);
+						ProtectedRegion foundRegion = null;
+
+						for(SignAgent a : plugin.getAgentManager().getAgentList()) {
+							if(a.getMode() == SignAgent.MODE_RENT_HOTEL && a.getRent().equalsIgnoreCase(p.getName()) && (args.length < 3 ? true : a.getRegion().equalsIgnoreCase(args[2]))) {
+								if(foundRegion != null) {
+									langHandler.outputError(p, "ERR_SPECIFY_REGION", null);
+									return true;
+								}
+								foundRegion = a.getProtectedRegion();
+							}
+						}
+						
+						for(World w : Bukkit.getWorlds()) {
+							if(args.length < 3) {
+								Map<String, ProtectedRegion> m = SimpleRegionMarket.getWorldGuard().getRegionManager(w).getRegions();
+								for(String key : m.keySet()) {
+									if(m.get(key).getOwners().contains(pLocal)) {
+										if(foundRegion != null) {
+											langHandler.outputError(p, "ERR_SPECIFY_REGION", null);
+											return true;
+										}
+										foundRegion = m.get(key);
+									}
+								}
+							} else {
+								ProtectedRegion r2rem = SimpleRegionMarket.getWorldGuard().getRegionManager(w).getRegion(args[2]);
+								if(r2rem != null) {
+									if(r2rem.getOwners().contains(pLocal)) {
+										if(foundRegion != null) {
+											langHandler.outputError(p, "ERR_SPECIFY_REGION", null);
+											return true;
+										}
+										foundRegion = r2rem;
+									}
+								}
+							}
+						}
+						
+						if(foundRegion != null) {
+							boolean bThere = false;
+							for(String s : foundRegion.getMembers().getPlayers()) {
+								if(s.equalsIgnoreCase(p2rem.getName())) {
+									bThere = true;
+									break;
+								}
+							}
+							if(bThere) {
+								foundRegion.getMembers().removePlayer(p2rem.getName());
+								ArrayList<String> list = new ArrayList<String>();
+								list.add(p2rem.getName());
+								list.add(foundRegion.getId());
+								langHandler.outputMessage(p, "CMD_REMMEMBER_SUCCESS", list);
+								if(p2rem.isOnline()) {
+									ArrayList<String> list2 = new ArrayList<String>();
+									list2.add(p.getName());
+									list2.add(foundRegion.getId());
+									langHandler.outputMessage(p2rem.getPlayer(), "CMD_REMMEMBER_OLDMEMBER", list2);
+								}
+								ArrayList<String> list3 = new ArrayList<String>();
+								list3.add(p.getName());
+								list3.add(p2rem.getName());
+								list3.add(foundRegion.getId());
+								langHandler.langOutputConsole("LOG_REMMEMBER", Level.INFO, list3);
+							} else {
+								ArrayList<String> list = new ArrayList<String>();
+								list.add(p2rem.getName());
+								langHandler.outputError(p, "ERR_NO_PLAYER", list);
+							}
+						} else {
+							langHandler.outputError(p, "ERR_REGION_NAME", null);
+							langHandler.outputMessage(p, "CMD_REMMEMBER_NO_ARG", null);
+						}
+					}
+				}
+			} else {
+				langHandler.outputError(p, "ERR_NO_PERM", null);
+			}
+		} else if (args[0].equalsIgnoreCase("addowner")) {
+			if (p == null || plugin.canAddOwner(p)) {
+				if(args.length < 2) {
+					langHandler.outputMessage(p, "CMD_ADDOWNER_NO_ARG", null);
+					return true;
+				}
+				Player p2add = Bukkit.getPlayer(args[1]);
+				if(p2add == p) {
+					langHandler.outputError(p, "CMD_ERR_ADD_YOURSELF", null);
+				} else {
+					if(p2add == null) {
+						ArrayList<String> list = new ArrayList<String>();
+						list.add(args[1]);
+						langHandler.outputError(p, "ERR_NO_PLAYER", list);
+					} else {
+						int countRegions = limitHandler.countPlayerOwnRegion(p) + limitHandler.countPlayerRentRoom(p);
+						if(countRegions < 1) {
+							langHandler.outputError(p, "ERR_NO_REGION", null);
+						} else {
+							if(args.length < 3 && countRegions > 1) {
+								langHandler.outputError(p, "ERR_SPECIFY_REGION", null);
+								langHandler.outputMessage(p, "CMD_ADDMEMBER_NO_ARG", null);
+								return true;
+							}
+
+							LocalPlayer p2addLocal = SimpleRegionMarket.getWorldGuard().wrapPlayer(p2add);
+							LocalPlayer pLocal = SimpleRegionMarket.getWorldGuard().wrapPlayer(p);
+							ProtectedRegion foundRegion = null;
+
+							for(SignAgent a : plugin.getAgentManager().getAgentList()) {
+								if(a.getMode() == SignAgent.MODE_RENT_HOTEL && a.getRent().equalsIgnoreCase(p.getName()) && (args.length < 3 ? true : a.getRegion().equalsIgnoreCase(args[2]))) {
+									if(foundRegion != null) {
+										langHandler.outputError(p, "ERR_SPECIFY_REGION", null);
+										return true;
+									}
+									foundRegion = a.getProtectedRegion();
+								}
+							}
+							
+							for(World w : Bukkit.getWorlds()) {
+								if(args.length < 3) {
+									Map<String, ProtectedRegion> m = SimpleRegionMarket.getWorldGuard().getRegionManager(w).getRegions();
+									for(String key : m.keySet()) {
+										if(m.get(key).getOwners().contains(pLocal)) {
+											if(foundRegion != null) {
+												langHandler.outputError(p, "ERR_SPECIFY_REGION", null);
+												return true;
+											}
+											foundRegion = m.get(key);
+										}
+									}
+								} else {
+									ProtectedRegion r2add = SimpleRegionMarket.getWorldGuard().getRegionManager(w).getRegion(args[2]);
+									if(r2add != null) {
+										if(r2add.getOwners().contains(pLocal)) {
+											if(foundRegion != null) {
+												langHandler.outputError(p, "ERR_SPECIFY_REGION", null);
+												return true;
+											}
+											foundRegion = r2add;
+										}
+									}
+								}
+							}
+							
+							if(foundRegion != null) {
+								foundRegion.getOwners().addPlayer(p2addLocal);
+								ArrayList<String> list = new ArrayList<String>();
+								list.add(p2add.getName());
+								list.add(foundRegion.getId());
+								langHandler.outputMessage(p, "CMD_ADDOWNER_SUCCESS", list);
+								ArrayList<String> list2 = new ArrayList<String>();
+								list2.add(p.getName());
+								list2.add(foundRegion.getId());
+								langHandler.outputMessage(p2add, "CMD_ADDOWNER_NEWOWNER", list2);
+								ArrayList<String> list3 = new ArrayList<String>();
+								list3.add(p.getName());
+								list3.add(p2add.getName());
+								list3.add(foundRegion.getId());
+								langHandler.langOutputConsole("LOG_ADDOWNER", Level.INFO, list3);
+							} else {
+								langHandler.outputError(p, "ERR_REGION_NAME", null);
+								langHandler.outputMessage(p, "CMD_ADDMEMBER_NO_ARG", null);
+							}
+						}
+					}
+				}
+			} else {
+				langHandler.outputError(p, "ERR_NO_PERM", null);
+			}
+		} else if (args[0].equalsIgnoreCase("remowner") || args[0].equalsIgnoreCase("removeowner")) {
+			if (p == null || plugin.canAddMember(p)) {
+				if(args.length < 2) {
+					langHandler.outputMessage(p, "CMD_REMOWNER_NO_ARG", null);
+					return true;
+				}
+				OfflinePlayer p2rem = Bukkit.getOfflinePlayer(args[1]);
+				if(p2rem.getPlayer() == p) {
+					langHandler.outputError(p, "CMD_ERR_REM_YOURSELF", null);
+				} else {
+					int countRegions = limitHandler.countPlayerOwnRegion(p) + limitHandler.countPlayerRentRoom(p);
+					if(countRegions < 1) {
+						langHandler.outputError(p, "ERR_NO_REGION", null);
+					} else {
+						if(args.length < 3 && countRegions > 1) {
+							langHandler.outputError(p, "ERR_SPECIFY_REGION", null);
+							langHandler.outputMessage(p, "CMD_REMOWNER_NO_ARG", null);
+							return true;
+						}
+
+						LocalPlayer pLocal = SimpleRegionMarket.getWorldGuard().wrapPlayer(p);
+						ProtectedRegion foundRegion = null;
+
+						for(SignAgent a : plugin.getAgentManager().getAgentList()) {
+							if(a.getMode() == SignAgent.MODE_RENT_HOTEL && a.getRent().equalsIgnoreCase(p.getName()) && (args.length < 3 ? true : a.getRegion().equalsIgnoreCase(args[2]))) {
+								if(foundRegion != null) {
+									langHandler.outputError(p, "ERR_SPECIFY_REGION", null);
+									return true;
+								}
+								foundRegion = a.getProtectedRegion();
+							}
+						}
+						
+						for(World w : Bukkit.getWorlds()) {
+							if(args.length < 3) {
+								Map<String, ProtectedRegion> m = SimpleRegionMarket.getWorldGuard().getRegionManager(w).getRegions();
+								for(String key : m.keySet()) {
+									if(m.get(key).getOwners().contains(pLocal)) {
+										if(foundRegion != null) {
+											langHandler.outputError(p, "ERR_SPECIFY_REGION", null);
+											return true;
+										}
+										foundRegion = m.get(key);
+									}
+								}
+							} else {
+								ProtectedRegion r2rem = SimpleRegionMarket.getWorldGuard().getRegionManager(w).getRegion(args[2]);
+								if(r2rem != null) {
+									if(r2rem.getOwners().contains(pLocal)) {
+										if(foundRegion != null) {
+											langHandler.outputError(p, "ERR_SPECIFY_REGION", null);
+											return true;
+										}
+										foundRegion = r2rem;
+									}
+								}
+							}
+						}
+						
+						if(foundRegion != null) {
+							boolean bThere = false;
+							for(String s : foundRegion.getOwners().getPlayers()) {
+								if(s.equalsIgnoreCase(p2rem.getName())) {
+									bThere = true;
+									break;
+								}
+							}
+							if(bThere) {
+								foundRegion.getOwners().removePlayer(p2rem.getName());
+								ArrayList<String> list = new ArrayList<String>();
+								list.add(p2rem.getName());
+								list.add(foundRegion.getId());
+								langHandler.outputMessage(p, "CMD_REMOWNER_SUCCESS", list);
+								if(p2rem.isOnline()) {
+									ArrayList<String> list2 = new ArrayList<String>();
+									list2.add(p.getName());
+									list2.add(foundRegion.getId());
+									langHandler.outputMessage(p2rem.getPlayer(), "CMD_REMOWNER_OLDOWNER", list2);
+								}
+								ArrayList<String> list3 = new ArrayList<String>();
+								list3.add(p.getName());
+								list3.add(p2rem.getName());
+								list3.add(foundRegion.getId());
+								langHandler.langOutputConsole("LOG_REMOWNER", Level.INFO, list3);
+							} else {
+								ArrayList<String> list = new ArrayList<String>();
+								list.add(p2rem.getName());
+								langHandler.outputError(p, "ERR_NO_PLAYER", list);
+							}
+						} else {
+							langHandler.outputError(p, "ERR_REGION_NAME", null);
+							langHandler.outputMessage(p, "CMD_REMOWNER_NO_ARG", null);
+						}
+					}
+				}
+			} else {
+				langHandler.outputError(p, "ERR_NO_PERM", null);
 			}
 		} else
 			return false;

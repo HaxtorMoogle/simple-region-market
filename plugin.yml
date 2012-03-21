@@ -13,6 +13,12 @@ commands:
     usage: /regionmarket limits | list | version
 
 permissions:
+  simpleregionmarket.admin:
+    description: Admin permissions
+  simpleregionmarket.addowner:
+    description: Add owner to own region
+  simpleregionmarket.addmember:
+    description: Add member to own region
   simpleregionmarket.*:
     description: Permission for buy/sell/rent/let
     children:
@@ -20,8 +26,6 @@ permissions:
       simpleregionmarket.sell: true
       simpleregionmarket.rent: true
       simpleregionmarket.create: true
-  simpleregionmarket.admin:
-    description: Admin permissions
   simpleregionmarket.buy:
     description: Buying regions
   simpleregionmarket.sell:
