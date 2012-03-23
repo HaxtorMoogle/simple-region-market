@@ -1,0 +1,61 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <name>SimpleRegionMarket</name>
+  <url>http://srm.theZorro266.com</url>
+
+  <groupId>com.thezorro266</groupId>
+  <artifactId>simpleregionmarket</artifactId>
+
+  <version>1.7.8</version>
+  <packaging>jar</packaging>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  
+  <repositories>
+    <repository>
+      <id>thezorro266-external</id>
+      <url>http://thezorro266.com:8081/nexus/content/repositories/external</url>
+    </repository>
+    <repository>
+      <id>bukkit-repo</id>
+      <url>http://repo.bukkit.org/content/groups/public</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.bukkit</groupId>
+      <artifactId>bukkit</artifactId>
+      <version>1.2.3-R0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sk89q</groupId>
+      <artifactId>worldedit</artifactId>
+      <version>5.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sk89q</groupId>
+      <artifactId>worldguard</artifactId>
+      <version>5.5.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.Acrobot</groupId>
+      <artifactId>ChestShop</artifactId>
+      <version>3.39</version>
+    </dependency>
+    <dependency>
+      <groupId>com.nijikokun</groupId>
+      <artifactId>register</artifactId>
+      <version>1.5</version>
+    </dependency>
+    <dependency>
+      <groupId>net.milkbowl</groupId>
+      <artifactId>vault</artifactId>
+      <version>1.2.13</version>
+    </dependency>
+  </dependencies>
+</project>
