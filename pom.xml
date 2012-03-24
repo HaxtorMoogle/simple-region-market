@@ -15,6 +15,36 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   
+  <scm>
+    <url>https://github.com/theZorro266/simple-region-market</url>
+    <tag>HEAD</tag>
+    <connection>scm:git:git://github.com/theZorro266/simple-region-market.git</connection>
+    <developerConnection>scm:git:git@github.com:theZorro266/simple-region-market.git</developerConnection>
+  </scm>
+  
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/theZorro266/simple-region-market/issues</url>
+  </issueManagement>
+  
+  <ciManagement>
+    <system>jenkins</system>
+    <url>http://ci.davboecki.de/job/simple-region-market/</url>
+  </ciManagement>
+  
+  <distributionManagement>
+    <repository>
+      <id>srm-releases</id>
+      <name>SimpleRegionMarket Releases</name>
+      <url>http://thezorro266.com:8081/nexus/content/repositories/releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>srm-snapshots</id>
+      <name>SimpleRegionMarket Snapshots</name>
+      <url>http://thezorro266.com:8081/nexus/content/repositories/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+  
   <repositories>
     <repository>
       <id>thezorro266-external</id>
