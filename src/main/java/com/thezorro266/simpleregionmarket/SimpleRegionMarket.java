@@ -138,7 +138,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 	}
 
 	public String getCopyright() {
-		return "Copyright (C) 2011-2012  www.theZorro266.com - All rights reserved.";
+		return "Copyright (C) 2011-2012  theZorro266  -  GPLv3";
 	}
 
 	public Method getEconomicManager() {
