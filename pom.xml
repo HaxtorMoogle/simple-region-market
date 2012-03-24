@@ -36,12 +36,12 @@
     <repository>
       <id>srm-releases</id>
       <name>SimpleRegionMarket Releases</name>
-      <url>http://thezorro266.com:8081/nexus/content/repositories/releases/</url>
+      <url>http://thezorro266.com:8081/nexus/content/repositories/srm-releases</url>
     </repository>
     <snapshotRepository>
       <id>srm-snapshots</id>
       <name>SimpleRegionMarket Snapshots</name>
-      <url>http://thezorro266.com:8081/nexus/content/repositories/snapshots/</url>
+      <url>http://thezorro266.com:8081/nexus/content/repositories/srm-snapshots</url>
     </snapshotRepository>
   </distributionManagement>
   
