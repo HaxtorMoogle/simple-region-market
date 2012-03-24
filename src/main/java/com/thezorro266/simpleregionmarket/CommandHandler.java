@@ -42,15 +42,9 @@ public class CommandHandler implements CommandExecutor {
 		if (args[0].equalsIgnoreCase("version")
 				|| args[0].equalsIgnoreCase("v")) {
 			if (p != null) {
-				langHandler.outputString(p,
-						"loaded version "
-								+ plugin.getDescription().getVersion() + ",  "
-								+ plugin.getCopyright());
+				langHandler.outputString(p, "loaded version " + plugin.getDescription().getVersion() + ",  " + plugin.getCopyright());
 			} else {
-				langHandler.outputConsole(Level.INFO,
-						"loaded version "
-								+ plugin.getDescription().getVersion() + ",  "
-								+ plugin.getCopyright());
+				langHandler.outputConsole(Level.INFO, "loaded version " + plugin.getDescription().getVersion() + ",  " + plugin.getCopyright());
 			}
 		} else if (args[0].equalsIgnoreCase("list")) {
 			if (p == null) {

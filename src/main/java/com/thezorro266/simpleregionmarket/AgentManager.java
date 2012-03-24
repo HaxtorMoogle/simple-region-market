@@ -21,23 +21,36 @@ public class AgentManager {
 		final int days = (int) (time / (24 * 60 * 60));
 		final int hours = (int) (time / (60 * 60));
 		final int minutes = (int) (time / 60);
+		String strReturn = "< 1 min";
 		if (days > 0) {
-			if (days == 1)
-				return days + " day";
-			else
-				return days + " days";
+			strReturn = Integer.toString(days);
+			if(hours > 0) {
+				strReturn += "+";
+			}
+			if (days == 1) {
+				strReturn += " day";
+			} else {
+				strReturn += " days";
+			}
 		} else if (hours > 0) {
-			if (hours == 1)
-				return hours + " hour";
-			else
-				return hours + " hours";
+			strReturn = Integer.toString(hours);
+			if(minutes > 0) {
+				strReturn += "+";
+			}
+			if (hours == 1) {
+				strReturn += " hour";
+			} else {
+				strReturn += " hours";
+			}
 		} else if (minutes > 0) {
-			if (minutes == 1)
-				return minutes + " min";
-			else
-				return minutes + " mins";
+			strReturn = Integer.toString(minutes);
+			if (minutes == 1) {
+				strReturn += " min";
+			} else {
+				strReturn += " mins";
+			}
 		}
-		return "< 1 min";
+		return strReturn;
 	}
 
 	public static long parseSignTime(String timestring) {
