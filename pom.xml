@@ -8,7 +8,7 @@
   <groupId>com.thezorro266</groupId>
   <artifactId>simpleregionmarket</artifactId>
 
-  <version>1.7.9.001-SNAPSHOT</version>
+  <version>1.7.8</version>
   <packaging>jar</packaging>
 
   <properties>

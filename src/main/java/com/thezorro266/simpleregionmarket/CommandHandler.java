@@ -357,7 +357,6 @@ public class CommandHandler implements CommandExecutor {
 								if(args.length < 3) {
 									Map<String, ProtectedRegion> m = SimpleRegionMarket.getWorldGuard().getRegionManager(w).getRegions();
 									for(String key : m.keySet()) {
-										langHandler.outputConsole(Level.INFO, "No region given, " + w.getName() + " | " + m.get(key));
 										if(m.get(key).getOwners().contains(pLocal)) {
 											if(foundRegion != null) {
 												langHandler.outputError(p, "ERR_SPECIFY_REGION", null);
@@ -368,7 +367,6 @@ public class CommandHandler implements CommandExecutor {
 									}
 								} else {
 									ProtectedRegion r2add = SimpleRegionMarket.getWorldGuard().getRegionManager(w).getRegion(args[2]);
-									langHandler.outputConsole(Level.INFO, "Region given, " + w.getName() + " | " + args[2] + " " + (r2add == null ? "false" : "true"));
 									if(r2add != null) {
 										if(r2add.getOwners().contains(pLocal)) {
 											if(foundRegion != null) {
