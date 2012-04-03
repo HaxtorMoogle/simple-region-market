@@ -224,7 +224,6 @@ public class SimpleRegionMarket extends JavaPlugin {
     }
 
     server.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-      @Override
       public void run() {
         getAgentManager().checkAgents();
       }
