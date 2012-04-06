@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.thezorro266.simpleregionmarket;
 
 import java.io.File;
@@ -13,90 +16,143 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+// TODO: Auto-generated Javadoc
+/**
+ * The Class LanguageHandler.
+ */
 public class LanguageHandler {
-  private final FileConfiguration languageFile = new YamlConfiguration();
-  private final SimpleRegionMarket plugin;
+	
+	/** The language file. */
+	private final FileConfiguration languageFile = new YamlConfiguration();
+	
+	/** The plugin. */
+	private final SimpleRegionMarket plugin;
 
-  public LanguageHandler(SimpleRegionMarket plugin) {
-    this.plugin = plugin;
-    if (!new File(SimpleRegionMarket.plugin_dir + "en.yml").exists()) {
-      plugin.saveResource("en.yml", false);
-    }
-  }
+	/**
+	 * Instantiates a new language handler.
+	 *
+	 * @param plugin the plugin
+	 */
+	public LanguageHandler(SimpleRegionMarket plugin) {
+		this.plugin = plugin;
+		if (!new File(SimpleRegionMarket.plugin_dir + "en.yml").exists()) {
+			plugin.saveResource("en.yml", false);
+		}
+	}
 
-  public void langOutputConsole(String id, Level level, ArrayList<String> args) {
-    outputConsole(level, parseLanguageString(id, args));
-  }
+	/**
+	 * Lang output console.
+	 *
+	 * @param id the id
+	 * @param level the level
+	 * @param args the args
+	 */
+	public void langOutputConsole(String id, Level level, ArrayList<String> args) {
+		outputConsole(level, parseLanguageString(id, args));
+	}
 
-  public void outputConsole(Level level, String string) {
-    Bukkit.getLogger().log(level, "[SimpleRegionMarket] " + string);
-  }
+	/**
+	 * Output console.
+	 *
+	 * @param level the level
+	 * @param string the string
+	 */
+	public void outputConsole(Level level, String string) {
+		Bukkit.getLogger().log(level, "[SimpleRegionMarket] " + string);
+	}
 
-  public void outputMessage(Player p, String id, ArrayList<String> args) {
-    p.sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_BLUE + "SRM" + ChatColor.WHITE + "] " + ChatColor.YELLOW + parseLanguageString(id, args));
-  }
+	/**
+	 * Output message.
+	 *
+	 * @param p the p
+	 * @param id the id
+	 * @param args the args
+	 */
+	public void outputMessage(Player p, String id, ArrayList<String> args) {
+		p.sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_BLUE + "SRM" + ChatColor.WHITE + "] " + ChatColor.YELLOW + parseLanguageString(id, args));
+	}
 
-  public void outputError(Player p, String id, ArrayList<String> args) {
-    p.sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_BLUE + "SRM" + ChatColor.WHITE + "] " + ChatColor.RED + parseLanguageString(id, args));
-  }
+	/**
+	 * Output error.
+	 *
+	 * @param p the p
+	 * @param id the id
+	 * @param args the args
+	 */
+	public void outputError(Player p, String id, ArrayList<String> args) {
+		p.sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_BLUE + "SRM" + ChatColor.WHITE + "] " + ChatColor.RED + parseLanguageString(id, args));
+	}
 
-  public void outputString(Player p, String string) {
-    p.sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_BLUE + "SRM" + ChatColor.WHITE + "] " + ChatColor.YELLOW + string);
-  }
+	/**
+	 * Output string.
+	 *
+	 * @param p the p
+	 * @param string the string
+	 */
+	public void outputString(Player p, String string) {
+		p.sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_BLUE + "SRM" + ChatColor.WHITE + "] " + ChatColor.YELLOW + string);
+	}
 
-  private String parseLanguageString(String id, ArrayList<String> args) {
-    String string = id;
+	/**
+	 * Parses the language string.
+	 *
+	 * @param id the id
+	 * @param args the args
+	 * @return the string
+	 */
+	private String parseLanguageString(String id, ArrayList<String> args) {
+		String string = id;
 
-    String lang = plugin.getConfigurationHandler().getConfig().getString("language");
-    if (!new File(SimpleRegionMarket.plugin_dir + lang + ".yml").exists()) {
-      outputConsole(Level.WARNING, "Language '" + lang + "' was not found.");
-      lang = "en";
-      plugin.getConfigurationHandler().getConfig().set("language", lang);
-      plugin.saveConfig();
-    }
+		String lang = plugin.getConfigurationHandler().getConfig().getString("language");
+		if (!new File(SimpleRegionMarket.plugin_dir + lang + ".yml").exists()) {
+			outputConsole(Level.WARNING, "Language '" + lang + "' was not found.");
+			lang = "en";
+			plugin.getConfigurationHandler().getConfig().set("language", lang);
+			plugin.saveConfig();
+		}
 
-    try {
-      languageFile.load(SimpleRegionMarket.plugin_dir + lang + ".yml");
-      string = languageFile.getString(id);
-    } catch (final FileNotFoundException e1) {
-      outputConsole(Level.SEVERE, "No write permissions on '" + SimpleRegionMarket.plugin_dir + "'.");
-      e1.printStackTrace();
-    } catch (final IOException e1) {
-      outputConsole(Level.SEVERE, "IO Exception in language system.");
-      e1.printStackTrace();
-    } catch (final InvalidConfigurationException e1) {
-      outputConsole(Level.SEVERE, "Language file corrupt (Invalid YAML).");
-      e1.printStackTrace();
-    } catch (final Exception e1) {
-      e1.printStackTrace();
-    }
+		try {
+			languageFile.load(SimpleRegionMarket.plugin_dir + lang + ".yml");
+			string = languageFile.getString(id);
+		} catch (final FileNotFoundException e1) {
+			outputConsole(Level.SEVERE, "No write permissions on '" + SimpleRegionMarket.plugin_dir + "'.");
+			e1.printStackTrace();
+		} catch (final IOException e1) {
+			outputConsole(Level.SEVERE, "IO Exception in language system.");
+			e1.printStackTrace();
+		} catch (final InvalidConfigurationException e1) {
+			outputConsole(Level.SEVERE, "Language file corrupt (Invalid YAML).");
+			e1.printStackTrace();
+		} catch (final Exception e1) {
+			e1.printStackTrace();
+		}
 
-    if (string == null || string.isEmpty()) {
-      string = id;
-    }
+		if (string == null || string.isEmpty()) {
+			string = id;
+		}
 
-    for (int i = string.length() - 1; i > -1; i--) {
-      if (string.charAt(i) == '$') {
-        if (i != 0 && string.charAt(i - 1) == '$') {
-          string = string.substring(0, i) + string.substring(i + 1, string.length());
-        } else if (Character.isDigit(string.charAt(i + 1))) {
-          int argi;
-          try {
-            argi = Integer.parseInt(Character.toString(string.charAt(i + 1)));
-          } catch (final Exception e) {
-            string = string.substring(0, i) + "ERROR ARGUMENT" + string.substring(i + 2, string.length());
-            continue;
-          }
+		for (int i = string.length() - 1; i > -1; i--) {
+			if (string.charAt(i) == '$') {
+				if (i != 0 && string.charAt(i - 1) == '$') {
+					string = string.substring(0, i) + string.substring(i + 1, string.length());
+				} else if (Character.isDigit(string.charAt(i + 1))) {
+					int argi;
+					try {
+						argi = Integer.parseInt(Character.toString(string.charAt(i + 1)));
+					} catch (final Exception e) {
+						string = string.substring(0, i) + "ERROR ARGUMENT" + string.substring(i + 2, string.length());
+						continue;
+					}
 
-          try {
-            string = string.substring(0, i) + args.get(argi) + string.substring(i + 2, string.length());
-          } catch (final Exception e) {
-            string = string.substring(0, i) + "ERROR ARGUMENT" + string.substring(i + 2, string.length());
-            continue;
-          }
-        }
-      }
-    }
-    return string;
-  }
+					try {
+						string = string.substring(0, i) + args.get(argi) + string.substring(i + 2, string.length());
+					} catch (final Exception e) {
+						string = string.substring(0, i) + "ERROR ARGUMENT" + string.substring(i + 2, string.length());
+						continue;
+					}
+				}
+			}
+		}
+		return string;
+	}
 }
