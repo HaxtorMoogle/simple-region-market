@@ -3,6 +3,7 @@
  */
 package com.thezorro266.simpleregionmarket;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
