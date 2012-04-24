@@ -14,23 +14,15 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.thezorro266.simpleregionmarket.PermissionManager;
 import com.thezorro266.simpleregionmarket.SimpleRegionMarket;
 import com.thezorro266.simpleregionmarket.Utils;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class CommandHandler.
- */
 public class CommandHandler implements CommandExecutor {
-
-	/** The lang handler. */
-	private final LanguageHandler langHandler;
-
-	/** The limit handler. */
-	private final LimitHandler limitHandler;
-
-	/** The plugin. */
-	private final SimpleRegionMarket plugin;
+	private final LanguageHandler LANG_HANDLER;
+	private final LimitHandler LIMIT_HANDLER;
+	private final SimpleRegionMarket PLUGIN;
+	private final PermissionManager PERM_MANAGER;
 
 	/**
 	 * Instantiates a new command handler.
@@ -42,17 +34,14 @@ public class CommandHandler implements CommandExecutor {
 	 * @param langHandler
 	 *            the lang handler
 	 */
-	public CommandHandler(SimpleRegionMarket plugin, LimitHandler limitHandler, LanguageHandler langHandler) {
-		this.plugin = plugin;
-		this.limitHandler = limitHandler;
-		this.langHandler = langHandler;
+	public CommandHandler(SimpleRegionMarket plugin, LimitHandler limitHandler,
+			LanguageHandler langHandler, PermissionManager permManager) {
+		PLUGIN = plugin;
+		LIMIT_HANDLER = limitHandler;
+		LANG_HANDLER = langHandler;
+		PERM_MANAGER = permManager;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.bukkit.command.CommandExecutor#onCommand(org.bukkit.command.CommandSender, org.bukkit.command.Command, java.lang.String, java.lang.String[])
-	 */
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
 
@@ -67,15 +56,15 @@ public class CommandHandler implements CommandExecutor {
 
 		if (args[0].equalsIgnoreCase("version") || args[0].equalsIgnoreCase("v")) {
 			if (p != null) {
-				langHandler.outputString(p, "loaded version " + plugin.getDescription().getVersion() + ",  " + Utils.getCopyright());
+				LANG_HANDLER.outputString(p, "loaded version " + PLUGIN.getDescription().getVersion() + ",  " + Utils.getCopyright());
 			} else {
-				langHandler.outputConsole(Level.INFO, "loaded version " + plugin.getDescription().getVersion() + ",  " + Utils.getCopyright());
+				LANG_HANDLER.outputConsole(Level.INFO, "loaded version " + PLUGIN.getDescription().getVersion() + ",  " + Utils.getCopyright());
 			}
 		} else if (args[0].equalsIgnoreCase("list")) { // TODO Can list own and rented regions
 			if (p == null) {
-				langHandler.outputConsole(Level.INFO, "Not yet implemented");
+				LANG_HANDLER.outputConsole(Level.INFO, "Not yet implemented");
 			} else {
-				langHandler.outputString(p, "Not yet implemented");
+				LANG_HANDLER.outputString(p, "Not yet implemented");
 			}
 			/*
 			 * if (p == null) { langHandler.outputConsole(Level.INFO, "The console is not allowed to use this command"); return true; } final
@@ -101,10 +90,10 @@ public class CommandHandler implements CommandExecutor {
 			 * Utils.econFormat(agent.getPrice())); } else { langHandler.outputString(p, "Region: " + agent.getRegion()); } }
 			 */
 		} else if (args[0].equalsIgnoreCase("limits") || args[0].equalsIgnoreCase("limit")) {
-			if (p == null || plugin.isAdmin(p)) {
+			if (p == null || PERM_MANAGER.isAdmin(p)) {
 				if (args.length < 2) { // limits
 					if (p != null) {
-						langHandler.outputMessage(p, "CMD_LIMITS_NO_ARG", null);
+						LANG_HANDLER.outputMessage(p, "CMD_LIMITS_NO_ARG", null);
 					}
 					return true;
 				} else {
@@ -115,7 +104,7 @@ public class CommandHandler implements CommandExecutor {
 						mode = 1;
 					} else {
 						if (p != null) {
-							langHandler.outputError(p, "CMD_LIMITS_WRONG_ARG", null);
+							LANG_HANDLER.outputError(p, "CMD_LIMITS_WRONG_ARG", null);
 						}
 						return true;
 					}
@@ -125,24 +114,24 @@ public class CommandHandler implements CommandExecutor {
 						if (p != null) {
 							final ArrayList<String> list = new ArrayList<String>();
 							if (mode == 0) {
-								list.add(Integer.toString(limitHandler.getGlobalBuyLimit()));
+								list.add(Integer.toString(LIMIT_HANDLER.getGlobalBuyLimit()));
 							} else if (mode == 1) {
-								list.add(Integer.toString(limitHandler.getGlobalRentLimit()));
+								list.add(Integer.toString(LIMIT_HANDLER.getGlobalRentLimit()));
 							}
-							langHandler.outputMessage(p, "CMD_LIMITS_OUTPUT_LIMIT", list);
+							LANG_HANDLER.outputMessage(p, "CMD_LIMITS_OUTPUT_LIMIT", list);
 						}
 					} else { // limits buy|rent <limit>|<...>
 						try {
 							limit = Integer.parseInt(args[2]);
 							if (mode == 0) {
-								limitHandler.setGlobalBuyLimit(limit);
+								LIMIT_HANDLER.setGlobalBuyLimit(limit);
 							} else if (mode == 1) {
-								limitHandler.setGlobalRentLimit(limit);
+								LIMIT_HANDLER.setGlobalRentLimit(limit);
 							}
 							final ArrayList<String> list = new ArrayList<String>();
 							list.add(Integer.toString(limit));
 							if (p != null) {
-								langHandler.outputMessage(p, "CMD_LIMITS_SET_LIMIT", list);
+								LANG_HANDLER.outputMessage(p, "CMD_LIMITS_SET_LIMIT", list);
 							}
 						} catch (final Exception e) {
 							if (args[2].equalsIgnoreCase("world")) {
@@ -150,41 +139,41 @@ public class CommandHandler implements CommandExecutor {
 								if (w != null) {
 									if (args.length < 4) { // limits buy|rent world
 										if (p != null) {
-											langHandler.outputError(p, "CMD_LIMITS_NO_WORLD", null);
+											LANG_HANDLER.outputError(p, "CMD_LIMITS_NO_WORLD", null);
 										}
 									} else if (args.length < 5) { // limits buy|rent world <name>
 										final ArrayList<String> list = new ArrayList<String>();
 										if (mode == 0) {
-											list.add(Integer.toString(limitHandler.getBuyWorldLimit(w)));
+											list.add(Integer.toString(LIMIT_HANDLER.getBuyWorldLimit(w)));
 										} else if (mode == 1) {
-											list.add(Integer.toString(limitHandler.getRentWorldLimit(w)));
+											list.add(Integer.toString(LIMIT_HANDLER.getRentWorldLimit(w)));
 										}
 										if (p != null) {
-											langHandler.outputMessage(p, "CMD_LIMITS_OUTPUT_LIMIT", list);
+											LANG_HANDLER.outputMessage(p, "CMD_LIMITS_OUTPUT_LIMIT", list);
 										}
 									} else { // limits buy|rent world <name>
 										// <limit>
 										try {
 											limit = Integer.parseInt(args[4]);
 											if (mode == 0) {
-												limitHandler.setBuyWorldLimit(w, limit);
+												LIMIT_HANDLER.setBuyWorldLimit(w, limit);
 											} else if (mode == 1) {
-												limitHandler.setRentWorldLimit(w, limit);
+												LIMIT_HANDLER.setRentWorldLimit(w, limit);
 											}
 											final ArrayList<String> list = new ArrayList<String>();
 											list.add(Integer.toString(limit));
 											if (p != null) {
-												langHandler.outputMessage(p, "CMD_LIMITS_SET_LIMIT", list);
+												LANG_HANDLER.outputMessage(p, "CMD_LIMITS_SET_LIMIT", list);
 											}
 										} catch (final Exception e2) {
 											if (p != null) {
-												langHandler.outputError(p, "CMD_LIMITS_WRONG_ARG", null);
+												LANG_HANDLER.outputError(p, "CMD_LIMITS_WRONG_ARG", null);
 											}
 										}
 									}
 								} else {
 									if (p != null) {
-										langHandler.outputError(p, "CMD_LIMITS_NO_WORLD", null);
+										LANG_HANDLER.outputError(p, "CMD_LIMITS_NO_WORLD", null);
 									}
 								}
 							} else if (args[2].equalsIgnoreCase("player")) {
@@ -192,58 +181,58 @@ public class CommandHandler implements CommandExecutor {
 								if (p2 != null) {
 									if (args.length < 4) { // limits buy|rent player
 										if (p != null) {
-											langHandler.outputError(p, "CMD_LIMITS_NO_PLAYER", null);
+											LANG_HANDLER.outputError(p, "CMD_LIMITS_NO_PLAYER", null);
 										}
 									} else if (args.length < 5) { // limits buy|rent player <name>
 										final ArrayList<String> list = new ArrayList<String>();
 										if (mode == 0) {
-											list.add(Integer.toString(limitHandler.getBuyPlayerLimit(p2)));
+											list.add(Integer.toString(LIMIT_HANDLER.getBuyPlayerLimit(p2)));
 										} else if (mode == 1) {
-											list.add(Integer.toString(limitHandler.getRentPlayerLimit(p2)));
+											list.add(Integer.toString(LIMIT_HANDLER.getRentPlayerLimit(p2)));
 										}
 										if (p != null) {
-											langHandler.outputMessage(p, "CMD_LIMITS_OUTPUT_LIMIT", list);
+											LANG_HANDLER.outputMessage(p, "CMD_LIMITS_OUTPUT_LIMIT", list);
 										}
 									} else { // limits buy|rent player <name> <limit>
 										try {
 											limit = Integer.parseInt(args[4]);
 											if (mode == 0) {
-												limitHandler.setBuyPlayerLimit(p2, limit);
+												LIMIT_HANDLER.setBuyPlayerLimit(p2, limit);
 											} else if (mode == 1) {
-												limitHandler.setRentPlayerLimit(p2, limit);
+												LIMIT_HANDLER.setRentPlayerLimit(p2, limit);
 											}
 											final ArrayList<String> list = new ArrayList<String>();
 											list.add(Integer.toString(limit));
 											if (p != null) {
-												langHandler.outputMessage(p, "CMD_LIMITS_SET_LIMIT", list);
+												LANG_HANDLER.outputMessage(p, "CMD_LIMITS_SET_LIMIT", list);
 											}
 										} catch (final Exception e2) {
 											if (p != null) {
-												langHandler.outputError(p, "CMD_LIMITS_WRONG_ARG", null);
+												LANG_HANDLER.outputError(p, "CMD_LIMITS_WRONG_ARG", null);
 											}
 										}
 									}
 								} else {
 									if (p != null) {
-										langHandler.outputError(p, "CMD_LIMITS_NO_PLAYER", null);
+										LANG_HANDLER.outputError(p, "CMD_LIMITS_NO_PLAYER", null);
 									}
 								}
 							} else {
 								if (p != null) {
-									langHandler.outputError(p, "CMD_LIMITS_WRONG_ARG", null);
+									LANG_HANDLER.outputError(p, "CMD_LIMITS_WRONG_ARG", null);
 								}
 							}
 						}
 					}
 				}
 
-				limitHandler.saveLimits();
+				LIMIT_HANDLER.saveLimits();
 			} else {
 				if (p != null) {
-					langHandler.outputError(p, "ERR_NO_PERM", null);
+					LANG_HANDLER.outputError(p, "ERR_NO_PERM", null);
 				}
 			}
-		} else if (args[0].equalsIgnoreCase("addmember")) {
+		} else if (args[0].equalsIgnoreCase("addmember")) { // TODO addmember, removemember, addowner, removeowner
 			/*
 			 * if (p == null || plugin.canAddMember(p)) { if (args.length < 2) { langHandler.outputMessage(p, "CMD_ADDMEMBER_NO_ARG", null); return true; }
 			 * final Player p2add = Bukkit.getPlayer(args[1]); if (p2add == p) { langHandler.outputError(p, "CMD_ERR_ADD_YOURSELF", null); } else { if (p2add ==

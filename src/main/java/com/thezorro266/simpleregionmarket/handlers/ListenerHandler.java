@@ -5,6 +5,7 @@ package com.thezorro266.simpleregionmarket.handlers;
  */
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -19,8 +20,10 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.thezorro266.simpleregionmarket.PermissionManager;
 import com.thezorro266.simpleregionmarket.SimpleRegionMarket;
 import com.thezorro266.simpleregionmarket.TokenManager;
 import com.thezorro266.simpleregionmarket.Utils;
@@ -30,6 +33,7 @@ public class ListenerHandler implements Listener {
 	private final LanguageHandler LANG_HANDLER;
 	private final SimpleRegionMarket PLUGIN;
 	private final TokenManager TOKEN_MANAGER;
+	private final PermissionManager PERM_MANAGER;
 
 	/**
 	 * Instantiates a new listener handler.
@@ -41,11 +45,13 @@ public class ListenerHandler implements Listener {
 	 * @param langHandler
 	 *            the lang handler
 	 */
-	public ListenerHandler(SimpleRegionMarket plugin, LimitHandler limitHandler, LanguageHandler langHandler, TokenManager tokenManager) {
+	public ListenerHandler(SimpleRegionMarket plugin, PermissionManager permManager,
+			LimitHandler limitHandler, LanguageHandler langHandler, TokenManager tokenManager) {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 		PLUGIN = plugin;
 		LANG_HANDLER = langHandler;
 		TOKEN_MANAGER = tokenManager;
+		PERM_MANAGER = permManager;
 	}
 
 	/**
@@ -56,18 +62,48 @@ public class ListenerHandler implements Listener {
 	 */
 	@EventHandler
 	public void onBlockBreak(final BlockBreakEvent event) {
-		/*
-		 * final Block b = event.getBlock(); final SignAgent agent = plugin.getAgentManager().getAgent(b.getLocation());
-		 * 
-		 * if (agent == null) { return; }
-		 * 
-		 * final Player p = event.getPlayer(); final ProtectedRegion region =
-		 * SimpleRegionMarket.getWorldGuard().getRegionManager(b.getLocation().getWorld()).getRegion(agent.getRegion()); if
-		 * (!plugin.getAgentManager().isOwner(p, region) && !plugin.isAdmin(p)) { event.setCancelled(true); ((Sign) b.getState()).update(); return; }
-		 * 
-		 * event.setCancelled(true); if (p != null) { agent.destroyAgent(true); langHandler.outputMessage(p, "AGENT_DELETE", null); }
-		 * plugin.getAgentManager().removeAgent(agent); plugin.saveAll();
-		 */
+		Material type = event.getBlock().getType();
+		if(type == Material.SIGN_POST || type == Material.WALL_SIGN) {
+			Location blockLocation = event.getBlock().getLocation();
+			World worldWorld = blockLocation.getWorld();
+			String world = worldWorld.getName();
+			ApplicableRegionSet regions = SimpleRegionMarket.getWorldGuard().getRegionManager(worldWorld)
+					.getApplicableRegions(blockLocation);
+			for(TemplateMain token : TokenManager.tokenList) {
+				for(Iterator<ProtectedRegion> iR = regions.iterator(); iR.hasNext();) {
+					ProtectedRegion protectedRegion = iR.next();
+					String region = protectedRegion.getId();
+
+					Player player = event.getPlayer();
+					if(!Utils.getEntryBoolean(token, world, region, "taken")) {
+						if(!PERM_MANAGER.isAdmin(player) && !protectedRegion.isOwner(player.getName())) { // TODO Player Member when bought?
+							LANG_HANDLER.outputError(player, "ERR_REGION_NO_OWNER", null);
+							event.setCancelled(true);
+							return;
+						}
+					} else {
+						if(!PERM_MANAGER.isAdmin(player)
+								&& !Utils.getEntryString(token, world, region, "owner").equalsIgnoreCase(player.getName())) {
+							LANG_HANDLER.outputError(player, "ERR_REGION_NO_OWNER", null);
+							event.setCancelled(true);
+							return;
+						}
+					}
+					
+					ArrayList<Location> signLocations = Utils.getSignLocations(token, world, region);
+					if(signLocations != null) {
+						for(Location signLoc : signLocations) {
+							if(signLoc.equals(blockLocation)) {
+								iR.remove();
+								Utils.setEntry(token, world, region, "signs", signLocations);
+								return;
+							}
+						}
+					}
+				}
+			}
+		}
+		PLUGIN.saveAll();
 	}
 
 	/**
@@ -197,7 +233,7 @@ public class ListenerHandler implements Listener {
 
 					String account = p.getName();
 					if (!event.getLine(3).isEmpty()) {
-						if (PLUGIN.isAdmin(p)) {
+						if (PERM_MANAGER.isAdmin(p)) {
 							if (event.getLine(3).equalsIgnoreCase("none")) {
 								account = "";
 							} else {

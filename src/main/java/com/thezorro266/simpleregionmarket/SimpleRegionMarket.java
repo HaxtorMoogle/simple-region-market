@@ -8,7 +8,6 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,7 +29,6 @@ import com.thezorro266.simpleregionmarket.signs.TemplateMain;
  * The Class SimpleRegionMarket.
  */
 public class SimpleRegionMarket extends JavaPlugin {
-	// public static Permission permission = null;
 	/** The economy. */
 	static Economy economy = null;
 
@@ -68,72 +66,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 	private LimitHandler limitHandler;
 	private ChestShop chestShop;
 	private TokenManager tokenManager;
-
-	/**
-	 * Can buy.
-	 * 
-	 * @param player
-	 *            the player
-	 * @return true, if successful
-	 */
-	public boolean canBuy(Player player) {
-		return (configurationHandler.getConfig().getBoolean("defp_player_buy") || player.hasPermission("simpleregionmarket.buy"));
-	}
-
-	/**
-	 * Can let.
-	 * 
-	 * @param player
-	 *            the player
-	 * @return true, if successful
-	 */
-	public boolean canLet(Player player) {
-		return (configurationHandler.getConfig().getBoolean("defp_player_let") || player.hasPermission("simpleregionmarket.let"));
-	}
-
-	/**
-	 * Can rent.
-	 * 
-	 * @param player
-	 *            the player
-	 * @return true, if successful
-	 */
-	public boolean canRent(Player player) {
-		return (configurationHandler.getConfig().getBoolean("defp_player_rent") || player.hasPermission("simpleregionmarket.rent"));
-	}
-
-	/**
-	 * Can sell.
-	 * 
-	 * @param player
-	 *            the player
-	 * @return true, if successful
-	 */
-	public boolean canSell(Player player) {
-		return (configurationHandler.getConfig().getBoolean("defp_player_sell") || player.hasPermission("simpleregionmarket.sell"));
-	}
-
-	/**
-	 * Can add owner.
-	 * 
-	 * @param player
-	 *            the player
-	 * @return true, if successful
-	 */
-	public boolean canAddOwner(Player player) {
-		return (configurationHandler.getConfig().getBoolean("defp_player_addowner") || player.hasPermission("simpleregionmarket.addowner"));
-	}
-
-	/**
-	 * Can add member.
-	 * 
-	 * @param player
-	 *            the player
-	 * @return true, if successful
-	 */
-	public boolean canAddMember(Player player) {
-		return (configurationHandler.getConfig().getBoolean("defp_player_addmember") || player.hasPermission("simpleregionmarket.addmember"));
-	}
+	private PermissionManager permManager;
 
 	/**
 	 * Econ give money.
@@ -215,17 +148,6 @@ public class SimpleRegionMarket extends JavaPlugin {
 		}
 	}
 
-	/**
-	 * Checks if is admin.
-	 * 
-	 * @param player
-	 *            the player
-	 * @return true, if is admin
-	 */
-	public boolean isAdmin(Player player) {
-		return (player.isOp() || player.hasPermission("simpleregionmarket.admin"));
-	}
-
 	@Override
 	public void onDisable() {
 		unloading = true;
@@ -258,6 +180,8 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 		tokenManager = new TokenManager(this);
 		tokenManager.initTemplates();
+		
+		permManager = new PermissionManager(configurationHandler);
 
 		enableEconomy = configurationHandler.getConfig().getBoolean("enable_economy") ? 1 : 0;
 		if (enableEconomy > 0) {
@@ -281,9 +205,9 @@ public class SimpleRegionMarket extends JavaPlugin {
 		limitHandler = new LimitHandler(this, langHandler);
 		limitHandler.loadLimits();
 
-		new ListenerHandler(this, limitHandler, langHandler, tokenManager);
+		new ListenerHandler(this, permManager, limitHandler, langHandler, tokenManager);
 
-		commandHandler = new CommandHandler(this, limitHandler, langHandler);
+		commandHandler = new CommandHandler(this, limitHandler, langHandler, permManager);
 		getCommand("regionmarket").setExecutor(commandHandler);
 
 		chestShop = (ChestShop) Bukkit.getPluginManager().getPlugin("ChestShop");
