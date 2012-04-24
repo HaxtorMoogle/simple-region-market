@@ -1,7 +1,8 @@
+package com.thezorro266.simpleregionmarket.handlers;
+
 /*
  * 
  */
-package com.thezorro266.simpleregionmarket;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,14 +15,14 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.thezorro266.simpleregionmarket.SimpleRegionMarket;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class LimitHandler.
  */
 public class LimitHandler {
-	
+
 	/** The limit config. */
 	private static YamlConfiguration limitConfig;
 
@@ -37,7 +38,7 @@ public class LimitHandler {
 	// Priority
 	/** The limitregions. */
 	private static int limitregions = -1;
-	
+
 	/** The limitregionworlds. */
 	private static Map<String, Integer> limitregionworlds = new HashMap<String, Integer>(); // Limits
 	// regions
@@ -59,7 +60,7 @@ public class LimitHandler {
 	// Priority
 	/** The limitrooms. */
 	private static int limitrooms = -1;
-	
+
 	/** The limitroomworlds. */
 	private static Map<String, Integer> limitroomworlds = new HashMap<String, Integer>(); // Limits
 	// rooms
@@ -74,56 +75,55 @@ public class LimitHandler {
 
 	/** The lang handler. */
 	private final LanguageHandler langHandler;
-	
-	/** The plugin. */
-	private final SimpleRegionMarket plugin;
 
 	/**
 	 * Instantiates a new limit handler.
-	 *
-	 * @param plugin the plugin
-	 * @param langHandler the lang handler
+	 * 
+	 * @param plugin
+	 *            the plugin
+	 * @param langHandler
+	 *            the lang handler
 	 */
 	public LimitHandler(SimpleRegionMarket plugin, LanguageHandler langHandler) {
-		this.plugin = plugin;
 		this.langHandler = langHandler;
 	}
 
 	/**
 	 * Count player own region.
-	 *
-	 * @param p the p
+	 * 
+	 * @param p
+	 *            the p
 	 * @return the int
 	 */
 	public int countPlayerOwnRegion(Player p) {
-		if (p != null) {
-			final WorldGuardPlugin tmp = SimpleRegionMarket.getWorldGuard();
-			return tmp.getGlobalRegionManager().get(p.getWorld()).getRegionCountOfPlayer(tmp.wrapPlayer(p));
-		}
+		/*
+		 * if (p != null) { final WorldGuardPlugin tmp = SimpleRegionMarket.getWorldGuard(); return
+		 * tmp.getGlobalRegionManager().get(p.getWorld()).getRegionCountOfPlayer(tmp.wrapPlayer(p)); }
+		 */
 		return 0;
 	}
 
 	/**
 	 * Count player rent room.
-	 *
-	 * @param p the p
+	 * 
+	 * @param p
+	 *            the p
 	 * @return the int
 	 */
 	public int countPlayerRentRoom(Player p) {
-		int count = 0;
-		for (int i = 0; i < plugin.getAgentManager().getAgentList().size(); i++) {
-			final SignAgent now = plugin.getAgentManager().getAgentList().get(i);
-			if (now != null && now.getMode() == SignAgent.MODE_RENT_HOTEL && now.getRent().equalsIgnoreCase(p.getName())) {
-				count++;
-			}
-		}
+		final int count = 0;
+		/*
+		 * for (int i = 0; i < plugin.getAgentManager().getAgentList().size(); i++) { final SignAgent now = plugin.getAgentManager().getAgentList().get(i); if
+		 * (now != null && now.getMode() == SignAgent.MODE_RENT_HOTEL && now.getRent().equalsIgnoreCase(p.getName())) { count++; } }
+		 */
 		return count;
 	}
 
 	/**
 	 * Gets the buy player limit.
-	 *
-	 * @param p the p
+	 * 
+	 * @param p
+	 *            the p
 	 * @return the buy player limit
 	 */
 	public int getBuyPlayerLimit(Player p) {
@@ -137,8 +137,9 @@ public class LimitHandler {
 
 	/**
 	 * Gets the buy world limit.
-	 *
-	 * @param w the w
+	 * 
+	 * @param w
+	 *            the w
 	 * @return the buy world limit
 	 */
 	public int getBuyWorldLimit(World w) {
@@ -152,7 +153,7 @@ public class LimitHandler {
 
 	/**
 	 * Gets the global buy limit.
-	 *
+	 * 
 	 * @return the global buy limit
 	 */
 	public int getGlobalBuyLimit() {
@@ -161,7 +162,7 @@ public class LimitHandler {
 
 	/**
 	 * Gets the global rent limit.
-	 *
+	 * 
 	 * @return the global rent limit
 	 */
 	public int getGlobalRentLimit() {
@@ -170,8 +171,9 @@ public class LimitHandler {
 
 	/**
 	 * Gets the rent player limit.
-	 *
-	 * @param p the p
+	 * 
+	 * @param p
+	 *            the p
 	 * @return the rent player limit
 	 */
 	public int getRentPlayerLimit(Player p) {
@@ -185,8 +187,9 @@ public class LimitHandler {
 
 	/**
 	 * Gets the rent world limit.
-	 *
-	 * @param w the w
+	 * 
+	 * @param w
+	 *            the w
 	 * @return the rent world limit
 	 */
 	public int getRentWorldLimit(World w) {
@@ -200,8 +203,9 @@ public class LimitHandler {
 
 	/**
 	 * Limit can buy.
-	 *
-	 * @param p the p
+	 * 
+	 * @param p
+	 *            the p
 	 * @return true, if successful
 	 */
 	public boolean limitCanBuy(Player p) {
@@ -222,8 +226,9 @@ public class LimitHandler {
 
 	/**
 	 * Limit can rent.
-	 *
-	 * @param p the p
+	 * 
+	 * @param p
+	 *            the p
 	 * @return true, if successful
 	 */
 	public boolean limitCanRent(Player p) {
@@ -246,7 +251,7 @@ public class LimitHandler {
 	 * Load limits.
 	 */
 	public void loadLimits() {
-		limitConfig = YamlConfiguration.loadConfiguration(new File(SimpleRegionMarket.plugin_dir + "limits.yml"));
+		limitConfig = YamlConfiguration.loadConfiguration(new File(SimpleRegionMarket.getPluginDir() + "limits.yml"));
 
 		ConfigurationSection path;
 		for (final String main : limitConfig.getKeys(false)) {
@@ -313,7 +318,7 @@ public class LimitHandler {
 		}
 
 		try {
-			limitConfig.save(SimpleRegionMarket.plugin_dir + "limits.yml");
+			limitConfig.save(SimpleRegionMarket.getPluginDir() + "limits.yml");
 		} catch (final IOException e) {
 			langHandler.outputConsole(Level.SEVERE, "Could not save limits.");
 		}
@@ -321,9 +326,11 @@ public class LimitHandler {
 
 	/**
 	 * Sets the buy player limit.
-	 *
-	 * @param p the p
-	 * @param limit the limit
+	 * 
+	 * @param p
+	 *            the p
+	 * @param limit
+	 *            the limit
 	 */
 	public void setBuyPlayerLimit(Player p, int limit) {
 		if (p != null) {
@@ -338,9 +345,11 @@ public class LimitHandler {
 
 	/**
 	 * Sets the buy world limit.
-	 *
-	 * @param w the w
-	 * @param limit the limit
+	 * 
+	 * @param w
+	 *            the w
+	 * @param limit
+	 *            the limit
 	 */
 	public void setBuyWorldLimit(World w, int limit) {
 		if (w != null) {
@@ -355,8 +364,9 @@ public class LimitHandler {
 
 	/**
 	 * Sets the global buy limit.
-	 *
-	 * @param limit the new global buy limit
+	 * 
+	 * @param limit
+	 *            the new global buy limit
 	 */
 	public void setGlobalBuyLimit(int limit) {
 		if (limit < -1) {
@@ -368,8 +378,9 @@ public class LimitHandler {
 
 	/**
 	 * Sets the global rent limit.
-	 *
-	 * @param limit the new global rent limit
+	 * 
+	 * @param limit
+	 *            the new global rent limit
 	 */
 	public void setGlobalRentLimit(int limit) {
 		if (limit < -1) {
@@ -381,9 +392,11 @@ public class LimitHandler {
 
 	/**
 	 * Sets the rent player limit.
-	 *
-	 * @param p the p
-	 * @param limit the limit
+	 * 
+	 * @param p
+	 *            the p
+	 * @param limit
+	 *            the limit
 	 */
 	public void setRentPlayerLimit(Player p, int limit) {
 		if (p != null) {
@@ -398,9 +411,11 @@ public class LimitHandler {
 
 	/**
 	 * Sets the rent world limit.
-	 *
-	 * @param w the w
-	 * @param limit the limit
+	 * 
+	 * @param w
+	 *            the w
+	 * @param limit
+	 *            the limit
 	 */
 	public void setRentWorldLimit(World w, int limit) {
 		if (w != null) {

@@ -3,6 +3,7 @@ version: ${project.version}
 author: theZorro266
 website: ${project.url}
 main: ${project.groupId}.${project.artifactId}.${project.name}
+load: POSTWORLD
 depend: ['WorldGuard']
 softdepend: ['Vault', 'ChestShop']
 

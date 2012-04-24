@@ -1,7 +1,8 @@
+package com.thezorro266.simpleregionmarket.handlers;
+
 /*
  * 
  */
-package com.thezorro266.simpleregionmarket;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,36 +17,42 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import com.thezorro266.simpleregionmarket.SimpleRegionMarket;
+
 // TODO: Auto-generated Javadoc
 /**
  * The Class LanguageHandler.
  */
 public class LanguageHandler {
-	
+
 	/** The language file. */
 	private final FileConfiguration languageFile = new YamlConfiguration();
-	
+
 	/** The plugin. */
 	private final SimpleRegionMarket plugin;
 
 	/**
 	 * Instantiates a new language handler.
-	 *
-	 * @param plugin the plugin
+	 * 
+	 * @param plugin
+	 *            the plugin
 	 */
 	public LanguageHandler(SimpleRegionMarket plugin) {
 		this.plugin = plugin;
-		if (!new File(SimpleRegionMarket.plugin_dir + "en.yml").exists()) {
+		if (!new File(SimpleRegionMarket.getPluginDir() + "en.yml").exists()) {
 			plugin.saveResource("en.yml", false);
 		}
 	}
 
 	/**
 	 * Lang output console.
-	 *
-	 * @param id the id
-	 * @param level the level
-	 * @param args the args
+	 * 
+	 * @param id
+	 *            the id
+	 * @param level
+	 *            the level
+	 * @param args
+	 *            the args
 	 */
 	public void langOutputConsole(String id, Level level, ArrayList<String> args) {
 		outputConsole(level, parseLanguageString(id, args));
@@ -53,9 +60,11 @@ public class LanguageHandler {
 
 	/**
 	 * Output console.
-	 *
-	 * @param level the level
-	 * @param string the string
+	 * 
+	 * @param level
+	 *            the level
+	 * @param string
+	 *            the string
 	 */
 	public void outputConsole(Level level, String string) {
 		Bukkit.getLogger().log(level, "[SimpleRegionMarket] " + string);
@@ -63,10 +72,13 @@ public class LanguageHandler {
 
 	/**
 	 * Output message.
-	 *
-	 * @param p the p
-	 * @param id the id
-	 * @param args the args
+	 * 
+	 * @param p
+	 *            the p
+	 * @param id
+	 *            the id
+	 * @param args
+	 *            the args
 	 */
 	public void outputMessage(Player p, String id, ArrayList<String> args) {
 		p.sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_BLUE + "SRM" + ChatColor.WHITE + "] " + ChatColor.YELLOW + parseLanguageString(id, args));
@@ -74,10 +86,13 @@ public class LanguageHandler {
 
 	/**
 	 * Output error.
-	 *
-	 * @param p the p
-	 * @param id the id
-	 * @param args the args
+	 * 
+	 * @param p
+	 *            the p
+	 * @param id
+	 *            the id
+	 * @param args
+	 *            the args
 	 */
 	public void outputError(Player p, String id, ArrayList<String> args) {
 		p.sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_BLUE + "SRM" + ChatColor.WHITE + "] " + ChatColor.RED + parseLanguageString(id, args));
@@ -85,9 +100,11 @@ public class LanguageHandler {
 
 	/**
 	 * Output string.
-	 *
-	 * @param p the p
-	 * @param string the string
+	 * 
+	 * @param p
+	 *            the p
+	 * @param string
+	 *            the string
 	 */
 	public void outputString(Player p, String string) {
 		p.sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_BLUE + "SRM" + ChatColor.WHITE + "] " + ChatColor.YELLOW + string);
@@ -95,16 +112,18 @@ public class LanguageHandler {
 
 	/**
 	 * Parses the language string.
-	 *
-	 * @param id the id
-	 * @param args the args
+	 * 
+	 * @param id
+	 *            the id
+	 * @param args
+	 *            the args
 	 * @return the string
 	 */
 	private String parseLanguageString(String id, ArrayList<String> args) {
 		String string = id;
 
 		String lang = plugin.getConfigurationHandler().getConfig().getString("language");
-		if (!new File(SimpleRegionMarket.plugin_dir + lang + ".yml").exists()) {
+		if (!new File(SimpleRegionMarket.getPluginDir() + lang + ".yml").exists()) {
 			outputConsole(Level.WARNING, "Language '" + lang + "' was not found.");
 			lang = "en";
 			plugin.getConfigurationHandler().getConfig().set("language", lang);
@@ -112,10 +131,10 @@ public class LanguageHandler {
 		}
 
 		try {
-			languageFile.load(SimpleRegionMarket.plugin_dir + lang + ".yml");
+			languageFile.load(SimpleRegionMarket.getPluginDir() + lang + ".yml");
 			string = languageFile.getString(id);
 		} catch (final FileNotFoundException e1) {
-			outputConsole(Level.SEVERE, "No write permissions on '" + SimpleRegionMarket.plugin_dir + "'.");
+			outputConsole(Level.SEVERE, "No write permissions on '" + SimpleRegionMarket.getPluginDir() + "'.");
 			e1.printStackTrace();
 		} catch (final IOException e1) {
 			outputConsole(Level.SEVERE, "IO Exception in language system.");

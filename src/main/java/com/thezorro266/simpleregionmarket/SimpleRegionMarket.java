@@ -1,11 +1,6 @@
-/*
- * 
- */
 package com.thezorro266.simpleregionmarket;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.logging.Level;
 
 import net.milkbowl.vault.economy.Economy;
@@ -13,7 +8,6 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
-import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -23,35 +17,38 @@ import com.Acrobot.ChestShop.ChestShop;
 import com.nijikokun.register.payment.Method;
 import com.nijikokun.register.payment.Methods;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
 import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.thezorro266.simpleregionmarket.handlers.CommandHandler;
+import com.thezorro266.simpleregionmarket.handlers.ConfigHandler;
+import com.thezorro266.simpleregionmarket.handlers.LanguageHandler;
+import com.thezorro266.simpleregionmarket.handlers.LimitHandler;
+import com.thezorro266.simpleregionmarket.handlers.ListenerHandler;
+import com.thezorro266.simpleregionmarket.signs.TemplateMain;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SimpleRegionMarket.
  */
 public class SimpleRegionMarket extends JavaPlugin {
 	// public static Permission permission = null;
 	/** The economy. */
-	public static Economy economy = null;
-	
+	static Economy economy = null;
+
 	/** The enable economy. */
-	public static int enableEconomy = 1;
+	static int enableEconomy = 1;
 
 	/** The plugin_dir. */
-	public static String plugin_dir = null;
-	
+	private static String pluginDir = null;
+
 	/** The server. */
 	private static Server server;
-	
+
 	/** The unloading. */
-	public static boolean unloading = false;
+	private static boolean unloading = false;
 
 	/**
 	 * Gets the world guard.
-	 *
+	 * 
 	 * @return the world guard
 	 */
 	public static WorldGuardPlugin getWorldGuard() {
@@ -64,31 +61,19 @@ public class SimpleRegionMarket extends JavaPlugin {
 		return (WorldGuardPlugin) plugin;
 	}
 
-	/** The agent manager. */
-	private AgentManager agentManager;
-
-	/** The command handler. */
 	private CommandHandler commandHandler;
-
-	/** The configuration handler. */
 	private ConfigHandler configurationHandler = null;
-
-	/** The error. */
 	private boolean error = false;
-
-	/** The lang handler. */
 	private LanguageHandler langHandler;
-
-	/** The limit handler. */
 	private LimitHandler limitHandler;
-
-	/** The chest shop. */
 	private ChestShop chestShop;
+	private TokenManager tokenManager;
 
 	/**
 	 * Can buy.
-	 *
-	 * @param player the player
+	 * 
+	 * @param player
+	 *            the player
 	 * @return true, if successful
 	 */
 	public boolean canBuy(Player player) {
@@ -97,8 +82,9 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 	/**
 	 * Can let.
-	 *
-	 * @param player the player
+	 * 
+	 * @param player
+	 *            the player
 	 * @return true, if successful
 	 */
 	public boolean canLet(Player player) {
@@ -107,8 +93,9 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 	/**
 	 * Can rent.
-	 *
-	 * @param player the player
+	 * 
+	 * @param player
+	 *            the player
 	 * @return true, if successful
 	 */
 	public boolean canRent(Player player) {
@@ -117,8 +104,9 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 	/**
 	 * Can sell.
-	 *
-	 * @param player the player
+	 * 
+	 * @param player
+	 *            the player
 	 * @return true, if successful
 	 */
 	public boolean canSell(Player player) {
@@ -127,8 +115,9 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 	/**
 	 * Can add owner.
-	 *
-	 * @param player the player
+	 * 
+	 * @param player
+	 *            the player
 	 * @return true, if successful
 	 */
 	public boolean canAddOwner(Player player) {
@@ -137,8 +126,9 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 	/**
 	 * Can add member.
-	 *
-	 * @param player the player
+	 * 
+	 * @param player
+	 *            the player
 	 * @return true, if successful
 	 */
 	public boolean canAddMember(Player player) {
@@ -146,30 +136,15 @@ public class SimpleRegionMarket extends JavaPlugin {
 	}
 
 	/**
-	 * Econ format.
-	 *
-	 * @param price the price
-	 * @return the string
-	 */
-	public String econFormat(double price) {
-		String ret = String.valueOf(price);
-		if (enableEconomy == 1) {
-			if (getEconomicManager() != null) {
-				ret = getEconomicManager().format(price);
-			}
-		} else if (enableEconomy == 2) {
-			ret = economy.format(price);
-		}
-		return ret;
-	}
-
-	/**
 	 * Econ give money.
-	 *
-	 * @param account the account
-	 * @param money the money
+	 * 
+	 * @param account
+	 *            the account
+	 * @param money
+	 *            the money
 	 * @return true, if successful
-	 * @throws Exception the exception
+	 * @throws Exception
+	 *             the exception
 	 */
 	public boolean econGiveMoney(String account, double money) throws Exception {
 		final boolean ret = true;
@@ -197,9 +172,11 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 	/**
 	 * Econ has enough.
-	 *
-	 * @param account the account
-	 * @param money the money
+	 * 
+	 * @param account
+	 *            the account
+	 * @param money
+	 *            the money
 	 * @return true, if successful
 	 */
 	public boolean econHasEnough(String account, double money) {
@@ -215,17 +192,8 @@ public class SimpleRegionMarket extends JavaPlugin {
 	}
 
 	/**
-	 * Gets the agent manager.
-	 *
-	 * @return the agent manager
-	 */
-	public AgentManager getAgentManager() {
-		return agentManager;
-	}
-
-	/**
 	 * Gets the configuration handler.
-	 *
+	 * 
 	 * @return the configuration handler
 	 */
 	public ConfigHandler getConfigurationHandler() {
@@ -233,24 +201,15 @@ public class SimpleRegionMarket extends JavaPlugin {
 	}
 
 	/**
-	 * Gets the copyright.
-	 *
-	 * @return the copyright
-	 */
-	public String getCopyright() {
-		return "Copyright (C) 2011-2012  theZorro266  -  GPLv3";
-	}
-
-	/**
 	 * Gets the economic manager.
-	 *
+	 * 
 	 * @return the economic manager
 	 */
-	public Method getEconomicManager() {
+	public static Method getEconomicManager() {
 		if (Methods.hasMethod()) {
 			return Methods.getMethod();
 		} else {
-			langHandler.langOutputConsole("ERR_NO_ECO", Level.SEVERE, null);
+			Bukkit.getLogger().log(Level.SEVERE, "Error: Economic System was not found.");
 			enableEconomy = 0;
 			return null;
 		}
@@ -258,26 +217,15 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 	/**
 	 * Checks if is admin.
-	 *
-	 * @param player the player
+	 * 
+	 * @param player
+	 *            the player
 	 * @return true, if is admin
 	 */
 	public boolean isAdmin(Player player) {
 		return (player.isOp() || player.hasPermission("simpleregionmarket.admin"));
 	}
 
-	/**
-	 * Checks if is economy.
-	 *
-	 * @return true, if is economy
-	 */
-	public boolean isEconomy() {
-		return enableEconomy > 0 && (enableEconomy != 1 || getEconomicManager() != null);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.bukkit.plugin.java.JavaPlugin#onDisable()
-	 */
 	@Override
 	public void onDisable() {
 		unloading = true;
@@ -289,14 +237,18 @@ public class SimpleRegionMarket extends JavaPlugin {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.bukkit.plugin.java.JavaPlugin#onEnable()
-	 */
+	@Override
+	public void onLoad() {
+		server = getServer();
+		SimpleRegionMarket.pluginDir = getDataFolder() + File.separator;
+
+		configurationHandler = new ConfigHandler(this);
+
+		langHandler = new LanguageHandler(this);
+	}
+
 	@Override
 	public void onEnable() {
-		server = getServer();
-		plugin_dir = getDataFolder() + File.separator;
-
 		if (getWorldGuard() == null) {
 			error = true;
 			langHandler.langOutputConsole("ERR_NO_WORLDGUARD", Level.SEVERE, null);
@@ -304,11 +256,8 @@ public class SimpleRegionMarket extends JavaPlugin {
 			return;
 		}
 
-		langHandler = new LanguageHandler(this);
-
-		agentManager = new AgentManager(this, langHandler);
-
-		configurationHandler = new ConfigHandler(this, langHandler);
+		tokenManager = new TokenManager(this);
+		tokenManager.initTemplates();
 
 		enableEconomy = configurationHandler.getConfig().getBoolean("enable_economy") ? 1 : 0;
 		if (enableEconomy > 0) {
@@ -332,86 +281,21 @@ public class SimpleRegionMarket extends JavaPlugin {
 		limitHandler = new LimitHandler(this, langHandler);
 		limitHandler.loadLimits();
 
-		new ListenerHandler(this, limitHandler, langHandler);
+		new ListenerHandler(this, limitHandler, langHandler, tokenManager);
 
 		commandHandler = new CommandHandler(this, limitHandler, langHandler);
 		getCommand("regionmarket").setExecutor(commandHandler);
-
-		configurationHandler.load();
 
 		chestShop = (ChestShop) Bukkit.getPluginManager().getPlugin("ChestShop");
 		if (chestShop != null) {
 			langHandler.langOutputConsole("HOOKED_CHESTSHOP", Level.INFO, null);
 		}
 
-		server.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-			@Override
-			public void run() {
-				getAgentManager().checkAgents();
-			}
-		}, 20L, 1200L);
+		/*
+		 * server.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() { public void run() { getAgentManager().checkAgents(); } }, 200L, 1200L);
+		 */
 
-		langHandler.outputConsole(Level.INFO, "loaded version " + getDescription().getVersion() + ",  " + getCopyright());
-	}
-
-	/*
-	 * private Boolean setupPermissions() { RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager
-	 * ().getRegistration(net.milkbowl.vault.permission.Permission.class); if (permissionProvider != null) { permission = permissionProvider.getProvider(); }
-	 * return (permission != null); }
-	 */
-
-	/**
-	 * Unrent hotel.
-	 *
-	 * @param hotel the hotel
-	 */
-	public void unrentHotel(SignAgent hotel) {
-		hotel.getProtectedRegion().setMembers(new DefaultDomain());
-		hotel.getProtectedRegion().setOwners(new DefaultDomain());
-		if (getConfigurationHandler().getConfig().getBoolean("logging")) {
-			final ArrayList<String> list = new ArrayList<String>();
-			list.add(hotel.getRegion());
-			list.add(hotel.getRent());
-			langHandler.langOutputConsole("LOG_EXPIRED_HOTEL", Level.INFO, list);
-		}
-		hotel.rentTo("");
-	}
-
-	/**
-	 * Rent hotel.
-	 *
-	 * @param region the region
-	 * @param p the p
-	 * @param renttime the renttime
-	 */
-	public void rentHotel(ProtectedRegion region, Player p, long renttime) {
-		if (region.getParent() != null) {
-			for (final String player : region.getParent().getOwners().getPlayers()) {
-				Player powner;
-				powner = Bukkit.getPlayerExact(player);
-				if (powner != null) {
-					final ArrayList<String> list = new ArrayList<String>();
-					list.add(region.getId());
-					list.add(p.getName());
-					langHandler.outputMessage(powner, "HOTEL_RENT", list);
-				}
-			}
-		}
-		region.setMembers(new DefaultDomain());
-		region.setOwners(new DefaultDomain());
-		if (configurationHandler.getConfig().getBoolean("renter_get_owner")) {
-			region.getOwners().addPlayer(getWorldGuard().wrapPlayer(p));
-		} else {
-			region.getMembers().addPlayer(getWorldGuard().wrapPlayer(p));
-		}
-		getAgentManager().rentRegionForPlayer(region, p, renttime);
-		saveAll();
-		if (configurationHandler.getConfig().getBoolean("logging")) {
-			final ArrayList<String> list = new ArrayList<String>();
-			list.add(region.getId());
-			list.add(p.getName());
-			langHandler.langOutputConsole("LOG_RENT_HOTEL", Level.INFO, list);
-		}
+		langHandler.outputConsole(Level.INFO, "loaded version " + getDescription().getVersion() + ".");
 	}
 
 	/**
@@ -434,68 +318,14 @@ public class SimpleRegionMarket extends JavaPlugin {
 			}
 		}
 		limitHandler.saveLimits();
-
-		configurationHandler.save();
-	}
-
-	/**
-	 * Sell region.
-	 *
-	 * @param region the region
-	 * @param p the p
-	 */
-	public void sellRegion(ProtectedRegion region, Player p) {
-		for (final String player : region.getOwners().getPlayers()) {
-			Player powner;
-			powner = Bukkit.getPlayerExact(player);
-			if (powner != null) {
-				final ArrayList<String> list = new ArrayList<String>();
-				list.add(region.getId());
-				list.add(p.getName());
-				langHandler.outputMessage(powner, "REGION_SOLD", list);
-			}
-		}
-		region.setMembers(new DefaultDomain());
-		region.setOwners(new DefaultDomain());
-		if (configurationHandler.getConfig().getBoolean("buyer_get_owner")) {
-			region.getOwners().addPlayer(getWorldGuard().wrapPlayer(p));
-		} else {
-			region.getMembers().addPlayer(getWorldGuard().wrapPlayer(p));
-		}
-
-		final Iterator<SignAgent> itr = getAgentManager().getAgentList().iterator();
-		if (configurationHandler.getConfig().getBoolean("remove_buyed_signs")) {
-			while (itr.hasNext()) {
-				final SignAgent obj = itr.next();
-				if (obj.getProtectedRegion() == region) {
-					obj.destroyAgent(false);
-					itr.remove();
-				}
-			}
-		} else {
-			while (itr.hasNext()) {
-				final SignAgent obj = itr.next();
-				if (obj.getProtectedRegion() == region) {
-					final Sign agentsign = (Sign) obj.getLocation().getBlock().getState();
-					agentsign.setLine(2, p.getName());
-					agentsign.update();
-					itr.remove();
-				}
-			}
-		}
-
-		saveAll();
-		if (configurationHandler.getConfig().getBoolean("logging")) {
-			final ArrayList<String> list = new ArrayList<String>();
-			list.add(region.getId());
-			list.add(p.getName());
-			langHandler.langOutputConsole("LOG_SOLD_REGION", Level.INFO, list);
+		for (final TemplateMain token : TokenManager.tokenList) {
+			token.save();
 		}
 	}
 
 	/**
 	 * Setup economy.
-	 *
+	 * 
 	 * @return the boolean
 	 */
 	private Boolean setupEconomy() {
@@ -505,5 +335,9 @@ public class SimpleRegionMarket extends JavaPlugin {
 		}
 
 		return economy != null;
+	}
+
+	public static String getPluginDir() {
+		return pluginDir;
 	}
 }
