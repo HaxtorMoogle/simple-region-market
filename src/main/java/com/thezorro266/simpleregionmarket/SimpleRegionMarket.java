@@ -5,7 +5,6 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -13,7 +12,6 @@ import com.Acrobot.ChestShop.ChestShop;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
 import com.sk89q.worldguard.protection.managers.RegionManager;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.thezorro266.simpleregionmarket.handlers.CommandHandler;
 import com.thezorro266.simpleregionmarket.handlers.ConfigHandler;
 import com.thezorro266.simpleregionmarket.handlers.LanguageHandler;
@@ -56,6 +54,10 @@ public class SimpleRegionMarket extends JavaPlugin {
 	private ChestShop chestShop;
 	private TokenManager tokenManager;
 
+	public static String getPluginDir() {
+		return pluginDir;
+	}
+
 	@Override
 	public void onDisable() {
 		unloading = true;
@@ -77,7 +79,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 		permManager = new PermissionManager();
 
-		econManager = new EconomyManager(langHandler, this);
+		econManager = new EconomyManager(this, langHandler);
 	}
 
 	@Override
@@ -89,11 +91,10 @@ public class SimpleRegionMarket extends JavaPlugin {
 			return;
 		}
 
-		tokenManager = new TokenManager(this);
+		tokenManager = new TokenManager(this, langHandler);
 		tokenManager.initTemplates();
 
-		limitHandler = new LimitHandler(this, langHandler);
-		limitHandler.loadLimits();
+		limitHandler = new LimitHandler(this, langHandler, tokenManager);
 
 		new ListenerHandler(this, limitHandler, langHandler, tokenManager);
 
@@ -111,22 +112,6 @@ public class SimpleRegionMarket extends JavaPlugin {
 		 */
 
 		langHandler.outputConsole(Level.INFO, "loaded version " + getDescription().getVersion() + ".");
-	}
-
-	public boolean playerIsOwner(Player player, TemplateMain token, String world, ProtectedRegion protectedRegion) {
-		if (player != null && token != null && world != null && protectedRegion != null) {
-			final String region = protectedRegion.getId();
-			if (!Utils.getEntryBoolean(token, world, region, "taken")) {
-				if (protectedRegion.isOwner(player.getName())) { // TODO Player Member when bought?
-					return true;
-				}
-			} else {
-				if (Utils.getEntryString(token, world, region, "owner").equalsIgnoreCase(player.getName())) {
-					return true;
-				}
-			}
-		}
-		return false;
 	}
 
 	/**
@@ -148,13 +133,8 @@ public class SimpleRegionMarket extends JavaPlugin {
 				langHandler.outputConsole(Level.SEVERE, "Saving WorldGuard failed, because it is not loaded.");
 			}
 		}
-		limitHandler.saveLimits();
 		for (final TemplateMain token : TokenManager.tokenList) {
 			token.save();
 		}
-	}
-
-	public static String getPluginDir() {
-		return pluginDir;
 	}
 }

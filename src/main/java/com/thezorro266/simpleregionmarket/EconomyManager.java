@@ -13,10 +13,13 @@ import com.nijikokun.register.payment.Methods;
 import com.thezorro266.simpleregionmarket.handlers.LanguageHandler;
 
 public class EconomyManager {
+	private final LanguageHandler LANG_HANDLER;
+	
 	private int enableEconomy;
 	private Economy economy;
 
-	public EconomyManager(LanguageHandler langHandler, SimpleRegionMarket plugin) {
+	public EconomyManager(SimpleRegionMarket plugin, LanguageHandler langHandler) {
+		LANG_HANDLER = langHandler;
 		final Server server = plugin.getServer();
 		enableEconomy = SimpleRegionMarket.configurationHandler.getConfig().getBoolean("enable_economy") ? 1 : 0;
 		if (enableEconomy > 0) {
@@ -62,7 +65,7 @@ public class EconomyManager {
 		if (Methods.hasMethod()) {
 			return Methods.getMethod();
 		} else {
-			Bukkit.getLogger().log(Level.SEVERE, "Error: Economic System was not found.");
+			LANG_HANDLER.outputConsole(Level.SEVERE, "Error: Economic System was not found.");
 			enableEconomy = 0;
 			return null;
 		}

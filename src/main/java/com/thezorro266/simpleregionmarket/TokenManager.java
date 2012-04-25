@@ -13,6 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.thezorro266.simpleregionmarket.handlers.LanguageHandler;
 import com.thezorro266.simpleregionmarket.signs.TemplateHotel;
 import com.thezorro266.simpleregionmarket.signs.TemplateLet;
 import com.thezorro266.simpleregionmarket.signs.TemplateMain;
@@ -28,9 +29,11 @@ public class TokenManager {
 	public static ArrayList<TemplateMain> tokenList = new ArrayList<TemplateMain>();
 
 	private final SimpleRegionMarket PLUGIN;
+	private final LanguageHandler LANG_HANDLER;
 
-	public TokenManager(SimpleRegionMarket plugin) {
+	public TokenManager(SimpleRegionMarket plugin, LanguageHandler langHandler) {
 		PLUGIN = plugin;
+		LANG_HANDLER = langHandler;
 	}
 
 	/**
@@ -97,7 +100,7 @@ public class TokenManager {
 
 	public void initTemplates() {
 		if (!CONFIG_FILE.exists()) {
-			Bukkit.getLogger().log(Level.INFO, "[SRM] No templates found. Creating standard templates.");
+			LANG_HANDLER.outputConsole(Level.INFO, "No templates found. Creating standard templates.");
 			PLUGIN.saveResource(CONFIG_NAME, false);
 		}
 		if (CONFIG_FILE.exists()) {
@@ -111,16 +114,32 @@ public class TokenManager {
 				} else if (type.equalsIgnoreCase("hotel")) {
 					tokenList.add(new TemplateHotel(key));
 				} else {
-					Bukkit.getLogger().log(Level.INFO, "[SRM] I don't know the type " + type + ".");
+					LANG_HANDLER.outputConsole(Level.INFO, "I don't know the type " + type + ".");
 				}
 			}
 		} else {
-			Bukkit.getLogger().log(Level.SEVERE, "[SRM] Error creating standard templates.");
+			LANG_HANDLER.outputConsole(Level.SEVERE, "Error creating standard templates.");
 		}
+	}
+
+	public boolean playerIsOwner(Player player, TemplateMain token, String world, ProtectedRegion protectedRegion) {
+		if (player != null && token != null && world != null && protectedRegion != null) {
+			final String region = protectedRegion.getId();
+			if (!Utils.getEntryBoolean(token, world, region, "taken")) {
+				if (protectedRegion.isOwner(player.getName())) { // TODO Player Member when bought?
+					return true;
+				}
+			} else {
+				if (Utils.getEntryString(token, world, region, "owner").equalsIgnoreCase(player.getName())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public void playerClickedSign(Player player, TemplateMain token, String world, String region) {
 		// TODO Handling when player clickes a sign in world "world" and region "region" with the template "token"
-
+		LANG_HANDLER.outputConsole(Level.INFO, "Player "+player.getName()+" clicked sign from template "+token.id+" in world "+world+", region "+region);
 	}
 }
