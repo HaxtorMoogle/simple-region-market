@@ -14,7 +14,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.thezorro266.simpleregionmarket.PermissionManager;
 import com.thezorro266.simpleregionmarket.SimpleRegionMarket;
 import com.thezorro266.simpleregionmarket.Utils;
 
@@ -22,7 +21,6 @@ public class CommandHandler implements CommandExecutor {
 	private final LanguageHandler LANG_HANDLER;
 	private final LimitHandler LIMIT_HANDLER;
 	private final SimpleRegionMarket PLUGIN;
-	private final PermissionManager PERM_MANAGER;
 
 	/**
 	 * Instantiates a new command handler.
@@ -34,12 +32,10 @@ public class CommandHandler implements CommandExecutor {
 	 * @param langHandler
 	 *            the lang handler
 	 */
-	public CommandHandler(SimpleRegionMarket plugin, LimitHandler limitHandler,
-			LanguageHandler langHandler, PermissionManager permManager) {
+	public CommandHandler(SimpleRegionMarket plugin, LimitHandler limitHandler, LanguageHandler langHandler) {
 		PLUGIN = plugin;
 		LIMIT_HANDLER = limitHandler;
 		LANG_HANDLER = langHandler;
-		PERM_MANAGER = permManager;
 	}
 
 	@Override
@@ -90,7 +86,7 @@ public class CommandHandler implements CommandExecutor {
 			 * Utils.econFormat(agent.getPrice())); } else { langHandler.outputString(p, "Region: " + agent.getRegion()); } }
 			 */
 		} else if (args[0].equalsIgnoreCase("limits") || args[0].equalsIgnoreCase("limit")) {
-			if (p == null || PERM_MANAGER.isAdmin(p)) {
+			if (p == null || SimpleRegionMarket.permManager.isAdmin(p)) {
 				if (args.length < 2) { // limits
 					if (p != null) {
 						LANG_HANDLER.outputMessage(p, "CMD_LIMITS_NO_ARG", null);

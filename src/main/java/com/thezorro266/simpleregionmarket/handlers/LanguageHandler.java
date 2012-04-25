@@ -19,17 +19,9 @@ import org.bukkit.entity.Player;
 
 import com.thezorro266.simpleregionmarket.SimpleRegionMarket;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class LanguageHandler.
- */
 public class LanguageHandler {
-
-	/** The language file. */
-	private final FileConfiguration languageFile = new YamlConfiguration();
-
-	/** The plugin. */
-	private final SimpleRegionMarket plugin;
+	private final FileConfiguration LANGUAGE_FILE = new YamlConfiguration();
+	private final SimpleRegionMarket PLUGIN;
 
 	/**
 	 * Instantiates a new language handler.
@@ -38,7 +30,7 @@ public class LanguageHandler {
 	 *            the plugin
 	 */
 	public LanguageHandler(SimpleRegionMarket plugin) {
-		this.plugin = plugin;
+		PLUGIN = plugin;
 		if (!new File(SimpleRegionMarket.getPluginDir() + "en.yml").exists()) {
 			plugin.saveResource("en.yml", false);
 		}
@@ -122,17 +114,17 @@ public class LanguageHandler {
 	private String parseLanguageString(String id, ArrayList<String> args) {
 		String string = id;
 
-		String lang = plugin.getConfigurationHandler().getConfig().getString("language");
+		String lang = SimpleRegionMarket.configurationHandler.getConfig().getString("language");
 		if (!new File(SimpleRegionMarket.getPluginDir() + lang + ".yml").exists()) {
 			outputConsole(Level.WARNING, "Language '" + lang + "' was not found.");
 			lang = "en";
-			plugin.getConfigurationHandler().getConfig().set("language", lang);
-			plugin.saveConfig();
+			SimpleRegionMarket.configurationHandler.getConfig().set("language", lang);
+			PLUGIN.saveConfig();
 		}
 
 		try {
-			languageFile.load(SimpleRegionMarket.getPluginDir() + lang + ".yml");
-			string = languageFile.getString(id);
+			LANGUAGE_FILE.load(SimpleRegionMarket.getPluginDir() + lang + ".yml");
+			string = LANGUAGE_FILE.getString(id);
 		} catch (final FileNotFoundException e1) {
 			outputConsole(Level.SEVERE, "No write permissions on '" + SimpleRegionMarket.getPluginDir() + "'.");
 			e1.printStackTrace();

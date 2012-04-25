@@ -2,13 +2,10 @@ package com.thezorro266.simpleregionmarket;
 
 import org.bukkit.entity.Player;
 
-import com.thezorro266.simpleregionmarket.handlers.ConfigHandler;
-
 public class PermissionManager {
-	private final ConfigHandler CONFIGURATION_HANDLER;
-	
-	public PermissionManager(ConfigHandler configurationHandler) {
-		CONFIGURATION_HANDLER = configurationHandler;
+
+	public PermissionManager() {
+
 	}
 
 	/**
@@ -19,7 +16,7 @@ public class PermissionManager {
 	 * @return true, if successful
 	 */
 	public boolean canBuy(Player player) {
-		return (CONFIGURATION_HANDLER.getConfig().getBoolean("defp_player_buy") || player.hasPermission("simpleregionmarket.buy"));
+		return (SimpleRegionMarket.configurationHandler.getConfig().getBoolean("defp_player_buy") || player.hasPermission("simpleregionmarket.buy"));
 	}
 
 	/**
@@ -30,7 +27,7 @@ public class PermissionManager {
 	 * @return true, if successful
 	 */
 	public boolean canLet(Player player) {
-		return (CONFIGURATION_HANDLER.getConfig().getBoolean("defp_player_let") || player.hasPermission("simpleregionmarket.let"));
+		return (SimpleRegionMarket.configurationHandler.getConfig().getBoolean("defp_player_let") || player.hasPermission("simpleregionmarket.let"));
 	}
 
 	/**
@@ -41,7 +38,7 @@ public class PermissionManager {
 	 * @return true, if successful
 	 */
 	public boolean canRent(Player player) {
-		return (CONFIGURATION_HANDLER.getConfig().getBoolean("defp_player_rent") || player.hasPermission("simpleregionmarket.rent"));
+		return (SimpleRegionMarket.configurationHandler.getConfig().getBoolean("defp_player_rent") || player.hasPermission("simpleregionmarket.rent"));
 	}
 
 	/**
@@ -52,7 +49,7 @@ public class PermissionManager {
 	 * @return true, if successful
 	 */
 	public boolean canSell(Player player) {
-		return (CONFIGURATION_HANDLER.getConfig().getBoolean("defp_player_sell") || player.hasPermission("simpleregionmarket.sell"));
+		return (SimpleRegionMarket.configurationHandler.getConfig().getBoolean("defp_player_sell") || player.hasPermission("simpleregionmarket.sell"));
 	}
 
 	/**
@@ -63,7 +60,7 @@ public class PermissionManager {
 	 * @return true, if successful
 	 */
 	public boolean canAddOwner(Player player) {
-		return (CONFIGURATION_HANDLER.getConfig().getBoolean("defp_player_addowner") || player.hasPermission("simpleregionmarket.addowner"));
+		return (SimpleRegionMarket.configurationHandler.getConfig().getBoolean("defp_player_addowner") || player.hasPermission("simpleregionmarket.addowner"));
 	}
 
 	/**
@@ -74,7 +71,7 @@ public class PermissionManager {
 	 * @return true, if successful
 	 */
 	public boolean canAddMember(Player player) {
-		return (CONFIGURATION_HANDLER.getConfig().getBoolean("defp_player_addmember") || player.hasPermission("simpleregionmarket.addmember"));
+		return (SimpleRegionMarket.configurationHandler.getConfig().getBoolean("defp_player_addmember") || player.hasPermission("simpleregionmarket.addmember"));
 	}
 
 	/**

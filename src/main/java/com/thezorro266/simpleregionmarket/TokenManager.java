@@ -120,7 +120,7 @@ public class TokenManager {
 	}
 
 	public void playerClickedSign(Player player, TemplateMain token, String world, String region) {
-		// TODO Auto-generated method stub
-		
+		// TODO Handling when player clickes a sign in world "world" and region "region" with the template "token"
+
 	}
 }

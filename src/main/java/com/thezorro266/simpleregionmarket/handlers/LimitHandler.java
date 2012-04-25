@@ -17,13 +17,7 @@ import org.bukkit.entity.Player;
 
 import com.thezorro266.simpleregionmarket.SimpleRegionMarket;
 
-// TODO: Auto-generated Javadoc
-/**
- * The Class LimitHandler.
- */
 public class LimitHandler {
-
-	/** The limit config. */
 	private static YamlConfiguration limitConfig;
 
 	// private static Map<String, Integer> limitregiongroups = new
@@ -70,7 +64,6 @@ public class LimitHandler {
 	// Low
 	// Priority
 
-	// TODO General permission groups with Vault
 	// TODO Parent region limits
 
 	/** The lang handler. */
@@ -95,6 +88,7 @@ public class LimitHandler {
 	 *            the p
 	 * @return the int
 	 */
+	// TODO New count system per template
 	public int countPlayerOwnRegion(Player p) {
 		/*
 		 * if (p != null) { final WorldGuardPlugin tmp = SimpleRegionMarket.getWorldGuard(); return

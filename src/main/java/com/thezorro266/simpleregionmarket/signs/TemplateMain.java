@@ -131,10 +131,10 @@ public abstract class TemplateMain {
 						replacementMap.put("id_taken", tplOptions.get("taken.id").toString());
 						replacementMap.put("world", world.toLowerCase());
 						replacementMap.put("region", region.toLowerCase());
-						if (Utils.isEconomy() || Utils.getEntryDouble(this, world, region, "price") == 0) {
+						if (SimpleRegionMarket.econManager.isEconomy() || Utils.getEntryDouble(this, world, region, "price") == 0) {
 							replacementMap.put("price", "FREE");
 						} else {
-							replacementMap.put("price", Utils.econFormat(Utils.getEntryDouble(this, world, region, "price")));
+							replacementMap.put("price", SimpleRegionMarket.econManager.econFormat(Utils.getEntryDouble(this, world, region, "price")));
 						}
 						replacementMap.put("account", Utils.getEntryString(this, world, region, "account"));
 						if (Utils.getEntryString(this, world, region, "owner") == null || Utils.getEntryString(this, world, region, "owner").isEmpty()) {

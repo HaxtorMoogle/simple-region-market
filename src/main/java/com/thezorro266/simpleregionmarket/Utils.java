@@ -167,34 +167,6 @@ public class Utils {
 	}
 
 	/**
-	 * Checks if economy is enabled.
-	 * 
-	 * @return true, if is economy
-	 */
-	public static boolean isEconomy() {
-		return SimpleRegionMarket.enableEconomy > 0 && (SimpleRegionMarket.enableEconomy != 1 || SimpleRegionMarket.getEconomicManager() != null);
-	}
-
-	/**
-	 * Format economy like.
-	 * 
-	 * @param price
-	 *            the price
-	 * @return the string
-	 */
-	public static String econFormat(double price) {
-		String ret = String.valueOf(price);
-		if (SimpleRegionMarket.enableEconomy == 1) {
-			if (SimpleRegionMarket.getEconomicManager() != null) {
-				ret = SimpleRegionMarket.getEconomicManager().format(price);
-			}
-		} else if (SimpleRegionMarket.enableEconomy == 2) {
-			ret = SimpleRegionMarket.economy.format(price);
-		}
-		return ret;
-	}
-
-	/**
 	 * Returns the Copyright.
 	 * 
 	 * @return the copyright
