@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.thezorro266.simpleregionmarket.signs.TemplateHotel;
@@ -116,5 +117,10 @@ public class TokenManager {
 		} else {
 			Bukkit.getLogger().log(Level.SEVERE, "[SRM] Error creating standard templates.");
 		}
+	}
+
+	public void playerClickedSign(Player player, TemplateMain token, String world, String region) {
+		// TODO Auto-generated method stub
+		
 	}
 }

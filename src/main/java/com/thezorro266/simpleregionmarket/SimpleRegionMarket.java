@@ -8,6 +8,7 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -18,6 +19,7 @@ import com.nijikokun.register.payment.Methods;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
 import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.thezorro266.simpleregionmarket.handlers.CommandHandler;
 import com.thezorro266.simpleregionmarket.handlers.ConfigHandler;
 import com.thezorro266.simpleregionmarket.handlers.LanguageHandler;
@@ -220,6 +222,22 @@ public class SimpleRegionMarket extends JavaPlugin {
 		 */
 
 		langHandler.outputConsole(Level.INFO, "loaded version " + getDescription().getVersion() + ".");
+	}
+	
+	public boolean playerIsOwner(Player player, TemplateMain token, String world, ProtectedRegion protectedRegion) {
+		if(player != null && token != null && world != null && protectedRegion != null) {
+			String region = protectedRegion.getId();
+			if(!Utils.getEntryBoolean(token, world, region, "taken")) {
+				if(protectedRegion.isOwner(player.getName())) { // TODO Player Member when bought?
+					return true;
+				}
+			} else {
+				if(Utils.getEntryString(token, world, region, "owner").equalsIgnoreCase(player.getName())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**

@@ -15,6 +15,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -75,19 +76,9 @@ public class ListenerHandler implements Listener {
 					String region = protectedRegion.getId();
 
 					Player player = event.getPlayer();
-					if(!Utils.getEntryBoolean(token, world, region, "taken")) {
-						if(!PERM_MANAGER.isAdmin(player) && !protectedRegion.isOwner(player.getName())) { // TODO Player Member when bought?
-							LANG_HANDLER.outputError(player, "ERR_REGION_NO_OWNER", null);
-							event.setCancelled(true);
-							return;
-						}
-					} else {
-						if(!PERM_MANAGER.isAdmin(player)
-								&& !Utils.getEntryString(token, world, region, "owner").equalsIgnoreCase(player.getName())) {
-							LANG_HANDLER.outputError(player, "ERR_REGION_NO_OWNER", null);
-							event.setCancelled(true);
-							return;
-						}
+					if(!PERM_MANAGER.isAdmin(player) && !PLUGIN.playerIsOwner(player, token, world, protectedRegion)) {
+						LANG_HANDLER.outputError(player, "ERR_REGION_NO_OWNER", null);
+						event.setCancelled(true);
 					}
 					
 					ArrayList<Location> signLocations = Utils.getSignLocations(token, world, region);
@@ -114,6 +105,34 @@ public class ListenerHandler implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerInteract(final PlayerInteractEvent event) {
+		if(event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+			Material type = event.getClickedBlock().getType();
+			if(type == Material.SIGN_POST || type == Material.WALL_SIGN) {
+				Location blockLocation = event.getClickedBlock().getLocation();
+				World worldWorld = blockLocation.getWorld();
+				String world = worldWorld.getName();
+				Player player = event.getPlayer();
+				ApplicableRegionSet regions = SimpleRegionMarket.getWorldGuard().getRegionManager(worldWorld)
+						.getApplicableRegions(blockLocation);
+				for(TemplateMain token : TokenManager.tokenList) {
+					for(Iterator<ProtectedRegion> iR = regions.iterator(); iR.hasNext();) {
+						ProtectedRegion protectedRegion = iR.next();
+						String region = protectedRegion.getId();
+						
+						ArrayList<Location> signLocations = Utils.getSignLocations(token, world, region);
+						if(signLocations != null) {
+							for(Location signLoc : signLocations) {
+								if(signLoc.equals(blockLocation)) {
+									TOKEN_MANAGER.playerClickedSign(player, token, world, region);
+									return;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 		/*
 		 * if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) { final Block b = event.getClickedBlock(); final SignAgent agent =
 		 * plugin.getAgentManager().getAgent(b.getLocation());
@@ -161,7 +180,6 @@ public class ListenerHandler implements Listener {
 		 * plugin.rentHotel(region, p, agent.getRentTime()); final ArrayList<String> list = new ArrayList<String>(); list.add(region.getId());
 		 * langHandler.outputMessage(p, "HOTEL_RENT_NONE", list); } } } }
 		 */
-	}
 
 	/**
 	 * On sign change.
@@ -196,6 +214,7 @@ public class ListenerHandler implements Listener {
 					return;
 				}
 
+				// TOKEN_MANAGER.addSign() - Sinnvoll?
 				final String world = worldWorld.getName();
 				final String region = protectedRegion.getId();
 				if (token.entries.containsKey(world) && token.entries.get(world).containsKey(region)) {
