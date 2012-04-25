@@ -12,7 +12,6 @@ import com.thezorro266.simpleregionmarket.Utils;
 
 public class CommandHandler implements CommandExecutor {
 	private final LanguageHandler LANG_HANDLER;
-	private final LimitHandler LIMIT_HANDLER;
 	private final SimpleRegionMarket PLUGIN;
 
 	/**
@@ -20,14 +19,11 @@ public class CommandHandler implements CommandExecutor {
 	 * 
 	 * @param plugin
 	 *            the plugin
-	 * @param limitHandler
-	 *            the limit handler
 	 * @param langHandler
 	 *            the lang handler
 	 */
-	public CommandHandler(SimpleRegionMarket plugin, LimitHandler limitHandler, LanguageHandler langHandler) {
+	public CommandHandler(SimpleRegionMarket plugin, LanguageHandler langHandler) {
 		PLUGIN = plugin;
-		LIMIT_HANDLER = limitHandler;
 		LANG_HANDLER = langHandler;
 	}
 

@@ -14,7 +14,7 @@ import com.thezorro266.simpleregionmarket.handlers.LanguageHandler;
 
 public class EconomyManager {
 	private final LanguageHandler LANG_HANDLER;
-	
+
 	private int enableEconomy;
 	private Economy economy;
 

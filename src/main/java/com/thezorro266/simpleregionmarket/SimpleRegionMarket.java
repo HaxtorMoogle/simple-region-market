@@ -8,7 +8,6 @@ import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.Acrobot.ChestShop.ChestShop;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -45,13 +44,12 @@ public class SimpleRegionMarket extends JavaPlugin {
 	public static ConfigHandler configurationHandler = null;
 	public static PermissionManager permManager = null;
 	public static EconomyManager econManager = null;
+	public static LimitHandler limitHandler = null;
 
 	// Private classes:
 	private CommandHandler commandHandler;
 	private boolean error = false;
 	private LanguageHandler langHandler;
-	private LimitHandler limitHandler;
-	private ChestShop chestShop;
 	private TokenManager tokenManager;
 
 	public static String getPluginDir() {
@@ -96,20 +94,25 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 		limitHandler = new LimitHandler(this, langHandler, tokenManager);
 
-		new ListenerHandler(this, limitHandler, langHandler, tokenManager);
+		new ListenerHandler(this, langHandler, tokenManager);
 
-		commandHandler = new CommandHandler(this, limitHandler, langHandler);
+		commandHandler = new CommandHandler(this, langHandler);
 		getCommand("regionmarket").setExecutor(commandHandler);
-
-		chestShop = (ChestShop) Bukkit.getPluginManager().getPlugin("ChestShop");
-		if (chestShop != null) {
-			langHandler.langOutputConsole("HOOKED_CHESTSHOP", Level.INFO, null);
-		}
 
 		// TODO Re-enable scheduler
 		/*
 		 * server.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() { public void run() { getAgentManager().checkAgents(); } }, 200L, 1200L);
 		 */
+
+		// Update for all signs (will create missing signs)
+
+		for (final TemplateMain token : TokenManager.tokenList) {
+			for (final String world : token.entries.keySet()) {
+				for (final String region : token.entries.get(world).keySet()) {
+					tokenManager.updateSigns(token, world, region);
+				}
+			}
+		}
 
 		langHandler.outputConsole(Level.INFO, "loaded version " + getDescription().getVersion() + ".");
 	}

@@ -23,14 +23,9 @@
   </scm>
   
   <issueManagement>
-    <system>GitHub</system>
-    <url>https://github.com/theZorro266/simple-region-market/issues</url>
+    <system>Own</system>
+    <url>http://www.thezorro266.com/plugin-simpleregionmarket-ticket.html</url>
   </issueManagement>
-  
-  <ciManagement>
-    <system>jenkins</system>
-    <url>http://ci.davboecki.de/job/simple-region-market/</url>
-  </ciManagement>
   
   <distributionManagement>
     <repository>
@@ -52,7 +47,11 @@
     </repository>
     <repository>
       <id>bukkit-repo</id>
-      <url>http://repo.bukkit.org/content/groups/public</url>
+      <url>http://repo.bukkit.org/content/repositories/releases/</url>
+    </repository>
+    <repository>
+      <id>milkbowl-repo</id>
+      <url>http://ci.milkbowl.net/plugin/repository/everything/</url>
     </repository>
   </repositories>
 
@@ -60,7 +59,12 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.2.5-R1.0</version>
+      <version>1.2.5-R1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>net.milkbowl.vault</groupId>
+      <artifactId>Vault</artifactId>
+      <version>1.2.15-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.sk89q</groupId>
@@ -73,19 +77,9 @@
       <version>5.5.2</version>
     </dependency>
     <dependency>
-      <groupId>com.Acrobot</groupId>
-      <artifactId>ChestShop</artifactId>
-      <version>3.39</version>
-    </dependency>
-    <dependency>
       <groupId>com.nijikokun</groupId>
       <artifactId>register</artifactId>
       <version>1.5</version>
-    </dependency>
-    <dependency>
-      <groupId>net.milkbowl</groupId>
-      <artifactId>vault</artifactId>
-      <version>1.2.13</version>
     </dependency>
   </dependencies>
   

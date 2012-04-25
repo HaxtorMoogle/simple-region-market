@@ -5,7 +5,7 @@ package com.thezorro266.simpleregionmarket.handlers;
  */
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -39,12 +39,10 @@ public class ListenerHandler implements Listener {
 	 * 
 	 * @param plugin
 	 *            the plugin
-	 * @param limitHandler
-	 *            the limit handler
 	 * @param langHandler
 	 *            the lang handler
 	 */
-	public ListenerHandler(SimpleRegionMarket plugin, LimitHandler limitHandler, LanguageHandler langHandler, TokenManager tokenManager) {
+	public ListenerHandler(SimpleRegionMarket plugin, LanguageHandler langHandler, TokenManager tokenManager) {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
 		PLUGIN = plugin;
 		LANG_HANDLER = langHandler;
@@ -66,25 +64,23 @@ public class ListenerHandler implements Listener {
 			final String world = worldWorld.getName();
 			final ApplicableRegionSet regions = SimpleRegionMarket.getWorldGuard().getRegionManager(worldWorld).getApplicableRegions(blockLocation);
 			for (final TemplateMain token : TokenManager.tokenList) {
-				for (final Iterator<ProtectedRegion> iR = regions.iterator(); iR.hasNext();) {
-					final ProtectedRegion protectedRegion = iR.next();
+				for (final ProtectedRegion protectedRegion : regions) {
 					final String region = protectedRegion.getId();
 
 					final Player player = event.getPlayer();
 					if (!SimpleRegionMarket.permManager.isAdmin(player) && !TOKEN_MANAGER.playerIsOwner(player, token, world, protectedRegion)) {
 						LANG_HANDLER.outputError(player, "ERR_REGION_NO_OWNER", null);
 						event.setCancelled(true);
+						return;
 					}
 
 					final ArrayList<Location> signLocations = Utils.getSignLocations(token, world, region);
-					if (signLocations != null) {
-						for (final Location signLoc : signLocations) {
-							if (signLoc.equals(blockLocation)) {
-								iR.remove();
-								Utils.setEntry(token, world, region, "signs", signLocations);
-								return;
-							}
+					if (!signLocations.isEmpty()) {
+						try {
+							signLocations.remove(blockLocation);
+						} catch (final Exception e) {
 						}
+						Utils.setEntry(token, world, region, "signs", signLocations);
 					}
 				}
 			}
@@ -116,6 +112,11 @@ public class ListenerHandler implements Listener {
 						if (signLocations != null) {
 							for (final Location signLoc : signLocations) {
 								if (signLoc.equals(blockLocation)) {
+									LANG_HANDLER.outputConsole(Level.INFO,
+											player.getName() + " has " + SimpleRegionMarket.limitHandler.countPlayerRegions(player) + " global regions.");
+									LANG_HANDLER.outputConsole(Level.INFO,
+											player.getName() + " has " + SimpleRegionMarket.limitHandler.countPlayerTokenRegions(token, player)
+													+ " regions from " + token.id);
 									TOKEN_MANAGER.playerClickedSign(player, token, world, region);
 									return;
 								}
@@ -217,7 +218,7 @@ public class ListenerHandler implements Listener {
 					Utils.setEntry(token, world, region, "signs", signLocations);
 				}
 
-				TOKEN_MANAGER.updateSigns(token.id, world, region);
+				TOKEN_MANAGER.updateSigns(token, world, region);
 				break;
 			}
 		}

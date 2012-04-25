@@ -67,7 +67,12 @@ public class Utils {
 
 	@SuppressWarnings("unchecked")
 	public static ArrayList<Location> getSignLocations(TemplateMain token, String world, String region) {
-		return (ArrayList<Location>) Utils.getEntry(token, world, region, "signs");
+		final ArrayList<Location> signLocations = (ArrayList<Location>) Utils.getEntry(token, world, region, "signs");
+		if (signLocations == null) {
+			return new ArrayList<Location>();
+		} else {
+			return signLocations;
+		}
 	}
 
 	/**

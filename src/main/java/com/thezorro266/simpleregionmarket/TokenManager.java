@@ -44,8 +44,8 @@ public class TokenManager {
 	 * @param event
 	 *            the event
 	 */
-	public void updateSigns(String id, String world, String region) {
-		if (id != null && world != null && region != null) {
+	public void updateSigns(TemplateMain token, String world, String region) {
+		if (token != null && world != null && region != null) {
 
 			final World worldWorld = Bukkit.getWorld(world);
 			if (worldWorld == null) {
@@ -54,18 +54,6 @@ public class TokenManager {
 
 			final ProtectedRegion protectedRegion = SimpleRegionMarket.getWorldGuard().getRegionManager(worldWorld).getRegion(region);
 			if (protectedRegion == null) {
-				return;
-			}
-
-			TemplateMain token = null;
-			for (final TemplateMain token1 : tokenList) {
-				if (token1.id == id) {
-					token = token1;
-					break;
-				}
-			}
-
-			if (token == null) {
 				return;
 			}
 
@@ -140,6 +128,7 @@ public class TokenManager {
 
 	public void playerClickedSign(Player player, TemplateMain token, String world, String region) {
 		// TODO Handling when player clickes a sign in world "world" and region "region" with the template "token"
-		LANG_HANDLER.outputConsole(Level.INFO, "Player "+player.getName()+" clicked sign from template "+token.id+" in world "+world+", region "+region);
+		LANG_HANDLER.outputConsole(Level.INFO, "Player " + player.getName() + " clicked sign from template " + token.id + " in world " + world + ", region "
+				+ region);
 	}
 }
