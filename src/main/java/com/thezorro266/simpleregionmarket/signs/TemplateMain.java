@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.thezorro266.simpleregionmarket.SimpleRegionMarket;
@@ -123,7 +124,7 @@ public abstract class TemplateMain {
 			if (world != null && entries.containsKey(world) && region != null && entries.get(world).containsKey(region)) {
 				final World worldWorld = Bukkit.getWorld(world);
 				if (worldWorld != null) {
-					final ProtectedRegion protectedRegion = SimpleRegionMarket.getWorldGuard().getRegionManager(worldWorld).getRegion(region);
+					final ProtectedRegion protectedRegion = SimpleRegionMarket.wgManager.getProtectedRegion(worldWorld, region);
 					if (protectedRegion != null) {
 						final HashMap<String, String> replacementMap = new HashMap<String, String>();
 						replacementMap.put("id", id);
@@ -155,5 +156,12 @@ public abstract class TemplateMain {
 			}
 		}
 		return null;
+	}
+
+	public boolean isRegionOwner(Player player, String world, String region) {
+		if (Utils.getEntryString(this, world, region, "owner").equalsIgnoreCase(player.getName())) {
+			return true;
+		}
+		return false;
 	}
 }

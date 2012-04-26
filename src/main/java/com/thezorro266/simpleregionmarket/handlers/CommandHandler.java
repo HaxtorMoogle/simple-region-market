@@ -27,9 +27,7 @@ public class CommandHandler implements CommandExecutor {
 		LANG_HANDLER = langHandler;
 	}
 
-	@Override
 	public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
-
 		Player p = null;
 		if (sender instanceof Player) {
 			p = (Player) sender;

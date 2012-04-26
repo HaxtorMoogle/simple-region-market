@@ -3,12 +3,9 @@ package com.thezorro266.simpleregionmarket;
 import java.io.File;
 import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
 import org.bukkit.World;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.databases.ProtectionDatabaseException;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.thezorro266.simpleregionmarket.handlers.CommandHandler;
@@ -25,30 +22,15 @@ public class SimpleRegionMarket extends JavaPlugin {
 	private static String pluginDir = null;
 	private boolean unloading = false;
 
-	/**
-	 * Gets the world guard.
-	 * 
-	 * @return the world guard
-	 */
-	public static WorldGuardPlugin getWorldGuard() {
-		final Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
-
-		if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
-			return null;
-		}
-
-		return (WorldGuardPlugin) plugin;
-	}
-
 	// Public classes:
 	public static ConfigHandler configurationHandler = null;
+	public static WorldGuardManager wgManager = null;
 	public static PermissionManager permManager = null;
 	public static EconomyManager econManager = null;
 	public static LimitHandler limitHandler = null;
 
 	// Private classes:
 	private CommandHandler commandHandler;
-	private boolean error = false;
 	private LanguageHandler langHandler;
 	private TokenManager tokenManager;
 
@@ -59,12 +41,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		unloading = true;
-		if (error) {
-			langHandler.langOutputConsole("ERR_PLUGIN_UNLOAD", Level.SEVERE, null);
-		} else {
-			saveAll();
-			langHandler.langOutputConsole("PLUGIN_UNLOAD", Level.INFO, null);
-		}
+		saveAll();
 	}
 
 	@Override
@@ -75,6 +52,8 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 		langHandler = new LanguageHandler(this);
 
+		wgManager = new WorldGuardManager(langHandler);
+
 		permManager = new PermissionManager();
 
 		econManager = new EconomyManager(this, langHandler);
@@ -82,13 +61,6 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		if (getWorldGuard() == null) {
-			error = true;
-			langHandler.langOutputConsole("ERR_NO_WORLDGUARD", Level.SEVERE, null);
-			getServer().getPluginManager().disablePlugin(this);
-			return;
-		}
-
 		tokenManager = new TokenManager(this, langHandler);
 		tokenManager.initTemplates();
 
@@ -105,7 +77,6 @@ public class SimpleRegionMarket extends JavaPlugin {
 		 */
 
 		// Update for all signs (will create missing signs)
-
 		for (final TemplateMain token : TokenManager.tokenList) {
 			for (final String world : token.entries.keySet()) {
 				for (final String region : token.entries.get(world).keySet()) {
@@ -121,18 +92,18 @@ public class SimpleRegionMarket extends JavaPlugin {
 	 * Save all.
 	 */
 	public void saveAll() {
-		if (getWorldGuard() != null && getWorldGuard().isEnabled()) {
-			for (final World w : getServer().getWorlds()) {
-				final RegionManager mgr = getWorldGuard().getGlobalRegionManager().get(w);
+		if (!unloading) {
+			if (wgManager.getWorldGuard() != null) {
+				for (final World w : getServer().getWorlds()) {
+					final RegionManager mgr = wgManager.getWorldGuard().getRegionManager(w);
 
-				try {
-					mgr.save();
-				} catch (final ProtectionDatabaseException e) {
-					langHandler.outputConsole(Level.SEVERE, "WorldGuard >> Failed to write regionsfile: " + e.getMessage());
+					try {
+						mgr.save();
+					} catch (final ProtectionDatabaseException e) {
+						langHandler.outputConsole(Level.SEVERE, "WorldGuard >> Failed to write regionsfile: " + e.getMessage());
+					}
 				}
-			}
-		} else {
-			if (!unloading) {
+			} else {
 				langHandler.outputConsole(Level.SEVERE, "Saving WorldGuard failed, because it is not loaded.");
 			}
 		}

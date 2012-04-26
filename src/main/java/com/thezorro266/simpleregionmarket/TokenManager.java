@@ -52,7 +52,7 @@ public class TokenManager {
 				return;
 			}
 
-			final ProtectedRegion protectedRegion = SimpleRegionMarket.getWorldGuard().getRegionManager(worldWorld).getRegion(region);
+			final ProtectedRegion protectedRegion = SimpleRegionMarket.wgManager.getProtectedRegion(worldWorld, region);
 			if (protectedRegion == null) {
 				return;
 			}

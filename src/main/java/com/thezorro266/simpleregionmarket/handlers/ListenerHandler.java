@@ -62,7 +62,7 @@ public class ListenerHandler implements Listener {
 			final Location blockLocation = event.getBlock().getLocation();
 			final World worldWorld = blockLocation.getWorld();
 			final String world = worldWorld.getName();
-			final ApplicableRegionSet regions = SimpleRegionMarket.getWorldGuard().getRegionManager(worldWorld).getApplicableRegions(blockLocation);
+			final ApplicableRegionSet regions = SimpleRegionMarket.wgManager.getWorldGuard().getRegionManager(worldWorld).getApplicableRegions(blockLocation);
 			for (final TemplateMain token : TokenManager.tokenList) {
 				for (final ProtectedRegion protectedRegion : regions) {
 					final String region = protectedRegion.getId();
@@ -103,7 +103,8 @@ public class ListenerHandler implements Listener {
 				final World worldWorld = blockLocation.getWorld();
 				final String world = worldWorld.getName();
 				final Player player = event.getPlayer();
-				final ApplicableRegionSet regions = SimpleRegionMarket.getWorldGuard().getRegionManager(worldWorld).getApplicableRegions(blockLocation);
+				final ApplicableRegionSet regions = SimpleRegionMarket.wgManager.getWorldGuard().getRegionManager(worldWorld)
+						.getApplicableRegions(blockLocation);
 				for (final TemplateMain token : TokenManager.tokenList) {
 					for (final ProtectedRegion protectedRegion : regions) {
 						final String region = protectedRegion.getId();
@@ -140,7 +141,7 @@ public class ListenerHandler implements Listener {
 			if (event.getLine(0).equalsIgnoreCase((String) token.tplOptions.get("input.id"))) {
 				final Location signLocation = event.getBlock().getLocation();
 				final World worldWorld = signLocation.getWorld();
-				final RegionManager worldRegionManager = SimpleRegionMarket.getWorldGuard().getRegionManager(worldWorld);
+				final RegionManager worldRegionManager = SimpleRegionMarket.wgManager.getWorldGuard().getRegionManager(worldWorld);
 				final Player p = event.getPlayer();
 
 				ProtectedRegion protectedRegion = null;
@@ -186,7 +187,7 @@ public class ListenerHandler implements Listener {
 
 					final double priceMin = Double.parseDouble(token.tplOptions.get("price.min").toString());
 					final double priceMax = Double.parseDouble(token.tplOptions.get("price.max").toString());
-					if (priceMin > price || price < priceMax) {
+					if (priceMin > price || price < priceMax) { // TODO existing signs?
 						final ArrayList<String> lang = new ArrayList<String>();
 						lang.add(String.valueOf(priceMin));
 						lang.add(String.valueOf(priceMax));
