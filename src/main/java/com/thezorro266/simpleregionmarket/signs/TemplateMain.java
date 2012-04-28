@@ -9,25 +9,28 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.thezorro266.simpleregionmarket.SimpleRegionMarket;
 import com.thezorro266.simpleregionmarket.TokenManager;
 import com.thezorro266.simpleregionmarket.Utils;
+import com.thezorro266.simpleregionmarket.handlers.LanguageHandler;
 
 /**
  * @author theZorro266
  * 
  */
 public abstract class TemplateMain {
-	/**
-	 * Standard template attributes
-	 */
 	public String id = null;
+	protected final SimpleRegionMarket plugin;
+	protected final LanguageHandler langHandler;
+	protected final TokenManager tokenManager;
 
 	/**
 	 * HashMap<Key:String, Value:Object>
@@ -38,6 +41,12 @@ public abstract class TemplateMain {
 	 * HashMap<World:String, HashMap<Region:String, HashMap<Key:String, Value:Object>>>
 	 */
 	public HashMap<String, HashMap<String, HashMap<String, Object>>> entries = new HashMap<String, HashMap<String, HashMap<String, Object>>>();
+
+	public TemplateMain(SimpleRegionMarket plugin, LanguageHandler langHandler, TokenManager tokenManager) {
+		this.plugin = plugin;
+		this.langHandler = langHandler;
+		this.tokenManager = tokenManager;
+	}
 
 	public void load() {
 		if (checkTemplate()) {
@@ -163,5 +172,93 @@ public abstract class TemplateMain {
 			return true;
 		}
 		return false;
+	}
+
+	public void ownerClicksTakenSign(String world, String region) {
+		final Player owner = Bukkit.getPlayer(Utils.getEntryString(this, world, region, "owner"));
+		langHandler.outputMessage(owner, "REGION_YOURS", null);
+	}
+
+	public void ownerClicksSign(Player player, String world, String region) {
+		langHandler.outputMessage(player, "REGION_YOURS", null);
+	}
+
+	public void otherClicksTakenSign(Player player, String world, String region) {
+		final ArrayList<String> args = new ArrayList<String>();
+		args.add(Utils.getEntryString(this, world, region, "owner"));
+		langHandler.outputMessage(player, "REGION_TAKEN_BY", args);
+	}
+
+	public void otherClicksSign(Player player, String world, String region) {
+		if (SimpleRegionMarket.econManager.isEconomy()) {
+			String account = Utils.getEntryString(this, world, region, "account");
+			if (account.isEmpty()) {
+				account = null;
+			}
+			final double price = Utils.getEntryDouble(this, world, region, "price");
+			if (SimpleRegionMarket.econManager.moneyTransaction(player.getName(), account, price)) {
+				if (account == null) {
+					takeRegion(player, world, region);
+				}
+			}
+		} else {
+			takeRegion(player, world, region);
+		}
+	}
+
+	public void takeRegion(Player newOwner, String world, String region) {
+		final ProtectedRegion protectedRegion = SimpleRegionMarket.wgManager.getProtectedRegion(Bukkit.getWorld(world), region);
+
+		if (Utils.getEntryBoolean(this, world, region, "taken")) {
+			final Player oldOwner = Bukkit.getPlayer(Utils.getEntryString(this, world, region, "owner"));
+			final ArrayList<String> list = new ArrayList<String>();
+			list.add(region);
+			list.add(newOwner.getName());
+			langHandler.outputMessage(oldOwner, "REGION_TAKE", list);
+			untakeRegion(world, region);
+		} else {
+			// Clear Members and Owners
+			protectedRegion.setMembers(new DefaultDomain());
+			protectedRegion.setOwners(new DefaultDomain());
+		}
+
+		if (tplOptions.get("buyer").toString().equalsIgnoreCase("member")) {
+			protectedRegion.getMembers().addPlayer(SimpleRegionMarket.wgManager.wrapPlayer(newOwner));
+		} else {
+			if (!tplOptions.get("buyer").toString().equalsIgnoreCase("owner")) {
+				langHandler.outputConsole(Level.WARNING, "The buyer state " + tplOptions.get("buyer").toString() + " is not known.");
+			}
+			protectedRegion.getMembers().addPlayer(SimpleRegionMarket.wgManager.wrapPlayer(newOwner));
+		}
+
+		if ((Boolean) tplOptions.get("removesigns")) {
+			final ArrayList<Location> signLocations = Utils.getSignLocations(this, world, region);
+			for (final Location sign : signLocations) {
+				sign.getBlock().setType(Material.AIR);
+			}
+			Utils.setEntry(this, world, region, "signs", null);
+		}
+
+		Utils.setEntry(this, world, region, "taken", true);
+		Utils.setEntry(this, world, region, "owner", newOwner.getName());
+
+		final ArrayList<String> list = new ArrayList<String>();
+		list.add(region);
+		langHandler.outputMessage(newOwner, "REGION_TAKEN", list);
+
+		tokenManager.updateSigns(this, world, region);
+	}
+
+	public void untakeRegion(String world, String region) {
+		final ProtectedRegion protectedRegion = SimpleRegionMarket.wgManager.getProtectedRegion(Bukkit.getWorld(world), region);
+
+		// Clear Members and Owners
+		protectedRegion.setMembers(new DefaultDomain());
+		protectedRegion.setOwners(new DefaultDomain());
+
+		Utils.setEntry(this, world, region, "taken", false);
+		Utils.setEntry(this, world, region, "owner", null);
+
+		tokenManager.updateSigns(this, world, region);
 	}
 }

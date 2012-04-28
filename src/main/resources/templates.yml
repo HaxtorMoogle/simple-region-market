@@ -1,5 +1,7 @@
 sell:
   type: sell
+  removesigns: false
+  buyer: owner
   price.min: 0
   price.max: -1
   input.id: '[SELL]'
@@ -16,28 +18,12 @@ sell:
   taken.2: ''
   taken.3: '[[player]]'
   taken.4: ''
-let:
-  type: let
-  price.min: 0
-  price.max: -1
-  input.id: '[LET]'
-  input.2: '[[region]]'
-  input.3: '[[price]]'
-  input.4: '[[account]]'
-  output.id: 'FOR RENT'
-  output.1: '[[id_out]]'
-  output.2: '[[region]]'
-  output.3: '[[price]]'
-  output.4: '[[x]] x [[y]] x [[z]]'
-  taken.id: 'RENTED'
-  taken.1: '[[id_taken]]'
-  taken.2: ''
-  taken.3: '[[player]]'
-  taken.4: ''
 hotel:
   type: hotel
   price.min: 0
   price.max: -1
+  renttime.min: 0
+  renttime.max: -1
   input.id: '[HOTEL]'
   input.2: '[[region]]'
   input.3: '[[price]]'

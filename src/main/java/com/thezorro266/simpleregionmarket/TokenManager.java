@@ -96,11 +96,11 @@ public class TokenManager {
 			for (final String key : configHandle.getKeys(false)) {
 				final String type = configHandle.getString(key + ".type");
 				if (type.equalsIgnoreCase("sell")) {
-					tokenList.add(new TemplateSell(key));
+					tokenList.add(new TemplateSell(PLUGIN, LANG_HANDLER, this, key));
 				} else if (type.equalsIgnoreCase("let")) {
-					tokenList.add(new TemplateLet(key));
+					tokenList.add(new TemplateLet(PLUGIN, LANG_HANDLER, this, key));
 				} else if (type.equalsIgnoreCase("hotel")) {
-					tokenList.add(new TemplateHotel(key));
+					tokenList.add(new TemplateHotel(PLUGIN, LANG_HANDLER, this, key));
 				} else {
 					LANG_HANDLER.outputConsole(Level.INFO, "I don't know the type " + type + ".");
 				}
@@ -127,8 +127,20 @@ public class TokenManager {
 	}
 
 	public void playerClickedSign(Player player, TemplateMain token, String world, String region) {
-		// TODO Handling when player clickes a sign in world "world" and region "region" with the template "token"
-		LANG_HANDLER.outputConsole(Level.INFO, "Player " + player.getName() + " clicked sign from template " + token.id + " in world " + world + ", region "
-				+ region);
+		if (Utils.getEntryBoolean(token, world, region, "taken")) {
+			if (player.getName().equalsIgnoreCase(Utils.getEntryString(token, world, region, "owner"))) {
+				token.ownerClicksTakenSign(world, region);
+			} else {
+				token.otherClicksTakenSign(player, world, region);
+			}
+		} else {
+			if (playerIsOwner(player, token, world, SimpleRegionMarket.wgManager.getProtectedRegion(Bukkit.getWorld(world), region))) {
+				token.ownerClicksSign(player, world, region);
+			} else {
+				// TODO Permissions!
+				// TODO Limits!
+				token.otherClicksSign(player, world, region);
+			}
+		}
 	}
 }

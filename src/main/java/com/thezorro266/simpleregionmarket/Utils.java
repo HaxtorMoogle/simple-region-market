@@ -1,6 +1,7 @@
 package com.thezorro266.simpleregionmarket;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -11,7 +12,7 @@ import org.bukkit.Location;
 import com.thezorro266.simpleregionmarket.signs.TemplateMain;
 
 public class Utils {
-	public static final int SIGN_LINES = 4;
+	static final int SIGN_LINES = 4;
 
 	public static String replaceTokens(String text, Map<String, String> replacements) {
 		final Pattern pattern = Pattern.compile("\\[\\[(.+?)\\]\\]");
@@ -65,6 +66,10 @@ public class Utils {
 		return (Integer) Utils.getEntry(token, world, region, key);
 	}
 
+	public static long getEntryLong(TemplateMain token, String world, String region, String key) {
+		return (Long) Utils.getEntry(token, world, region, key);
+	}
+
 	@SuppressWarnings("unchecked")
 	public static ArrayList<Location> getSignLocations(TemplateMain token, String world, String region) {
 		final ArrayList<Location> signLocations = (ArrayList<Location>) Utils.getEntry(token, world, region, "signs");
@@ -73,6 +78,14 @@ public class Utils {
 		} else {
 			return signLocations;
 		}
+	}
+
+	public static long getEntryDate(TemplateMain token, String world, String region) {
+		final Date date = (Date) getEntry(token, world, region, "expiredate");
+		if (date != null) {
+			return date.getTime();
+		}
+		return (Long) null;
 	}
 
 	/**

@@ -41,11 +41,6 @@ public class EconomyManager {
 		}
 	}
 
-	/**
-	 * Setup economy with Vault.
-	 * 
-	 * @return the boolean
-	 */
 	private Boolean setupEconomy() {
 		final RegisteredServiceProvider<Economy> economyProvider = Bukkit.getServer().getServicesManager()
 				.getRegistration(net.milkbowl.vault.economy.Economy.class);
@@ -56,11 +51,6 @@ public class EconomyManager {
 		return economy != null;
 	}
 
-	/**
-	 * Gets the economic manager.
-	 * 
-	 * @return the economic manager
-	 */
 	public Method getEconomicManager() {
 		if (Methods.hasMethod()) {
 			return Methods.getMethod();
@@ -71,26 +61,10 @@ public class EconomyManager {
 		}
 	}
 
-	/**
-	 * Checks if economy is enabled.
-	 * 
-	 * @return true, if is economy
-	 */
 	public boolean isEconomy() {
 		return enableEconomy > 0 && (enableEconomy != 1 || getEconomicManager() != null);
 	}
 
-	/**
-	 * Econ give money.
-	 * 
-	 * @param account
-	 *            the account
-	 * @param money
-	 *            the money
-	 * @return true, if successful
-	 * @throws Exception
-	 *             the exception
-	 */
 	public boolean econGiveMoney(String account, double money) throws Exception {
 		final boolean ret = true;
 		if (enableEconomy == 1) {
@@ -115,15 +89,6 @@ public class EconomyManager {
 		return ret;
 	}
 
-	/**
-	 * Econ has enough.
-	 * 
-	 * @param account
-	 *            the account
-	 * @param money
-	 *            the money
-	 * @return true, if successful
-	 */
 	public boolean econHasEnough(String account, double money) {
 		boolean ret = false;
 		if (enableEconomy == 1) {
@@ -136,13 +101,6 @@ public class EconomyManager {
 		return ret;
 	}
 
-	/**
-	 * Format economy like.
-	 * 
-	 * @param price
-	 *            the price
-	 * @return the string
-	 */
 	public String econFormat(double price) {
 		String ret = String.valueOf(price);
 		if (enableEconomy == 1) {
@@ -153,5 +111,33 @@ public class EconomyManager {
 			ret = economy.format(price);
 		}
 		return ret;
+	}
+
+	public boolean moneyTransaction(String from, String to, double money) {
+		try {
+			if (to == null) {
+				if (econHasEnough(from, money)) {
+					econGiveMoney(from, -money);
+				} else {
+					LANG_HANDLER.outputError(Bukkit.getPlayer(from), "ERR_NO_MONEY", null);
+				}
+				return true;
+			} else if (from == null) {
+				econGiveMoney(to, money);
+				return true;
+			} else {
+				if (econHasEnough(from, money)) {
+					econGiveMoney(from, -money);
+					econGiveMoney(to, money);
+				} else {
+					LANG_HANDLER.outputError(Bukkit.getPlayer(from), "ERR_NO_MONEY", null);
+				}
+				return true;
+			}
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+		LANG_HANDLER.outputError(Bukkit.getPlayer(from), "ERR_ECO_TRANSFER", null);
+		return false;
 	}
 }

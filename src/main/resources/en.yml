@@ -38,11 +38,6 @@ ERR_REGION_PRICE_SHOW: Region $0, price $1 and $2.
 ERR_REGION_DELETE: 'Check: Region $0 does not exist anymore. Deleted Sign.'
 ERR_REGION_LIMIT: You have reached your limit of regions on this world.
 ERR_REGION_BUY_YOURS: You cannot buy this region, because its yours.
-REGION_SOLD: The region $0 was just sold to $1.
-REGION_BUYED_NONE: You successfully bought the region $0.
-REGION_BUYED_USER: You successfully bought the region $0 from $1.
-REGION_OFFER_NONE: You offer the region for sale by the server.
-REGION_OFFER_USER: You offer your region for sale.
 ERR_PARENT_NO_OWNER: You do not own the hotel (parent of the region).
 ERR_ALREADY_RENT: This room is already rented by someone.
 ERR_HOTEL_LIMIT: You have reached your limit of rooms on this world.
@@ -94,3 +89,9 @@ LOG_REMMEMBER: $0 removed $1 as member from the region $2.
 LOG_ADDOWNER: $0 added $1 as owner to the region $2.
 LOG_REMOWNER: $0 removed $1 as owner from the region $2.
 HOOKED_CHESTSHOP: Successfully hooked into ChestShop.
+REGION_YOURS: This is your region.
+REGION_TAKEN_BY: This region is owned by $0.
+REGION_TAKE: The region $0 was just taken by $1.
+REGION_TAKEN: You successfully bought the region $0.
+REGION_OFFER_NONE: You offer the region for sale by the server.
+REGION_OFFER_USER: You offer your region for sale.

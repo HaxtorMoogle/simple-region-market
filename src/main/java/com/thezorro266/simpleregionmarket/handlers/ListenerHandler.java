@@ -5,7 +5,6 @@ package com.thezorro266.simpleregionmarket.handlers;
  */
 
 import java.util.ArrayList;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -19,7 +18,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.ItemStack;
 
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -78,9 +76,9 @@ public class ListenerHandler implements Listener {
 					if (!signLocations.isEmpty()) {
 						try {
 							signLocations.remove(blockLocation);
+							Utils.setEntry(token, world, region, "signs", signLocations);
 						} catch (final Exception e) {
 						}
-						Utils.setEntry(token, world, region, "signs", signLocations);
 					}
 				}
 			}
@@ -113,11 +111,6 @@ public class ListenerHandler implements Listener {
 						if (signLocations != null) {
 							for (final Location signLoc : signLocations) {
 								if (signLoc.equals(blockLocation)) {
-									LANG_HANDLER.outputConsole(Level.INFO,
-											player.getName() + " has " + SimpleRegionMarket.limitHandler.countPlayerRegions(player) + " global regions.");
-									LANG_HANDLER.outputConsole(Level.INFO,
-											player.getName() + " has " + SimpleRegionMarket.limitHandler.countPlayerTokenRegions(token, player)
-													+ " regions from " + token.id);
 									TOKEN_MANAGER.playerClickedSign(player, token, world, region);
 									return;
 								}
@@ -156,9 +149,8 @@ public class ListenerHandler implements Listener {
 
 				if (protectedRegion == null) {
 					LANG_HANDLER.outputError(p, "ERR_REGION_NAME", null);
+					event.getBlock().breakNaturally();
 					event.setCancelled(true);
-					event.getBlock().setType(Material.AIR);
-					worldWorld.dropItem(signLocation, new ItemStack(Material.SIGN, 1));
 					return;
 				}
 
@@ -176,9 +168,8 @@ public class ListenerHandler implements Listener {
 							price = Double.parseDouble(event.getLine(2));
 						} catch (final Exception e) {
 							LANG_HANDLER.outputError(p, "ERR_NO_PRICE", null);
+							event.getBlock().breakNaturally();
 							event.setCancelled(true);
-							event.getBlock().setType(Material.AIR);
-							worldWorld.dropItem(signLocation, new ItemStack(Material.SIGN, 1));
 							return;
 						}
 					} else {
@@ -187,14 +178,13 @@ public class ListenerHandler implements Listener {
 
 					final double priceMin = Double.parseDouble(token.tplOptions.get("price.min").toString());
 					final double priceMax = Double.parseDouble(token.tplOptions.get("price.max").toString());
-					if (priceMin > price || price < priceMax) { // TODO existing signs?
+					if (priceMin > price && (priceMax == -1 || price < priceMax)) {
 						final ArrayList<String> lang = new ArrayList<String>();
 						lang.add(String.valueOf(priceMin));
 						lang.add(String.valueOf(priceMax));
 						LANG_HANDLER.outputError(p, "ERR_PRICE_LIMIT", lang);
+						event.getBlock().breakNaturally();
 						event.setCancelled(true);
-						event.getBlock().setType(Material.AIR);
-						worldWorld.dropItem(signLocation, new ItemStack(Material.SIGN, 1));
 						return;
 					}
 
@@ -226,7 +216,7 @@ public class ListenerHandler implements Listener {
 
 		if (!event.isCancelled()) {
 			PLUGIN.saveAll();
-			for (int i = 0; i < Utils.SIGN_LINES; i++) {
+			for (int i = 0; i < 4; i++) {
 				event.setLine(i, ((Sign) event.getBlock().getState()).getLine(i));
 			}
 		}

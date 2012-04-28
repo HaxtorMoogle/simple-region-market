@@ -24,20 +24,8 @@ public class ConfigHandler {
 		if (config.get("logging") == null) {
 			config.set("logging", true);
 		}
-		if (config.get("remove_buyed_signs") == null) {
-			config.set("remove_buyed_signs", true);
-		}
 		if (config.get("enable_economy") == null) {
 			config.set("enable_economy", true);
-		}
-		if (config.get("max_rent_multiplier") == null) {
-			config.set("max_rent_multiplier", 2);
-		}
-		if (config.get("buyer_get_owner") == null) {
-			config.set("buyer_get_owner", true);
-		}
-		if (config.get("renter_get_owner") == null) {
-			config.set("renter_get_owner", false);
 		}
 		if (config.get("defp_player_buy") == null) {
 			config.set("defp_player_buy", false);
