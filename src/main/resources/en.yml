@@ -5,6 +5,7 @@ ERR_NO_ECO_USER: The economic system was not found, please tell the server owner
 ERR_VAULT_ECONOMY: You do not have an economy system besides Vault running.
 ERR_CREATE_ECO_ACCOUNT: 'Error: Could not create economy account "$0".'
 ERR_PRICE_LIMIT: 'The price is not between $0 and $1.'
+ERR_RENTTIME_LIMIT: 'The rent time is not between $0 and $1.'
 NO_REGISTER_VAULT: Neither Register nor Vault was found. Switching to economy-free version.
 CONFIG_SAVED: Config saved successfully.
 PLUGIN_UNLOAD: Plugin successfully unloaded.
@@ -16,17 +17,13 @@ ERR_NO_PLAYER: 'The player "$0" was not found.'
 ERR_NO_REGION: You do not own a region.
 ERR_SPECIFY_REGION: Please specify the region, you have more than one.
 ERR_PRICE_UNDER_ZERO: The price cannot be lower than zero.
-ERR_NO_RENTTIME: Renttime not found.
-ERR_NO_PRICE_RENTTIME: Price and renttime not found.
+ERR_NO_RENTTIME: Rent time not found.
 ERR_NO_PERM: You are not allowed to do that.
 ERR_NO_PERM_SELL: You do not have the permission to sell a region.
 ERR_NO_PERM_BUY: You do not have the permission to buy a region.
 ERR_NO_PERM_RENT: You do not have the permission to rent a region.
 ERR_NO_PERM_LET: You do not have the permission to let a region.
 ERR_PLACE_AGENT: The agent could not be created.
-AGENT_WORLD_REMOVED: World "$0" got removed. Deleting all agents on that world.
-AGENT_REGION_REMOVED: Region "$0" got removed. Deleting all agents on that region.
-AGENT_BLOCK_REMOVED: The sign of the agent got removed somehow. Deleting that agent.
 AGENT_PLACED: You have got now $0 agent(s) placed for this region.
 AGENT_DELETE: Successfully deleted the agent.
 AGENT_YOURS: This is your agent.
@@ -95,3 +92,6 @@ REGION_TAKE: The region $0 was just taken by $1.
 REGION_TAKEN: You successfully bought the region $0.
 REGION_OFFER_NONE: You offer the region for sale by the server.
 REGION_OFFER_USER: You offer your region for sale.
+REGION_DELETE_SIGN: Successfully deleted that sign from the region.
+REGION_ADD_SIGN: Successfully added this sign to the region.
+ERR_OTHER_TOKEN: You can't create a sign from this token, when there are signs from other tokens.

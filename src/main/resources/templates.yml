@@ -22,19 +22,19 @@ hotel:
   type: hotel
   price.min: 0
   price.max: -1
-  renttime.min: 0
+  renttime.min: 60000
   renttime.max: -1
   input.id: '[HOTEL]'
   input.2: '[[region]]'
   input.3: '[[price]]'
-  input.4: '[[account]]'
+  input.4: '[[time]]'
   output.id: 'FOR RENT'
   output.1: '[[id_out]]'
   output.2: '[[region]]'
-  output.3: '[[price]]'
+  output.3: '[[price]] - [[time]]'
   output.4: '[[x]] x [[y]] x [[z]]'
   taken.id: 'OCCUPIED'
   taken.1: '[[id_taken]]'
-  taken.2: ''
-  taken.3: '[[player]]'
-  taken.4: ''
+  taken.2: '[[timeleft]]'
+  taken.3: ''
+  taken.4: '[[player]]'

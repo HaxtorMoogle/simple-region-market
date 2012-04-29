@@ -5,8 +5,6 @@ import java.util.Date;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import com.sk89q.worldguard.domains.DefaultDomain;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.thezorro266.simpleregionmarket.SimpleRegionMarket;
 import com.thezorro266.simpleregionmarket.TokenManager;
 import com.thezorro266.simpleregionmarket.Utils;
@@ -23,10 +21,10 @@ public class TemplateHotel extends TemplateLet {
 
 	@Override
 	public void ownerClicksTakenSign(String world, String region) {
-		final long newRentTime = Utils.getEntryDate(this, world, region) + Utils.getEntryLong(this, world, region, "renttime");
+		final long newRentTime = Utils.getEntryLong(this, world, region, "expiredate") + Utils.getEntryLong(this, world, region, "renttime");
 		final Player owner = Bukkit.getPlayer(Utils.getEntryString(this, world, region, "owner"));
-		if ((Long) tplOptions.get("renttime.max") != -1
-				|| (newRentTime - System.currentTimeMillis()) / Utils.getEntryLong(this, world, region, "renttime") < (Long) tplOptions.get("renttime.max")) {
+		if (Utils.getOptionLong(this, "renttime.max") != -1
+				|| (newRentTime - System.currentTimeMillis()) / Utils.getEntryLong(this, world, region, "renttime") < Utils.getOptionLong(this, "renttime.max")) {
 			if (SimpleRegionMarket.econManager.isEconomy()) {
 				String account = Utils.getEntryString(this, world, region, "account");
 				if (account.isEmpty()) {
@@ -47,36 +45,17 @@ public class TemplateHotel extends TemplateLet {
 			langHandler.outputError(owner, "ERR_RERENT_TOO_LONG", null);
 		}
 	}
-
+	
 	@Override
-	public void takeRegion(Player newOwner, String world, String region) {
-		final ProtectedRegion protectedRegion = SimpleRegionMarket.wgManager.getProtectedRegion(Bukkit.getWorld(world), region);
-
-		// Clear Members and Owners
-		protectedRegion.setMembers(new DefaultDomain());
-		protectedRegion.setOwners(new DefaultDomain());
-
-		protectedRegion.getMembers().addPlayer(SimpleRegionMarket.wgManager.wrapPlayer(newOwner));
-
-		Utils.setEntry(this, world, region, "taken", true);
-		Utils.setEntry(this, world, region, "owner", newOwner.getName());
-		Utils.setEntry(this, world, region, "expiredate", new Date(Utils.getEntryLong(this, world, region, "renttime")));
-
-		tokenManager.updateSigns(this, world, region);
-	}
-
-	@Override
-	public void untakeRegion(String world, String region) {
-		final ProtectedRegion protectedRegion = SimpleRegionMarket.wgManager.getProtectedRegion(Bukkit.getWorld(world), region);
-
-		// Clear Members and Owners
-		protectedRegion.setMembers(new DefaultDomain());
-		protectedRegion.setOwners(new DefaultDomain());
-
-		Utils.setEntry(this, world, region, "taken", false);
-		Utils.setEntry(this, world, region, "owner", null);
-		Utils.setEntry(this, world, region, "expiredate", null);
-
-		tokenManager.updateSigns(this, world, region);
+	public void schedule(String world, String region) {
+		if(Utils.getEntryBoolean(this, world, region, "taken")) {
+			if(Utils.getEntryLong(this, world, region, "expiredate") < System.currentTimeMillis()) {
+				untakeRegion(world, region);
+				final Player player = Bukkit.getPlayer(Utils.getEntryString(this, world, region, "owner"));
+				if(player != null) {
+					langHandler.outputMessage(player, "HOTEL_EXPIRED", null);
+				}
+			}
+		}
 	}
 }

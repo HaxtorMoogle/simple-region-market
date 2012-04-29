@@ -1,9 +1,5 @@
 package com.thezorro266.simpleregionmarket.handlers;
 
-/*
- * 
- */
-
 import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
@@ -20,7 +16,6 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.thezorro266.simpleregionmarket.SimpleRegionMarket;
 import com.thezorro266.simpleregionmarket.TokenManager;
@@ -28,9 +23,9 @@ import com.thezorro266.simpleregionmarket.Utils;
 import com.thezorro266.simpleregionmarket.signs.TemplateMain;
 
 public class ListenerHandler implements Listener {
-	private final LanguageHandler LANG_HANDLER;
-	private final SimpleRegionMarket PLUGIN;
-	private final TokenManager TOKEN_MANAGER;
+	private final LanguageHandler langHandler;
+	private final SimpleRegionMarket plugin;
+	private final TokenManager tokenManager;
 
 	/**
 	 * Instantiates a new listener handler.
@@ -42,9 +37,9 @@ public class ListenerHandler implements Listener {
 	 */
 	public ListenerHandler(SimpleRegionMarket plugin, LanguageHandler langHandler, TokenManager tokenManager) {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
-		PLUGIN = plugin;
-		LANG_HANDLER = langHandler;
-		TOKEN_MANAGER = tokenManager;
+		this.plugin = plugin;
+		this.langHandler = langHandler;
+		this.tokenManager = tokenManager;
 	}
 
 	/**
@@ -63,27 +58,20 @@ public class ListenerHandler implements Listener {
 			final ApplicableRegionSet regions = SimpleRegionMarket.wgManager.getWorldGuard().getRegionManager(worldWorld).getApplicableRegions(blockLocation);
 			for (final TemplateMain token : TokenManager.tokenList) {
 				for (final ProtectedRegion protectedRegion : regions) {
-					final String region = protectedRegion.getId();
-
-					final Player player = event.getPlayer();
-					if (!SimpleRegionMarket.permManager.isAdmin(player) && !TOKEN_MANAGER.playerIsOwner(player, token, world, protectedRegion)) {
-						LANG_HANDLER.outputError(player, "ERR_REGION_NO_OWNER", null);
-						event.setCancelled(true);
-						return;
-					}
-
-					final ArrayList<Location> signLocations = Utils.getSignLocations(token, world, region);
-					if (!signLocations.isEmpty()) {
-						try {
-							signLocations.remove(blockLocation);
-							Utils.setEntry(token, world, region, "signs", signLocations);
-						} catch (final Exception e) {
+					String region = protectedRegion.getId();
+					if(Utils.getEntry(token, world, region, "signs") != null) {
+						final ArrayList<Location> signLocations = Utils.getSignLocations(token, world, region);
+						if(signLocations.contains(blockLocation)) {
+							if(!tokenManager.playerSignBreak(event.getPlayer(), token, world, protectedRegion, blockLocation)) {
+								event.setCancelled(true);
+							}
+							plugin.saveAll();
+							return;
 						}
 					}
 				}
 			}
 		}
-		PLUGIN.saveAll();
 	}
 
 	/**
@@ -111,7 +99,8 @@ public class ListenerHandler implements Listener {
 						if (signLocations != null) {
 							for (final Location signLoc : signLocations) {
 								if (signLoc.equals(blockLocation)) {
-									TOKEN_MANAGER.playerClickedSign(player, token, world, region);
+									tokenManager.playerClickedSign(player, token, world, region);
+									plugin.saveAll();
 									return;
 								}
 							}
@@ -131,93 +120,27 @@ public class ListenerHandler implements Listener {
 	@EventHandler
 	public void onSignChange(final SignChangeEvent event) {
 		for (final TemplateMain token : TokenManager.tokenList) {
-			if (event.getLine(0).equalsIgnoreCase((String) token.tplOptions.get("input.id"))) {
+			if (event.getLine(0).equalsIgnoreCase(Utils.getOptionString(token, "input.id"))) {
 				final Location signLocation = event.getBlock().getLocation();
-				final World worldWorld = signLocation.getWorld();
-				final RegionManager worldRegionManager = SimpleRegionMarket.wgManager.getWorldGuard().getRegionManager(worldWorld);
-				final Player p = event.getPlayer();
-
-				ProtectedRegion protectedRegion = null;
-
-				if (event.getLine(1).isEmpty()) {
-					if (worldRegionManager.getApplicableRegions(signLocation).size() == 1) {
-						protectedRegion = worldRegionManager.getApplicableRegions(signLocation).iterator().next();
-					}
-				} else {
-					protectedRegion = worldRegionManager.getRegion(event.getLine(1));
+				
+				String lines[] = new String[4];
+				for (int i = 0; i < 4; i++) {
+					lines[i] = event.getLine(i);
 				}
-
-				if (protectedRegion == null) {
-					LANG_HANDLER.outputError(p, "ERR_REGION_NAME", null);
+				
+				if(!tokenManager.playerCreatedSign(event.getPlayer(), token, signLocation, lines)) {
 					event.getBlock().breakNaturally();
 					event.setCancelled(true);
 					return;
 				}
-
-				// TOKEN_MANAGER.addSign() - Sinnvoll?
-				final String world = worldWorld.getName();
-				final String region = protectedRegion.getId();
-				if (token.entries.containsKey(world) && token.entries.get(world).containsKey(region)) {
-					final ArrayList<Location> signLocations = Utils.getSignLocations(token, world, region);
-					signLocations.add(signLocation);
-					Utils.setEntry(token, world, region, "signs", signLocations);
-				} else {
-					double price;
-					if (SimpleRegionMarket.econManager.isEconomy() && !event.getLine(2).isEmpty()) {
-						try {
-							price = Double.parseDouble(event.getLine(2));
-						} catch (final Exception e) {
-							LANG_HANDLER.outputError(p, "ERR_NO_PRICE", null);
-							event.getBlock().breakNaturally();
-							event.setCancelled(true);
-							return;
-						}
-					} else {
-						price = 0;
-					}
-
-					final double priceMin = Double.parseDouble(token.tplOptions.get("price.min").toString());
-					final double priceMax = Double.parseDouble(token.tplOptions.get("price.max").toString());
-					if (priceMin > price && (priceMax == -1 || price < priceMax)) {
-						final ArrayList<String> lang = new ArrayList<String>();
-						lang.add(String.valueOf(priceMin));
-						lang.add(String.valueOf(priceMax));
-						LANG_HANDLER.outputError(p, "ERR_PRICE_LIMIT", lang);
-						event.getBlock().breakNaturally();
-						event.setCancelled(true);
-						return;
-					}
-
-					String account = p.getName();
-					if (!event.getLine(3).isEmpty()) {
-						if (SimpleRegionMarket.permManager.isAdmin(p)) {
-							if (event.getLine(3).equalsIgnoreCase("none")) {
-								account = "";
-							} else {
-								account = event.getLine(3);
-							}
-						}
-					}
-
-					Utils.setEntry(token, world, region, "price", price);
-					Utils.setEntry(token, world, region, "account", account);
-					Utils.setEntry(token, world, region, "taken", false);
-					Utils.setEntry(token, world, region, "owner", "");
-
-					final ArrayList<Location> signLocations = new ArrayList<Location>();
-					signLocations.add(signLocation);
-					Utils.setEntry(token, world, region, "signs", signLocations);
+				
+				for (int i = 0; i < 4; i++) {
+					event.setLine(i, ((Sign) event.getBlock().getState()).getLine(i));
 				}
 
-				TOKEN_MANAGER.updateSigns(token, world, region);
+				langHandler.outputMessage(event.getPlayer(), "REGION_ADD_SIGN", null);
+				plugin.saveAll();
 				break;
-			}
-		}
-
-		if (!event.isCancelled()) {
-			PLUGIN.saveAll();
-			for (int i = 0; i < 4; i++) {
-				event.setLine(i, ((Sign) event.getBlock().getState()).getLine(i));
 			}
 		}
 	}
