@@ -1,5 +1,5 @@
 name: ${project.name}
-version: ${project.version}
+version: ${majorversion}-${state}
 author: theZorro266
 website: ${project.url}
 main: ${project.groupId}.${project.artifactId}.${project.name}

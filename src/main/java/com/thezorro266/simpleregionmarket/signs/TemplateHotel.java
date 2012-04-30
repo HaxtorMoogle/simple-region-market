@@ -45,14 +45,14 @@ public class TemplateHotel extends TemplateLet {
 			langHandler.outputError(owner, "ERR_RERENT_TOO_LONG", null);
 		}
 	}
-	
+
 	@Override
 	public void schedule(String world, String region) {
-		if(Utils.getEntryBoolean(this, world, region, "taken")) {
-			if(Utils.getEntryLong(this, world, region, "expiredate") < System.currentTimeMillis()) {
+		if (Utils.getEntryBoolean(this, world, region, "taken")) {
+			if (Utils.getEntryLong(this, world, region, "expiredate") < System.currentTimeMillis()) {
 				untakeRegion(world, region);
 				final Player player = Bukkit.getPlayer(Utils.getEntryString(this, world, region, "owner"));
-				if(player != null) {
+				if (player != null) {
 					langHandler.outputMessage(player, "HOTEL_EXPIRED", null);
 				}
 			}

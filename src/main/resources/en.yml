@@ -83,6 +83,7 @@ LOG_ADDOWNER: $0 added $1 as owner to the region $2.
 LOG_REMOWNER: $0 removed $1 as owner from the region $2.
 HOOKED_CHESTSHOP: Successfully hooked into ChestShop.
 REGION_YOURS: This is your region.
+REGION_DELETE: Successfully deleted the region.
 REGION_TAKEN_BY: This region is owned by $0.
 REGION_TAKE: The region $0 was just taken by $1.
 REGION_TAKEN: You successfully bought the region $0.
@@ -91,6 +92,7 @@ REGION_OFFER_USER: You offer your region for sale.
 REGION_DELETE_SIGN: Successfully deleted that sign from the region.
 REGION_ADD_SIGN: Successfully added this sign to the region.
 ERR_OTHER_TOKEN: You can't create a sign from this token, when there are signs from other tokens.
+ERR_NEED_ONE_SIGN: This template needs at least one sign, when it's taken.
 LIMIT_GLOBAL: You have reached the global region limit.
 LIMIT_TOKEN: You have reached the token region limit.
 LIMIT_GLOBAL_WORLD: You have reached the global region limit in this world.

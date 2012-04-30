@@ -70,15 +70,20 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 		commandHandler = new CommandHandler(this, langHandler);
 		getCommand("regionmarket").setExecutor(commandHandler);
-		
+
 		// Check all signs and output stats
 		long ms = System.currentTimeMillis();
-		int[] count = tokenManager.checkRegions();
-		ms = System.currentTimeMillis()-ms;
-		langHandler.outputConsole(Level.INFO, "Loaded "+TokenManager.tokenList.size()+" template(s), "+count[0]+" world(s) and "+count[1]+" region(s).");
-		langHandler.outputConsole(Level.INFO, "The check took "+ms+"ms");
+		final int[] count = tokenManager.checkRegions();
+		ms = System.currentTimeMillis() - ms;
+		langHandler.outputConsole(Level.INFO, "Loaded " + TokenManager.tokenList.size() + " template(s), " + count[0] + " world(s) and " + count[1]
+				+ " region(s).");
+		langHandler.outputConsole(Level.INFO, "The check took " + ms + "ms");
 
-		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() { public void run() { tokenManager.checkRegions(); } }, 1200L, 1200L);
+		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+			public void run() {
+				tokenManager.checkRegions();
+			}
+		}, 1200L, 1200L);
 	}
 
 	/**

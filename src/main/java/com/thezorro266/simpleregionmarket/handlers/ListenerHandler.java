@@ -58,11 +58,11 @@ public class ListenerHandler implements Listener {
 			final ApplicableRegionSet regions = SimpleRegionMarket.wgManager.getWorldGuard().getRegionManager(worldWorld).getApplicableRegions(blockLocation);
 			for (final TemplateMain token : TokenManager.tokenList) {
 				for (final ProtectedRegion protectedRegion : regions) {
-					String region = protectedRegion.getId();
-					if(Utils.getEntry(token, world, region, "signs") != null) {
+					final String region = protectedRegion.getId();
+					if (Utils.getEntry(token, world, region, "signs") != null) {
 						final ArrayList<Location> signLocations = Utils.getSignLocations(token, world, region);
-						if(signLocations.contains(blockLocation)) {
-							if(!tokenManager.playerSignBreak(event.getPlayer(), token, world, protectedRegion, blockLocation)) {
+						if (signLocations.contains(blockLocation)) {
+							if (!tokenManager.playerSignBreak(event.getPlayer(), token, world, protectedRegion, blockLocation)) {
 								event.setCancelled(true);
 							}
 							plugin.saveAll();
@@ -122,18 +122,18 @@ public class ListenerHandler implements Listener {
 		for (final TemplateMain token : TokenManager.tokenList) {
 			if (event.getLine(0).equalsIgnoreCase(Utils.getOptionString(token, "input.id"))) {
 				final Location signLocation = event.getBlock().getLocation();
-				
-				String lines[] = new String[4];
+
+				final String lines[] = new String[4];
 				for (int i = 0; i < 4; i++) {
 					lines[i] = event.getLine(i);
 				}
-				
-				if(!tokenManager.playerCreatedSign(event.getPlayer(), token, signLocation, lines)) {
+
+				if (!tokenManager.playerCreatedSign(event.getPlayer(), token, signLocation, lines)) {
 					event.getBlock().breakNaturally();
 					event.setCancelled(true);
 					return;
 				}
-				
+
 				for (int i = 0; i < 4; i++) {
 					event.setLine(i, ((Sign) event.getBlock().getState()).getLine(i));
 				}

@@ -28,6 +28,8 @@ import com.thezorro266.simpleregionmarket.handlers.LanguageHandler;
  */
 public abstract class TemplateMain {
 	public String id = null;
+	public boolean canLiveWithoutSigns = true;
+	
 	protected final SimpleRegionMarket plugin;
 	protected final LanguageHandler langHandler;
 	protected final TokenManager tokenManager;
@@ -168,7 +170,8 @@ public abstract class TemplateMain {
 	}
 
 	public boolean isRegionOwner(Player player, String world, String region) {
-		if(Utils.getEntry(this, world, region, "taken") != null && Utils.getEntryBoolean(this, world, region, "taken") && Utils.getEntry(this, world, region, "owner") != null) {
+		if (Utils.getEntry(this, world, region, "taken") != null && Utils.getEntryBoolean(this, world, region, "taken")
+				&& Utils.getEntry(this, world, region, "owner") != null) {
 			if (Utils.getEntryString(this, world, region, "owner").equalsIgnoreCase(player.getName())) {
 				return true;
 			}
@@ -232,7 +235,7 @@ public abstract class TemplateMain {
 			}
 			protectedRegion.getMembers().addPlayer(SimpleRegionMarket.wgManager.wrapPlayer(newOwner));
 		}
-		
+
 		if (Utils.getOptionBoolean(this, "removesigns")) {
 			final ArrayList<Location> signLocations = Utils.getSignLocations(this, world, region);
 			for (final Location sign : signLocations) {
@@ -263,16 +266,17 @@ public abstract class TemplateMain {
 
 		tokenManager.updateSigns(this, world, region);
 	}
-	
-	public boolean signCreated(Player player, String world, ProtectedRegion protectedRegion, Location signLocation, HashMap<String, String> input, String[] lines) {
+
+	public boolean signCreated(Player player, String world, ProtectedRegion protectedRegion, Location signLocation, HashMap<String, String> input,
+			String[] lines) {
 		final String region = protectedRegion.getId();
 		final ArrayList<Location> signLocations = Utils.getSignLocations(this, world, region);
-		
+
 		if (!entries.containsKey(world) || !entries.get(world).containsKey(region)) {
 			double price;
 			if (SimpleRegionMarket.econManager.isEconomy() && input.get("price") != null) {
 				try {
-					price = Double.parseDouble((String) input.get("price"));
+					price = Double.parseDouble(input.get("price"));
 				} catch (final Exception e) {
 					langHandler.outputError(player, "ERR_NO_PRICE", null);
 					return false;
@@ -294,10 +298,10 @@ public abstract class TemplateMain {
 			String account = player.getName();
 			if (input.get("account") != null) {
 				if (SimpleRegionMarket.permManager.isAdmin(player)) {
-					if (((String) input.get("account")).equalsIgnoreCase("none")) {
+					if (input.get("account").equalsIgnoreCase("none")) {
 						account = "";
 					} else {
-						account = (String) input.get("account");
+						account = input.get("account");
 					}
 				}
 			}
@@ -307,7 +311,7 @@ public abstract class TemplateMain {
 			Utils.setEntry(this, world, region, "taken", false);
 			Utils.removeEntry(this, world, region, "owner");
 		}
-		
+
 		signLocations.add(signLocation);
 		Utils.setEntry(this, world, region, "signs", signLocations);
 

@@ -28,8 +28,8 @@ public class Utils {
 					matcher.appendReplacement(buffer, "");
 					buffer.append(replacement);
 				}
-			} catch (Exception e) {
-				Bukkit.getLogger().log(Level.INFO, "Replacement map has a misconfiguration at "+matcher.group(1));
+			} catch (final Exception e) {
+				Bukkit.getLogger().log(Level.INFO, "Replacement map has a misconfiguration at " + matcher.group(1));
 			}
 		}
 		matcher.appendTail(buffer);
@@ -37,10 +37,10 @@ public class Utils {
 	}
 
 	public static HashMap<String, String> getSignInput(TemplateMain token, String[] lines) {
-		HashMap<String, String> hashMap = new HashMap<String, String>();
-		for(int i=0; i < lines.length; i++) {
-			String inputLine = Utils.getOptionString(token, "input."+(i+1));
-			if(inputLine != null) {
+		final HashMap<String, String> hashMap = new HashMap<String, String>();
+		for (int i = 0; i < lines.length; i++) {
+			final String inputLine = Utils.getOptionString(token, "input." + (i + 1));
+			if (inputLine != null) {
 				final Pattern pattern = Pattern.compile("\\[\\[(.+?)\\]\\]");
 				final Matcher matcher = pattern.matcher(inputLine);
 				while (matcher.find()) {
@@ -74,6 +74,24 @@ public class Utils {
 			token.entries.get(world).get(region).remove(key);
 		}
 	}
+	
+	public static void removeRegion(TemplateMain token, String world, String region) {
+		if(token != null && world != null && region != null) {
+			if(token.entries.containsKey(world)) {
+				if(token.entries.get(world).containsKey(region)) {
+					token.entries.get(world).remove(region);
+				}
+			}
+		}
+	}
+	
+	public static void removeWorld(TemplateMain token, String world) {
+		if(token != null && world != null) {
+			if(token.entries.containsKey(world)) {
+				token.entries.remove(world);
+			}
+		}
+	}
 
 	public static Object getEntry(TemplateMain token, String world, String region, String key) {
 		if (token != null && world != null && region != null && key != null) {
@@ -86,42 +104,42 @@ public class Utils {
 
 	public static String getEntryString(TemplateMain token, String world, String region, String key) {
 		Object entry = Utils.getEntry(token, world, region, key);
-		if(entry != null) {
+		if (entry != null) {
 			entry = entry.toString();
 		}
 		return (String) entry;
 	}
 
 	public static boolean getEntryBoolean(TemplateMain token, String world, String region, String key) {
-		String strEntry = Utils.getEntryString(token, world, region, key);
-		if(strEntry != null) {
+		final String strEntry = Utils.getEntryString(token, world, region, key);
+		if (strEntry != null) {
 			return Boolean.parseBoolean(strEntry);
 		}
-		return (Boolean) null;
+		return false;
 	}
 
 	public static double getEntryDouble(TemplateMain token, String world, String region, String key) {
-		String strEntry = Utils.getEntryString(token, world, region, key);
-		if(strEntry != null) {
+		final String strEntry = Utils.getEntryString(token, world, region, key);
+		if (strEntry != null) {
 			return Double.parseDouble(strEntry);
 		}
-		return (Double) null;
+		return 0;
 	}
 
 	public static int getEntryInteger(TemplateMain token, String world, String region, String key) {
-		String strEntry = Utils.getEntryString(token, world, region, key);
-		if(strEntry != null) {
+		final String strEntry = Utils.getEntryString(token, world, region, key);
+		if (strEntry != null) {
 			return Integer.parseInt(strEntry);
 		}
-		return (Integer) null;
+		return 0;
 	}
 
 	public static long getEntryLong(TemplateMain token, String world, String region, String key) {
-		String strEntry = Utils.getEntryString(token, world, region, key);
-		if(strEntry != null) {
+		final String strEntry = Utils.getEntryString(token, world, region, key);
+		if (strEntry != null) {
 			return Long.parseLong(strEntry);
 		}
-		return (Long) null;
+		return 0;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -145,47 +163,47 @@ public class Utils {
 
 	public static String getOptionString(TemplateMain token, String key) {
 		Object entry = Utils.getOption(token, key);
-		if(entry != null) {
+		if (entry != null) {
 			entry = entry.toString();
 		}
 		return (String) entry;
 	}
 
 	public static boolean getOptionBoolean(TemplateMain token, String key) {
-		String strEntry = Utils.getOptionString(token, key);
-		if(strEntry != null) {
+		final String strEntry = Utils.getOptionString(token, key);
+		if (strEntry != null) {
 			return Boolean.parseBoolean(strEntry);
 		}
-		return (Boolean) null;
+		return false;
 	}
 
 	public static double getOptionDouble(TemplateMain token, String key) {
-		String strEntry = Utils.getOptionString(token, key);
-		if(strEntry != null) {
+		final String strEntry = Utils.getOptionString(token, key);
+		if (strEntry != null) {
 			return Double.parseDouble(strEntry);
 		}
-		return (Double) null;
+		return 0;
 	}
 
 	public static int getOptionInteger(TemplateMain token, String key) {
-		String strEntry = Utils.getOptionString(token, key);
-		if(strEntry != null) {
+		final String strEntry = Utils.getOptionString(token, key);
+		if (strEntry != null) {
 			return Integer.parseInt(strEntry);
 		}
-		return (Integer) null;
+		return 0;
 	}
 
 	public static long getOptionLong(TemplateMain token, String key) {
-		String strEntry = Utils.getOptionString(token, key);
-		if(strEntry != null) {
+		final String strEntry = Utils.getOptionString(token, key);
+		if (strEntry != null) {
 			return Long.parseLong(strEntry);
 		}
-		return (Long) null;
+		return 0;
 	}
 
 	public static ProtectedRegion getProtectedRegion(String region, Location signLocation) {
 		ProtectedRegion protectedRegion = null;
-		RegionManager worldRegionManager = SimpleRegionMarket.wgManager.getWorldGuard().getRegionManager(signLocation.getWorld());
+		final RegionManager worldRegionManager = SimpleRegionMarket.wgManager.getWorldGuard().getRegionManager(signLocation.getWorld());
 		if (region == null || region.isEmpty()) {
 			if (worldRegionManager.getApplicableRegions(signLocation).size() == 1) {
 				protectedRegion = worldRegionManager.getApplicableRegions(signLocation).iterator().next();

@@ -20,6 +20,8 @@ import com.thezorro266.simpleregionmarket.handlers.LanguageHandler;
  * 
  */
 public class TemplateLet extends TemplateMain {
+	public boolean canLiveWithoutSigns = false;
+	
 	public TemplateLet(SimpleRegionMarket plugin, LanguageHandler langHandler, TokenManager tokenManager, String tplId) {
 		super(plugin, langHandler, tokenManager);
 		id = tplId;
@@ -59,17 +61,18 @@ public class TemplateLet extends TemplateMain {
 	}
 
 	@Override
-	public boolean signCreated(Player player, String world, ProtectedRegion protectedRegion, Location signLocation, HashMap<String, String> input, String[] lines) {
+	public boolean signCreated(Player player, String world, ProtectedRegion protectedRegion, Location signLocation, HashMap<String, String> input,
+			String[] lines) {
 		final String region = protectedRegion.getId();
 		final ArrayList<Location> signLocations = Utils.getSignLocations(this, world, region);
-		
+
 		if (!entries.containsKey(world) || !entries.get(world).containsKey(region)) {
 			final double priceMin = Utils.getOptionDouble(this, "price.min");
 			final double priceMax = Utils.getOptionDouble(this, "price.max");
 			double price;
 			if (SimpleRegionMarket.econManager.isEconomy() && input.get("price") != null) {
 				try {
-					price = Double.parseDouble((String) input.get("price"));
+					price = Double.parseDouble(input.get("price"));
 				} catch (final Exception e) {
 					langHandler.outputError(player, "ERR_NO_PRICE", null);
 					return false;
@@ -91,8 +94,8 @@ public class TemplateLet extends TemplateMain {
 			long renttime;
 			if (!input.get("time").isEmpty()) {
 				try {
-					renttime = Utils.parseSignTime((String) input.get("time"));
-				} catch (Exception e) {
+					renttime = Utils.parseSignTime(input.get("time"));
+				} catch (final Exception e) {
 					langHandler.outputError(player, "ERR_NO_RENTTIME", null);
 					return false;
 				}
@@ -100,7 +103,7 @@ public class TemplateLet extends TemplateMain {
 				langHandler.outputError(player, "ERR_NO_RENTTIME", null);
 				return false;
 			}
-			
+
 			if (renttimeMin > renttime && (renttimeMax == -1 || renttime < renttimeMax)) {
 				final ArrayList<String> list = new ArrayList<String>();
 				list.add(String.valueOf(renttimeMin));
@@ -108,7 +111,6 @@ public class TemplateLet extends TemplateMain {
 				langHandler.outputError(player, "ERR_RENTTIME_LIMIT", list);
 				return false;
 			}
-			
 
 			Utils.setEntry(this, world, region, "price", price);
 			Utils.setEntry(this, world, region, "renttime", renttime);
@@ -116,26 +118,26 @@ public class TemplateLet extends TemplateMain {
 			Utils.setEntry(this, world, region, "taken", false);
 			Utils.removeEntry(this, world, region, "owner");
 		}
-		
+
 		signLocations.add(signLocation);
 		Utils.setEntry(this, world, region, "signs", signLocations);
 
 		tokenManager.updateSigns(this, world, region);
 		return true;
 	}
-	
+
 	@Override
 	public Map<String, String> getReplacementMap(String world, String region) {
-		HashMap<String, String> replacementMap = (HashMap<String, String>) super.getReplacementMap(world, region);
-		if(replacementMap != null) {
+		final HashMap<String, String> replacementMap = (HashMap<String, String>) super.getReplacementMap(world, region);
+		if (replacementMap != null) {
 			replacementMap.put("time", Utils.getSignTime(Utils.getEntryLong(this, world, region, "renttime")));
-			if(Utils.getEntry(this, world, region, "expiredate") != null) {
+			if (Utils.getEntry(this, world, region, "expiredate") != null) {
 				replacementMap.put("timeleft", Utils.getSignTime(Utils.getEntryLong(this, world, region, "expiredate") - System.currentTimeMillis()));
 			}
 		}
 		return replacementMap;
 	}
-	
+
 	@Override
 	public void schedule(String world, String region) {
 		// TODO Automatic extend
