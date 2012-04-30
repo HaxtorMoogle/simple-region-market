@@ -31,11 +31,9 @@ ERR_REGION_OWNER: You own this region.
 ERR_REGION_PRICE: There were found some signs, which do not have the same price.
 ERR_REGION_PRICE_SHOW: Region $0, price $1 and $2.
 ERR_REGION_DELETE: 'Check: Region $0 does not exist anymore. Deleted Sign.'
-ERR_REGION_LIMIT: You have reached your limit of regions on this world.
 ERR_REGION_BUY_YOURS: You cannot buy this region, because its yours.
 ERR_PARENT_NO_OWNER: You do not own the hotel (parent of the region).
 ERR_ALREADY_RENT: This room is already rented by someone.
-ERR_HOTEL_LIMIT: You have reached your limit of rooms on this world.
 ERR_RERENT_TOO_LONG: You cannot extend your room.
 HOTEL_SUCCESS_RERENT: You successfully extended your room's time.
 HOTEL_YOURS: You cannot rent a room in your hotel.
@@ -93,3 +91,9 @@ REGION_OFFER_USER: You offer your region for sale.
 REGION_DELETE_SIGN: Successfully deleted that sign from the region.
 REGION_ADD_SIGN: Successfully added this sign to the region.
 ERR_OTHER_TOKEN: You can't create a sign from this token, when there are signs from other tokens.
+LIMIT_GLOBAL: You have reached the global region limit.
+LIMIT_TOKEN: You have reached the token region limit.
+LIMIT_GLOBAL_WORLD: You have reached the global region limit in this world.
+LIMIT_TOKEN_WORLD: You have reached the token region limit in this world.
+LIMIT_GLOBAL_PARENTREGION: You have reached the global region limit for this parent region.
+LIMIT_TOKEN_PARENTREGION: You have reached the token region limit for this parent region.

@@ -21,9 +21,6 @@ import com.thezorro266.simpleregionmarket.signs.TemplateMain;
 import com.thezorro266.simpleregionmarket.signs.TemplateSell;
 
 public class TokenManager {
-	/**
-	 * Static final attributes
-	 */
 	public final static String CONFIG_NAME = "templates.yml";
 	public final static File CONFIG_FILE = new File(SimpleRegionMarket.getPluginDir() + CONFIG_NAME);
 
@@ -181,8 +178,37 @@ public class TokenManager {
 			} else {
 				// Permissions
 				if(SimpleRegionMarket.permManager.canPlayerBuyToken(player, token)) {
-					// TODO Limits!
-					token.otherClicksSign(player, world, region);
+					// Limits
+					if(SimpleRegionMarket.limitHandler.checkPlayerGlobal(player)) {
+						if(SimpleRegionMarket.limitHandler.checkPlayerToken(player, token)) {
+							if(SimpleRegionMarket.limitHandler.checkPlayerGlobalWorld(player, world)) {
+								if(SimpleRegionMarket.limitHandler.checkPlayerTokenWorld(player, token, world)) {
+									ProtectedRegion protectedRegion = SimpleRegionMarket.wgManager.getProtectedRegion(Bukkit.getWorld(world), region);
+									if(protectedRegion == null) {
+										token.otherClicksSign(player, world, region);
+									} else {
+										if(SimpleRegionMarket.limitHandler.checkPlayerGlobalRegion(player, protectedRegion.getParent())) {
+											if(SimpleRegionMarket.limitHandler.checkPlayerTokenRegion(player, token, protectedRegion.getParent())) {
+												token.otherClicksSign(player, world, region);
+											} else {
+												langHandler.outputError(player, "LIMIT_TOKEN_PARENTREGION", null);
+											}
+										} else {
+											langHandler.outputError(player, "LIMIT_GLOBAL_PARENTREGION", null);
+										}
+									}
+								} else {
+									langHandler.outputError(player, "LIMIT_TOKEN_WORLD", null);
+								}
+							} else {
+								langHandler.outputError(player, "LIMIT_GLOBAL_WORLD", null);
+							}
+						} else {
+							langHandler.outputError(player, "LIMIT_TOKEN", null);
+						}
+					} else {
+						langHandler.outputError(player, "LIMIT_GLOBAL", null);
+					}
 				} else {
 					langHandler.outputError(player, "ERR_NO_PERM_BUY", null);
 				}
@@ -216,8 +242,7 @@ public class TokenManager {
 			langHandler.outputError(player, "ERR_NO_PERM_SELL", null);
 			return false;
 		}
-		
-		// TODO Limits!
+
 		return token.signCreated(player, world, protectedRegion, signLocation, input, lines);
 	}
 	

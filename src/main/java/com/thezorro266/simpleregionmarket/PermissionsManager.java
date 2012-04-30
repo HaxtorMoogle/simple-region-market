@@ -6,7 +6,7 @@ import com.thezorro266.simpleregionmarket.signs.TemplateMain;
 
 public class PermissionsManager {
 	public void setupTokenPermissions() {
-		
+		// TODO register permissions
 	}
 	
 	public boolean canPlayerBuyToken(Player player, TemplateMain token) {
