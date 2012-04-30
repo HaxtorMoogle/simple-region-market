@@ -21,8 +21,6 @@ ERR_NO_RENTTIME: Rent time not found.
 ERR_NO_PERM: You are not allowed to do that.
 ERR_NO_PERM_SELL: You do not have the permission to sell a region.
 ERR_NO_PERM_BUY: You do not have the permission to buy a region.
-ERR_NO_PERM_RENT: You do not have the permission to rent a region.
-ERR_NO_PERM_LET: You do not have the permission to let a region.
 ERR_PLACE_AGENT: The agent could not be created.
 AGENT_PLACED: You have got now $0 agent(s) placed for this region.
 AGENT_DELETE: Successfully deleted the agent.

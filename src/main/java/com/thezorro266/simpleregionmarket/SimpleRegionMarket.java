@@ -25,7 +25,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 	// Public classes:
 	public static ConfigHandler configurationHandler = null;
 	public static WorldGuardManager wgManager = null;
-	public static PermissionManager permManager = null;
+	public static PermissionsManager permManager = null;
 	public static EconomyManager econManager = null;
 	public static LimitHandler limitHandler = null;
 
@@ -54,7 +54,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 		wgManager = new WorldGuardManager(langHandler);
 
-		permManager = new PermissionManager();
+		permManager = new PermissionsManager();
 
 		econManager = new EconomyManager(this, langHandler);
 	}

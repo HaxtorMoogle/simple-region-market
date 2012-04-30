@@ -27,24 +27,6 @@ public class ConfigHandler {
 		if (config.get("enable_economy") == null) {
 			config.set("enable_economy", true);
 		}
-		if (config.get("defp_player_buy") == null) {
-			config.set("defp_player_buy", false);
-		}
-		if (config.get("defp_player_rent") == null) {
-			config.set("defp_player_rent", false);
-		}
-		if (config.get("defp_player_sell") == null) {
-			config.set("defp_player_sell", false);
-		}
-		if (config.get("defp_player_let") == null) {
-			config.set("defp_player_let", false);
-		}
-		if (config.get("defp_player_addowner") == null) {
-			config.set("defp_player_addowner", false);
-		}
-		if (config.get("defp_player_addmember") == null) {
-			config.set("defp_player_addmember", false);
-		}
 
 		plugin.saveConfig();
 	}

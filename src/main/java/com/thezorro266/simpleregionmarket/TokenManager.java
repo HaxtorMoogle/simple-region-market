@@ -179,9 +179,13 @@ public class TokenManager {
 			if (playerIsOwner(player, token, world, SimpleRegionMarket.wgManager.getProtectedRegion(Bukkit.getWorld(world), region))) {
 				token.ownerClicksSign(player, world, region);
 			} else {
-				// TODO Permissions!
-				// TODO Limits!
-				token.otherClicksSign(player, world, region);
+				// Permissions
+				if(SimpleRegionMarket.permManager.canPlayerBuyToken(player, token)) {
+					// TODO Limits!
+					token.otherClicksSign(player, world, region);
+				} else {
+					langHandler.outputError(player, "ERR_NO_PERM_BUY", null);
+				}
 			}
 		}
 	}
@@ -207,7 +211,12 @@ public class TokenManager {
 			}
 		}
 		
-		// TODO Permissions!
+		// Permissions
+		if(!SimpleRegionMarket.permManager.canPlayerSellToken(player, token)) {
+			langHandler.outputError(player, "ERR_NO_PERM_SELL", null);
+			return false;
+		}
+		
 		// TODO Limits!
 		return token.signCreated(player, world, protectedRegion, signLocation, input, lines);
 	}
