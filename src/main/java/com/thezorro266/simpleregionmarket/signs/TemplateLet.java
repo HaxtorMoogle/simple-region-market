@@ -20,11 +20,12 @@ import com.thezorro266.simpleregionmarket.handlers.LanguageHandler;
  * 
  */
 public class TemplateLet extends TemplateMain {
-	public boolean canLiveWithoutSigns = false;
-	
 	public TemplateLet(SimpleRegionMarket plugin, LanguageHandler langHandler, TokenManager tokenManager, String tplId) {
 		super(plugin, langHandler, tokenManager);
 		id = tplId;
+
+		canLiveWithoutSigns = false;
+
 		load();
 	}
 
@@ -64,7 +65,6 @@ public class TemplateLet extends TemplateMain {
 	public boolean signCreated(Player player, String world, ProtectedRegion protectedRegion, Location signLocation, HashMap<String, String> input,
 			String[] lines) {
 		final String region = protectedRegion.getId();
-		final ArrayList<Location> signLocations = Utils.getSignLocations(this, world, region);
 
 		if (!entries.containsKey(world) || !entries.get(world).containsKey(region)) {
 			final double priceMin = Utils.getOptionDouble(this, "price.min");
@@ -119,8 +119,11 @@ public class TemplateLet extends TemplateMain {
 			Utils.removeEntry(this, world, region, "owner");
 		}
 
+		final ArrayList<Location> signLocations = Utils.getSignLocations(this, world, region);
 		signLocations.add(signLocation);
-		Utils.setEntry(this, world, region, "signs", signLocations);
+		if (signLocations.size() == 1) {
+			Utils.setEntry(this, world, region, "signs", signLocations);
+		}
 
 		tokenManager.updateSigns(this, world, region);
 		return true;

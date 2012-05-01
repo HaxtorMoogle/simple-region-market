@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,8 +14,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.thezorro266.simpleregionmarket.SimpleRegionMarket;
 import com.thezorro266.simpleregionmarket.TokenManager;
 import com.thezorro266.simpleregionmarket.Utils;
@@ -53,20 +50,23 @@ public class ListenerHandler implements Listener {
 		final Material type = event.getBlock().getType();
 		if (type == Material.SIGN_POST || type == Material.WALL_SIGN) {
 			final Location blockLocation = event.getBlock().getLocation();
-			final World worldWorld = blockLocation.getWorld();
-			final String world = worldWorld.getName();
-			final ApplicableRegionSet regions = SimpleRegionMarket.wgManager.getWorldGuard().getRegionManager(worldWorld).getApplicableRegions(blockLocation);
+			final String world = blockLocation.getWorld().getName();
 			for (final TemplateMain token : TokenManager.tokenList) {
-				for (final ProtectedRegion protectedRegion : regions) {
-					final String region = protectedRegion.getId();
-					if (Utils.getEntry(token, world, region, "signs") != null) {
+				if (token.entries.containsKey(world)) {
+					for (final String region : token.entries.get(world).keySet()) {
 						final ArrayList<Location> signLocations = Utils.getSignLocations(token, world, region);
-						if (signLocations.contains(blockLocation)) {
-							if (!tokenManager.playerSignBreak(event.getPlayer(), token, world, protectedRegion, blockLocation)) {
-								event.setCancelled(true);
+						if (!signLocations.isEmpty()) {
+							for (final Location signLoc : signLocations) {
+								if (signLoc.equals(blockLocation)) {
+									if (!tokenManager.playerSignBreak(event.getPlayer(), token, world, region, blockLocation)) {
+										event.setCancelled(true);
+										tokenManager.updateSigns(token, world, region);
+									} else {
+										plugin.saveAll();
+									}
+									return;
+								}
 							}
-							plugin.saveAll();
-							return;
 						}
 					}
 				}
@@ -86,22 +86,19 @@ public class ListenerHandler implements Listener {
 			final Material type = event.getClickedBlock().getType();
 			if (type == Material.SIGN_POST || type == Material.WALL_SIGN) {
 				final Location blockLocation = event.getClickedBlock().getLocation();
-				final World worldWorld = blockLocation.getWorld();
-				final String world = worldWorld.getName();
+				final String world = blockLocation.getWorld().getName();
 				final Player player = event.getPlayer();
-				final ApplicableRegionSet regions = SimpleRegionMarket.wgManager.getWorldGuard().getRegionManager(worldWorld)
-						.getApplicableRegions(blockLocation);
 				for (final TemplateMain token : TokenManager.tokenList) {
-					for (final ProtectedRegion protectedRegion : regions) {
-						final String region = protectedRegion.getId();
-
-						final ArrayList<Location> signLocations = Utils.getSignLocations(token, world, region);
-						if (signLocations != null) {
-							for (final Location signLoc : signLocations) {
-								if (signLoc.equals(blockLocation)) {
-									tokenManager.playerClickedSign(player, token, world, region);
-									plugin.saveAll();
-									return;
+					if (token.entries.containsKey(world)) {
+						for (final String region : token.entries.get(world).keySet()) {
+							final ArrayList<Location> signLocations = Utils.getSignLocations(token, world, region);
+							if (!signLocations.isEmpty()) {
+								for (final Location signLoc : signLocations) {
+									if (signLoc.equals(blockLocation)) {
+										tokenManager.playerClickedSign(player, token, world, region);
+										plugin.saveAll();
+										return;
+									}
 								}
 							}
 						}

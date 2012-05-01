@@ -69,8 +69,7 @@ public class TokenManager {
 
 			// Set sign lines for all signs
 			if (Utils.getEntry(token, world, region, "signs") != null) {
-				final ArrayList<Location> signLocations = Utils.getSignLocations(token, world, region);
-				for (final Location loc : signLocations) {
+				for (final Location loc : Utils.getSignLocations(token, world, region)) {
 					if (loc.getBlock().getType() != Material.SIGN_POST && loc.getBlock().getType() != Material.WALL_SIGN) {
 						loc.getBlock().setType(Material.SIGN_POST);
 					}
@@ -95,6 +94,7 @@ public class TokenManager {
 					if (!worldsHad.contains(world)) {
 						langHandler.outputConsole(Level.WARNING, "World " + world + " is not loaded!");
 					}
+					token.entries.remove(world);
 				} else {
 					if (!worldsHad.contains(world)) {
 						count[0]++;
@@ -105,6 +105,7 @@ public class TokenManager {
 							if (!regionsHad.contains(region)) {
 								langHandler.outputConsole(Level.WARNING, "WorldGuard region " + region + " was not found!");
 							}
+							token.entries.get(world).remove(region);
 						} else {
 							if (!regionsHad.contains(region)) {
 								count[1]++;
@@ -230,8 +231,7 @@ public class TokenManager {
 
 		for (final TemplateMain otherToken : TokenManager.tokenList) {
 			if (!otherToken.equals(token) && Utils.getEntry(otherToken, world, region, "taken") != null) {
-				if (!(Utils.getEntry(otherToken, world, region, "signs") != null && Utils.getSignLocations(otherToken, world, region).isEmpty())
-						|| Utils.getEntryBoolean(otherToken, world, region, "taken")) {
+				if (!Utils.getSignLocations(otherToken, world, region).isEmpty() || Utils.getEntryBoolean(otherToken, world, region, "taken")) {
 					langHandler.outputError(player, "ERR_OTHER_TOKEN", null);
 					return false;
 				}
@@ -247,8 +247,9 @@ public class TokenManager {
 		return token.signCreated(player, world, protectedRegion, signLocation, input, lines);
 	}
 
-	public boolean playerSignBreak(Player player, TemplateMain token, String world, ProtectedRegion protectedRegion, Location signLocation) {
-		final String region = protectedRegion.getId();
+	public boolean playerSignBreak(Player player, TemplateMain token, String world, String region, Location signLocation) {
+		final World worldWorld = Bukkit.getWorld(world);
+		final ProtectedRegion protectedRegion = SimpleRegionMarket.wgManager.getProtectedRegion(worldWorld, region);
 
 		// Permissions
 		if (!SimpleRegionMarket.permManager.isAdmin(player) && !playerIsOwner(player, token, world, protectedRegion)) {
@@ -256,11 +257,10 @@ public class TokenManager {
 			return false;
 		}
 
-		ArrayList<Location> signLocations = Utils.getSignLocations(token, world, region);
-		signLocations.remove(signLocation);
-		if(signLocations.isEmpty()) {
-			if(Utils.getEntryBoolean(token, world, region, "taken")) {
-				if(token.canLiveWithoutSigns) {
+		final ArrayList<Location> signLocations = Utils.getSignLocations(token, world, region);
+		if (signLocations.size() == 1) {
+			if (Utils.getEntryBoolean(token, world, region, "taken")) {
+				if (token.canLiveWithoutSigns) { // TODO Ask for deletion (region)
 					Utils.removeEntry(token, world, region, "signs");
 				} else {
 					langHandler.outputError(player, "ERR_NEED_ONE_SIGN", null);
@@ -272,7 +272,7 @@ public class TokenManager {
 				return true;
 			}
 		} else {
-			Utils.setEntry(token, world, region, "signs", signLocations);
+			signLocations.remove(signLocation);
 		}
 		langHandler.outputMessage(player, "REGION_DELETE_SIGN", null);
 		return true;

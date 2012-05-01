@@ -80,7 +80,8 @@ public class LimitHandler {
 	 * Returns a count from template, parentRegion for regions, where player is owner
 	 * 
 	 * @param player
-	 * @param token template, where to count regions from
+	 * @param token
+	 *            template, where to count regions from
 	 * @param parentRegion
 	 * @return the count of all regions from the template in the parent region owned by the player
 	 */
@@ -122,7 +123,8 @@ public class LimitHandler {
 	 * Returns a count from template, world for regions, where player is owner
 	 * 
 	 * @param player
-	 * @param token template, where to count regions from
+	 * @param token
+	 *            template, where to count regions from
 	 * @param world
 	 * @return the count of all regions from the template in the world owned by the player
 	 */

@@ -29,7 +29,7 @@ import com.thezorro266.simpleregionmarket.handlers.LanguageHandler;
 public abstract class TemplateMain {
 	public String id = null;
 	public boolean canLiveWithoutSigns = true;
-	
+
 	protected final SimpleRegionMarket plugin;
 	protected final LanguageHandler langHandler;
 	protected final TokenManager tokenManager;
@@ -97,9 +97,8 @@ public abstract class TemplateMain {
 					for (final String string3 : entries.get(sWorld).get(sRegion).keySet()) {
 						final String sKey = string3;
 						if (sKey.equals("signs")) {
-							final ArrayList<Location> signLocations = Utils.getSignLocations(this, sWorld, sRegion);
 							int counter = 0;
-							for (final Location signLoc : signLocations) {
+							for (final Location signLoc : Utils.getSignLocations(this, sWorld, sRegion)) {
 								tokenSave.set(sWorld + "." + sRegion + ".signs." + counter + ".X", signLoc.getX());
 								tokenSave.set(sWorld + "." + sRegion + ".signs." + counter + ".Y", signLoc.getY());
 								tokenSave.set(sWorld + "." + sRegion + ".signs." + counter + ".Z", signLoc.getZ());
@@ -237,8 +236,7 @@ public abstract class TemplateMain {
 		}
 
 		if (Utils.getOptionBoolean(this, "removesigns")) {
-			final ArrayList<Location> signLocations = Utils.getSignLocations(this, world, region);
-			for (final Location sign : signLocations) {
+			for (final Location sign : Utils.getSignLocations(this, world, region)) {
 				sign.getBlock().setType(Material.AIR);
 			}
 			Utils.setEntry(this, world, region, "signs", null);
@@ -270,7 +268,6 @@ public abstract class TemplateMain {
 	public boolean signCreated(Player player, String world, ProtectedRegion protectedRegion, Location signLocation, HashMap<String, String> input,
 			String[] lines) {
 		final String region = protectedRegion.getId();
-		final ArrayList<Location> signLocations = Utils.getSignLocations(this, world, region);
 
 		if (!entries.containsKey(world) || !entries.get(world).containsKey(region)) {
 			double price;
@@ -312,8 +309,11 @@ public abstract class TemplateMain {
 			Utils.removeEntry(this, world, region, "owner");
 		}
 
+		final ArrayList<Location> signLocations = Utils.getSignLocations(this, world, region);
 		signLocations.add(signLocation);
-		Utils.setEntry(this, world, region, "signs", signLocations);
+		if (signLocations.size() == 1) {
+			Utils.setEntry(this, world, region, "signs", signLocations);
+		}
 
 		tokenManager.updateSigns(this, world, region);
 		return true;

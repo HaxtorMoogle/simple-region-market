@@ -71,6 +71,16 @@ public class SimpleRegionMarket extends JavaPlugin {
 		commandHandler = new CommandHandler(this, langHandler);
 		getCommand("regionmarket").setExecutor(commandHandler);
 
+		final File agents = new File(SimpleRegionMarket.getPluginDir() + "agents.yml");
+		if (agents.exists()) {
+			if (configurationHandler.loadOld()) {
+				langHandler.outputConsole(Level.INFO, "Imported successfully the old agents.yml");
+				agents.delete();
+			} else {
+				langHandler.outputConsole(Level.INFO, "Importing was not successful. Do you have SELL and HOTEL templates?");
+			}
+		}
+
 		// Check all signs and output stats
 		long ms = System.currentTimeMillis();
 		final int[] count = tokenManager.checkRegions();
@@ -80,6 +90,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 		langHandler.outputConsole(Level.INFO, "The check took " + ms + "ms");
 
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+			@Override
 			public void run() {
 				tokenManager.checkRegions();
 			}

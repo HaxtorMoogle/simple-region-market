@@ -74,20 +74,20 @@ public class Utils {
 			token.entries.get(world).get(region).remove(key);
 		}
 	}
-	
+
 	public static void removeRegion(TemplateMain token, String world, String region) {
-		if(token != null && world != null && region != null) {
-			if(token.entries.containsKey(world)) {
-				if(token.entries.get(world).containsKey(region)) {
+		if (token != null && world != null && region != null) {
+			if (token.entries.containsKey(world)) {
+				if (token.entries.get(world).containsKey(region)) {
 					token.entries.get(world).remove(region);
 				}
 			}
 		}
 	}
-	
+
 	public static void removeWorld(TemplateMain token, String world) {
-		if(token != null && world != null) {
-			if(token.entries.containsKey(world)) {
+		if (token != null && world != null) {
+			if (token.entries.containsKey(world)) {
 				token.entries.remove(world);
 			}
 		}
