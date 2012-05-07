@@ -1,7 +1,5 @@
 package com.thezorro266.simpleregionmarket;
 
-import java.util.logging.Level;
-
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -23,7 +21,7 @@ public class WorldGuardManager {
 		final Plugin wgPlugin = Bukkit.getServer().getPluginManager().getPlugin("WorldGuard");
 
 		if (wgPlugin == null || !(wgPlugin instanceof WorldGuardPlugin) || !wgPlugin.isEnabled()) {
-			langHandler.langOutputConsole("ERR_NO_WORLDGUARD", Level.SEVERE, null);
+			langHandler.consoleOut("MAIN.ERROR.NO_WORLDGUARD");
 			return null;
 		}
 

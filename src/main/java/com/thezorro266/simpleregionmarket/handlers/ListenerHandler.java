@@ -135,7 +135,7 @@ public class ListenerHandler implements Listener {
 					event.setLine(i, ((Sign) event.getBlock().getState()).getLine(i));
 				}
 
-				langHandler.outputMessage(event.getPlayer(), "REGION_ADD_SIGN", null);
+				langHandler.playerNormalOut(event.getPlayer(), "PLAYER.REGION.ADDED_SIGN", null); // TODO region did not exist before -> Other msg
 				plugin.saveAll();
 				break;
 			}

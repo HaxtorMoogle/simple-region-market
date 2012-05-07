@@ -92,7 +92,9 @@ public class TokenManager {
 				final World worldWorld = Bukkit.getWorld(world);
 				if (worldWorld == null) {
 					if (!worldsHad.contains(world)) {
-						langHandler.outputConsole(Level.WARNING, "World " + world + " is not loaded!");
+						ArrayList<String> list = new ArrayList<String>();
+						list.add(world);
+						langHandler.consoleOut("CHECK.WARN.NO_WORLD", Level.WARNING, list);
 					}
 					token.entries.remove(world);
 				} else {
@@ -103,7 +105,9 @@ public class TokenManager {
 						final ProtectedRegion protectedRegion = SimpleRegionMarket.wgManager.getProtectedRegion(worldWorld, region);
 						if (protectedRegion == null) {
 							if (!regionsHad.contains(region)) {
-								langHandler.outputConsole(Level.WARNING, "WorldGuard region " + region + " was not found!");
+								ArrayList<String> list = new ArrayList<String>();
+								list.add(region);
+								langHandler.consoleOut("CHECK.WARN.NO_REGION", Level.WARNING, list);
 							}
 							token.entries.get(world).remove(region);
 						} else {
@@ -128,7 +132,7 @@ public class TokenManager {
 
 	public void initTemplates() {
 		if (!CONFIG_FILE.exists()) {
-			langHandler.outputConsole(Level.INFO, "No templates found. Creating standard templates.");
+			langHandler.consoleOut("TEMPLATES.NORM.NO_TEMPLATES");
 			plugin.saveResource(CONFIG_NAME, false);
 		}
 		if (CONFIG_FILE.exists()) {
@@ -142,11 +146,13 @@ public class TokenManager {
 				} else if (type.equalsIgnoreCase("hotel")) {
 					tokenList.add(new TemplateHotel(plugin, langHandler, this, key));
 				} else {
-					langHandler.outputConsole(Level.INFO, "I don't know the type " + type + ".");
+					ArrayList<String> list = new ArrayList<String>();
+					list.add(type);
+					langHandler.consoleOut("TEMPLATES.WARN.TYPE_NOT_KOWN", Level.WARNING, list);
 				}
 			}
 		} else {
-			langHandler.outputConsole(Level.SEVERE, "Error creating standard templates.");
+			langHandler.consoleOut("TEMPLATES.ERROR.NO_STANDARD_TEMPLATES");
 		}
 	}
 
@@ -192,26 +198,26 @@ public class TokenManager {
 											if (SimpleRegionMarket.limitHandler.checkPlayerTokenRegion(player, token, protectedRegion.getParent())) {
 												token.otherClicksSign(player, world, region);
 											} else {
-												langHandler.outputError(player, "LIMIT_TOKEN_PARENTREGION", null);
+												langHandler.playerErrorOut(player, "PLAYER.LIMITS.TOKEN_PARENTREGION", null);
 											}
 										} else {
-											langHandler.outputError(player, "LIMIT_GLOBAL_PARENTREGION", null);
+											langHandler.playerErrorOut(player, "PLAYER.LIMITS.GLOBAL_PARENTREGION", null);
 										}
 									}
 								} else {
-									langHandler.outputError(player, "LIMIT_TOKEN_WORLD", null);
+									langHandler.playerErrorOut(player, "PLAYER.LIMITS.TOKEN_WORLD", null);
 								}
 							} else {
-								langHandler.outputError(player, "LIMIT_GLOBAL_WORLD", null);
+								langHandler.playerErrorOut(player, "PLAYER.LIMITS.GLOBAL_WORLD", null);
 							}
 						} else {
-							langHandler.outputError(player, "LIMIT_TOKEN", null);
+							langHandler.playerErrorOut(player, "PLAYER.LIMITS.TOKEN", null);
 						}
 					} else {
-						langHandler.outputError(player, "LIMIT_GLOBAL", null);
+						langHandler.playerErrorOut(player, "PLAYER.LIMITS.GLOBAL", null);
 					}
 				} else {
-					langHandler.outputError(player, "ERR_NO_PERM_BUY", null);
+					langHandler.playerErrorOut(player, "PLAYER.NO_PERMISSIONS.BUY", null);
 				}
 			}
 		}
@@ -223,7 +229,7 @@ public class TokenManager {
 		final ProtectedRegion protectedRegion = Utils.getProtectedRegion(input.get("region").toString(), signLocation);
 
 		if (protectedRegion == null) {
-			langHandler.outputError(player, "ERR_REGION_NAME", null);
+			langHandler.playerErrorOut(player, "PLAYER.ERROR.NO_REGION", null);
 			return false;
 		}
 
@@ -232,7 +238,7 @@ public class TokenManager {
 		for (final TemplateMain otherToken : TokenManager.tokenList) {
 			if (!otherToken.equals(token) && Utils.getEntry(otherToken, world, region, "taken") != null) {
 				if (!Utils.getSignLocations(otherToken, world, region).isEmpty() || Utils.getEntryBoolean(otherToken, world, region, "taken")) {
-					langHandler.outputError(player, "ERR_OTHER_TOKEN", null);
+					langHandler.playerErrorOut(player, "PLAYER.ERROR.OTHER_TOKEN", null);
 					return false;
 				}
 			}
@@ -240,7 +246,7 @@ public class TokenManager {
 
 		// Permissions
 		if (!SimpleRegionMarket.permManager.canPlayerSellToken(player, token)) {
-			langHandler.outputError(player, "ERR_NO_PERM_SELL", null);
+			langHandler.playerErrorOut(player, "PLAYER.NO_PERMISSIONS.SELL", null);
 			return false;
 		}
 
@@ -253,7 +259,7 @@ public class TokenManager {
 
 		// Permissions
 		if (!SimpleRegionMarket.permManager.isAdmin(player) && !playerIsOwner(player, token, world, protectedRegion)) {
-			langHandler.outputError(player, "ERR_REGION_NO_OWNER", null);
+			langHandler.playerErrorOut(player, "PLAYER.ERROR.NOT_OWNER", null);
 			return false;
 		}
 
@@ -263,18 +269,18 @@ public class TokenManager {
 				if (token.canLiveWithoutSigns) { // TODO Ask for deletion (region)
 					Utils.removeEntry(token, world, region, "signs");
 				} else {
-					langHandler.outputError(player, "ERR_NEED_ONE_SIGN", null);
+					langHandler.playerErrorOut(player, "PLAYER.ERROR.NEED_ONE_SIGN", null);
 					return false;
 				}
 			} else {
 				Utils.removeRegion(token, world, region);
-				langHandler.outputMessage(player, "REGION_DELETE", null);
+				langHandler.playerNormalOut(player, "PLAYER.REGION.DELETED", null);
 				return true;
 			}
 		} else {
 			signLocations.remove(signLocation);
 		}
-		langHandler.outputMessage(player, "REGION_DELETE_SIGN", null);
+		langHandler.playerNormalOut(player, "PLAYER.REGION.DELETED_SIGN", null);
 		return true;
 	}
 }

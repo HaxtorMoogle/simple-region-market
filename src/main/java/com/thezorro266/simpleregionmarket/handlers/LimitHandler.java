@@ -2,7 +2,6 @@ package com.thezorro266.simpleregionmarket.handlers;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -17,12 +16,9 @@ public class LimitHandler {
 	private final static String LIMITS_NAME = "limits.yml";
 	private final static File LIMITS_FILE = new File(SimpleRegionMarket.getPluginDir() + LIMITS_NAME);
 
-	private final LanguageHandler langHandler;
-
 	private final HashMap<String, Object> limitEntries = new HashMap<String, Object>();
 
-	public LimitHandler(SimpleRegionMarket plugin, LanguageHandler langHandler, TokenManager tokenManager) {
-		this.langHandler = langHandler;
+	public LimitHandler(SimpleRegionMarket plugin, TokenManager tokenManager) {
 		load();
 	}
 
@@ -97,8 +93,6 @@ public class LimitHandler {
 				}
 			}
 		}
-		langHandler.outputConsole(Level.INFO, "Counting " + count + " regions for player " + player.getName() + " for parent region " + parentRegion.getId()
-				+ " on template " + token.id + ".");
 		return count;
 	}
 
@@ -114,8 +108,6 @@ public class LimitHandler {
 		for (final TemplateMain token : TokenManager.tokenList) {
 			count += countPlayerChildRegions(player, token, parentRegion);
 		}
-		langHandler.outputConsole(Level.INFO, "Counting " + count + " regions for player " + player.getName() + " for parent region " + parentRegion.getId()
-				+ ".");
 		return count;
 	}
 
@@ -138,8 +130,6 @@ public class LimitHandler {
 				}
 			}
 		}
-		langHandler.outputConsole(Level.INFO, "Counting " + count + " regions for player " + player.getName() + " in world " + world + " on template "
-				+ token.id + ".");
 		return count;
 	}
 
@@ -155,7 +145,6 @@ public class LimitHandler {
 		for (final TemplateMain token : TokenManager.tokenList) {
 			count += countPlayerWorldRegions(player, token, world);
 		}
-		langHandler.outputConsole(Level.INFO, "Counting " + count + " regions for player " + player.getName() + " in the world " + world + ".");
 		return count;
 	}
 
@@ -179,7 +168,6 @@ public class LimitHandler {
 				}
 			}
 		}
-		langHandler.outputConsole(Level.INFO, "Counting " + count + " regions for player " + player.getName() + " on template " + token.id + ".");
 		return count;
 	}
 
@@ -194,7 +182,6 @@ public class LimitHandler {
 		for (final TemplateMain token : TokenManager.tokenList) {
 			count += countPlayerTokenRegions(player, token);
 		}
-		langHandler.outputConsole(Level.INFO, "Counting " + count + " regions for player " + player.getName() + ".");
 		return count;
 	}
 

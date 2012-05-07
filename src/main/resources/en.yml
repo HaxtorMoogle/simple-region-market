@@ -1,101 +1,56 @@
-ERR_NO_WORLDGUARD: 'Error: WorldGuard was not found.'
-ERR_NO_ECO: 'Error: Economic System was not found.'
-ERR_ECO_TRANSFER: There was a problem with transfering the money.
-ERR_NO_ECO_USER: The economic system was not found, please tell the server owner.
-ERR_VAULT_ECONOMY: You do not have an economy system besides Vault running.
-ERR_CREATE_ECO_ACCOUNT: 'Error: Could not create economy account "$0".'
-ERR_PRICE_LIMIT: 'The price is not between $0 and $1.'
-ERR_RENTTIME_LIMIT: 'The rent time is not between $0 and $1.'
-NO_REGISTER_VAULT: Neither Register nor Vault was found. Switching to economy-free version.
-CONFIG_SAVED: Config saved successfully.
-PLUGIN_UNLOAD: Plugin successfully unloaded.
-ERR_CONFIG_NOT_SAVED: 'Error: Config was not saved successfully.'
-ERR_PLUGIN_UNLOAD: 'Error: Plugin unloaded. There was an error with the other plugins.'
-ERR_NO_MONEY: You do not have enough money.
-ERR_NO_PRICE: Price not found.
-ERR_NO_PLAYER: 'The player "$0" was not found.'
-ERR_NO_REGION: You do not own a region.
-ERR_SPECIFY_REGION: Please specify the region, you have more than one.
-ERR_PRICE_UNDER_ZERO: The price cannot be lower than zero.
-ERR_NO_RENTTIME: Rent time not found.
-ERR_NO_PERM: You are not allowed to do that.
-ERR_NO_PERM_SELL: You do not have the permission to sell a region.
-ERR_NO_PERM_BUY: You do not have the permission to buy a region.
-ERR_PLACE_AGENT: The agent could not be created.
-AGENT_PLACED: You have got now $0 agent(s) placed for this region.
-AGENT_DELETE: Successfully deleted the agent.
-AGENT_YOURS: This is your agent.
-ERR_REGION_NAME: There is no region with this name.
-ERR_REGION_NO_OWNER: You do not own this region.
-ERR_REGION_OWNER: You own this region.
-ERR_REGION_PRICE: There were found some signs, which do not have the same price.
-ERR_REGION_PRICE_SHOW: Region $0, price $1 and $2.
-ERR_REGION_DELETE: 'Check: Region $0 does not exist anymore. Deleted Sign.'
-ERR_REGION_BUY_YOURS: You cannot buy this region, because its yours.
-ERR_PARENT_NO_OWNER: You do not own the hotel (parent of the region).
-ERR_ALREADY_RENT: This room is already rented by someone.
-ERR_RERENT_TOO_LONG: You cannot extend your room.
-HOTEL_SUCCESS_RERENT: You successfully extended your room's time.
-HOTEL_YOURS: You cannot rent a room in your hotel.
-HOTEL_EXPIRED: Your room in the hotel expired. It is not anymore yours.
-HOTEL_RENT: The room $0 was just rented by $1.
-HOTEL_RENT_NONE: You successfully rented the room $0.
-HOTEL_RENT_USER: You successfully rented the room $0 from $1.
-HOTEL_OFFER_NONE: You offer this room for rent by the server.
-HOTEL_OFFER_USER: You offer this room for rent.
-HELP: To see how to use this plugin, visit "http://dev.bukkit.org/server-mods/simple-region-market/pages/how-to/"
-CMD_LIMITS_NO_ARG: Use /rm limits <buy/rent> <world/player/new global limit> <name (of world/player)> (<new limit>)
-CMD_LIMITS_WRONG_ARG: Wrong argument. Use /rm limits <buy/rent> <world/player/new global limit> <name (of world/player)> (<new limit>)
-CMD_LIMITS_NO_WORLD: World not found.
-CMD_LIMITS_NO_PLAYER: Player not found.
-CMD_LIMITS_SET_LIMIT: Set limit to $0
-CMD_LIMITS_OUTPUT_LIMIT: 'Limit: $0'
-CMD_LIST_TOO_MANY_REGIONS: There are too many regions so you cant list them.
-CMD_LIST_NO_REGIONS: There are no regions being sold by Signs.
-CMD_LIST_WRONG_ARG: Use /rm list <site> (site must be over zero).
-CMD_LANG_NO_ARG: 'Language: "$0" - Use /rm lang [LANGUAGE] to set the language.'
-CMD_LANG_SWITCHED: Successfully switched to English translated by <SERVERNAME HERE> :D
-CMD_LANG_NO_LANG: Language not found.
-CMD_LOGGING_NO_ARG: Logging is set to $0. To enable logging use "/rm logging true", otherwise use "false" instead.
-CMD_LOGGING_SET: Logging was set to $0.
-CMD_LOGGING_ALREADY_SET: Logging already set to $0.
-CMD_ADDMEMBER_NO_ARG: Use /rm addmember <playername> (<region>) to add a member to your region.
-CMD_ADDMEMBER_SUCCESS: You successfully added $0 as member to your region $1.
-CMD_ADDMEMBER_NEWMEMBER: $0 added you as member to the region $1.
-CMD_REMMEMBER_NO_ARG: Use /rm rem(ove)member <playername> (<region>) to remove a member from your region.
-CMD_REMMEMBER_SUCCESS: You removed $0 from the region $1 as member.
-CMD_REMMEMBER_OLDMEMBER: $0 removed you from the region $1 as member.
-CMD_ADDOWNER_NO_ARG: Use /rm addowner <playername> (<region>) to add an owner to your region.
-CMD_ADDOWNER_SUCCESS: You successfully added $0 as owner to your region $1.
-CMD_ADDOWNER_NEWOWNER: $0 added you as owner to the region $1.
-CMD_REMOWNER_NO_ARG: Use /rm rem(ove)owner <playername> (<region>) to remove an owner from your region.
-CMD_REMOWNER_SUCCESS: You removed $0 from the region $1 as owner.
-CMD_REMOWNER_OLDOWNER: $0 removed you from the region $1 as owner.
-CMD_ERR_ADD_YOURSELF: You cannot add yourself to your region.
-CMD_ERR_REM_YOURSELF: You cannot remove yourself from your region.
-LOG_SWITCHED: Logging was switched to $0
-LOG_SOLD_REGION: Region $0 was sold to $1
-LOG_RENT_HOTEL: Hotel $0 was rent to $1
-LOG_EXPIRED_HOTEL: Hotel $0 was rent by $1 and just expired
-LOG_ADDMEMBER: $0 added $1 as member to the region $2.
-LOG_REMMEMBER: $0 removed $1 as member from the region $2.
-LOG_ADDOWNER: $0 added $1 as owner to the region $2.
-LOG_REMOWNER: $0 removed $1 as owner from the region $2.
-HOOKED_CHESTSHOP: Successfully hooked into ChestShop.
-REGION_YOURS: This is your region.
-REGION_DELETE: Successfully deleted the region.
-REGION_TAKEN_BY: This region is owned by $0.
-REGION_TAKE: The region $0 was just taken by $1.
-REGION_TAKEN: You successfully bought the region $0.
-REGION_OFFER_NONE: You offer the region for sale by the server.
-REGION_OFFER_USER: You offer your region for sale.
-REGION_DELETE_SIGN: Successfully deleted that sign from the region.
-REGION_ADD_SIGN: Successfully added this sign to the region.
-ERR_OTHER_TOKEN: You can't create a sign from this token, when there are signs from other tokens.
-ERR_NEED_ONE_SIGN: This template needs at least one sign, when it's taken.
-LIMIT_GLOBAL: You have reached the global region limit.
-LIMIT_TOKEN: You have reached the token region limit.
-LIMIT_GLOBAL_WORLD: You have reached the global region limit in this world.
-LIMIT_TOKEN_WORLD: You have reached the token region limit in this world.
-LIMIT_GLOBAL_PARENTREGION: You have reached the global region limit for this parent region.
-LIMIT_TOKEN_PARENTREGION: You have reached the token region limit for this parent region.
+MAIN:
+  WARN:
+    NO_ECO_API: Neither Register nor Vault was found - Switching to economy-free version
+    VAULT_NO_ECO: You do not have an economy system besides Vault running
+    REGISTER_NO_ECO: You do not have an economy system besides Register running
+  ERROR:
+    NO_WORLDGUARD: WorldGuard was not found
+CHECK:
+  WARN:
+    NO_WORLD: World $0 is not loaded!
+    NO_REGION: WorldGuard region $0 was not found!
+TEMPLATES:
+  NORM:
+    NO_TEMPLATES: No templates found - Creating standard templates
+  WARN:
+    TYPE_NOT_KOWN: I don't know the template type $0
+  ERROR:
+    NO_STANDARD_TEMPLATES: Could not create standard templates
+CMD:
+  UNTAKE:
+    NO_ARG: 'Usage: /rm untake <region> - Removes the owners and members from the region'
+  REMOVE:
+    NO_ARG: 'Usage: /rm rem <region> - Removes the region out of the system'
+PLAYER:
+  ERROR:
+    ECO_PROBLEM: There was a problem with transfering the money.
+    NO_MONEY: You do not have enough money.
+    NO_PRICE: Price not found.
+    NO_RENTTIME: Rent time not found.
+    NO_REGION: There is no region with this name.
+    NOT_OWNER: You do not own this region.
+    PRICE_LIMIT: The price is not between $0 and $1.
+    RENTTIME_LIMIT: The rent time is not between $0 and $1.
+    RERENT_TOO_LONG: You cannot extend your room.
+    NEED_ONE_SIGN: This template needs at least one sign when it's taken.
+    OTHER_TOKEN: You can't create a sign from this token, when there are signs from other tokens.
+  NO_PERMISSIONS:
+    BUY: You do not have the permission to buy that region.
+    SELL: You do not have the permission to sell that region.
+  REGION:
+    YOURS: This is your region.
+    BOUGHT: You successfully bought the region $0.
+    JUST_TAKEN_BY: The region $0 was just taken by $1.
+    TAKEN_BY: This region is owned by $0.
+    ADDED_SIGN: Successfully added this sign to the region.
+    ADDED_RENTTIME: You successfully extended your room's time.
+    DELETED_SIGN: Deleted that sign from the region.
+    DELETED: Successfully deleted the region.
+    EXPIRED: Your region $0 expired.
+  LIMITS:
+    GLOBAL: You have reached the global region limit.
+    TOKEN: You have reached the token region limit.
+    GLOBAL_WORLD: You have reached the global region limit in this world.
+    TOKEN_WORLD: You have reached the token region limit in this world.
+    GLOBAL_PARENTREGION: You have reached the global region limit for this parent region.
+    TOKEN_PARENTREGION: You have reached the token region limit for this parent region.

@@ -180,17 +180,17 @@ public abstract class TemplateMain {
 
 	public void ownerClicksTakenSign(String world, String region) {
 		final Player owner = Bukkit.getPlayer(Utils.getEntryString(this, world, region, "owner"));
-		langHandler.outputMessage(owner, "REGION_YOURS", null);
+		langHandler.playerNormalOut(owner, "PLAYER.REGION.YOURS", null);
 	}
 
-	public void ownerClicksSign(Player player, String world, String region) {
-		langHandler.outputMessage(player, "REGION_YOURS", null);
+	public void ownerClicksSign(Player owner, String world, String region) {
+		langHandler.playerNormalOut(owner, "PLAYER.REGION.YOURS", null);
 	}
 
 	public void otherClicksTakenSign(Player player, String world, String region) {
-		final ArrayList<String> args = new ArrayList<String>();
-		args.add(Utils.getEntryString(this, world, region, "owner"));
-		langHandler.outputMessage(player, "REGION_TAKEN_BY", args);
+		final ArrayList<String> list = new ArrayList<String>();
+		list.add(Utils.getEntryString(this, world, region, "owner"));
+		langHandler.playerNormalOut(player, "PLAYER.REGION.TAKEN_BY", list);
 	}
 
 	public void otherClicksSign(Player player, String world, String region) {
@@ -218,7 +218,7 @@ public abstract class TemplateMain {
 			final ArrayList<String> list = new ArrayList<String>();
 			list.add(region);
 			list.add(newOwner.getName());
-			langHandler.outputMessage(oldOwner, "REGION_TAKE", list);
+			langHandler.playerNormalOut(oldOwner, "PLAYER.REGION.JUST_TAKEN_BY", list);
 			untakeRegion(world, region);
 		} else {
 			// Clear Members and Owners
@@ -230,7 +230,7 @@ public abstract class TemplateMain {
 			protectedRegion.getMembers().addPlayer(SimpleRegionMarket.wgManager.wrapPlayer(newOwner));
 		} else {
 			if (!Utils.getOptionString(this, "buyer").equalsIgnoreCase("owner")) {
-				langHandler.outputConsole(Level.WARNING, "The buyer state " + Utils.getOptionString(this, "buyer") + " is not known.");
+				langHandler.consoleDirectOut(Level.WARNING, "The buyer state " + Utils.getOptionString(this, "buyer") + " is not known.");
 			}
 			protectedRegion.getMembers().addPlayer(SimpleRegionMarket.wgManager.wrapPlayer(newOwner));
 		}
@@ -247,7 +247,7 @@ public abstract class TemplateMain {
 
 		final ArrayList<String> list = new ArrayList<String>();
 		list.add(region);
-		langHandler.outputMessage(newOwner, "REGION_TAKEN", list);
+		langHandler.playerNormalOut(newOwner, "PLAYER.REGION.BOUGHT", list);
 
 		tokenManager.updateSigns(this, world, region);
 	}
@@ -275,7 +275,7 @@ public abstract class TemplateMain {
 				try {
 					price = Double.parseDouble(input.get("price"));
 				} catch (final Exception e) {
-					langHandler.outputError(player, "ERR_NO_PRICE", null);
+					langHandler.playerErrorOut(player, "PLAYER.ERROR.NO_PRICE", null);
 					return false;
 				}
 			} else {
@@ -288,7 +288,7 @@ public abstract class TemplateMain {
 				final ArrayList<String> list = new ArrayList<String>();
 				list.add(String.valueOf(priceMin));
 				list.add(String.valueOf(priceMax));
-				langHandler.outputError(player, "ERR_PRICE_LIMIT", list);
+				langHandler.playerErrorOut(player, "PLAYER.ERROR.PRICE_LIMIT", list);
 				return false;
 			}
 

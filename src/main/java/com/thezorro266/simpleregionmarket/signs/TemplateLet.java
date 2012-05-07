@@ -74,7 +74,7 @@ public class TemplateLet extends TemplateMain {
 				try {
 					price = Double.parseDouble(input.get("price"));
 				} catch (final Exception e) {
-					langHandler.outputError(player, "ERR_NO_PRICE", null);
+					langHandler.playerErrorOut(player, "PLAYER.ERROR.NO_PRICE", null);
 					return false;
 				}
 			} else {
@@ -85,7 +85,7 @@ public class TemplateLet extends TemplateMain {
 				final ArrayList<String> list = new ArrayList<String>();
 				list.add(String.valueOf(priceMin));
 				list.add(String.valueOf(priceMax));
-				langHandler.outputError(player, "ERR_PRICE_LIMIT", list);
+				langHandler.playerErrorOut(player, "PLAYER.ERROR.PRICE_LIMIT", list);
 				return false;
 			}
 
@@ -96,11 +96,11 @@ public class TemplateLet extends TemplateMain {
 				try {
 					renttime = Utils.parseSignTime(input.get("time"));
 				} catch (final Exception e) {
-					langHandler.outputError(player, "ERR_NO_RENTTIME", null);
+					langHandler.playerErrorOut(player, "PLAYER.ERROR.NO_RENTTIME", null);
 					return false;
 				}
 			} else {
-				langHandler.outputError(player, "ERR_NO_RENTTIME", null);
+				langHandler.playerErrorOut(player, "PLAYER.ERROR.NO_RENTTIME", null);
 				return false;
 			}
 
@@ -108,7 +108,7 @@ public class TemplateLet extends TemplateMain {
 				final ArrayList<String> list = new ArrayList<String>();
 				list.add(String.valueOf(renttimeMin));
 				list.add(String.valueOf(renttimeMax));
-				langHandler.outputError(player, "ERR_RENTTIME_LIMIT", list);
+				langHandler.playerErrorOut(player, "PLAYER.ERROR.RENTTIME_LIMIT", null);
 				return false;
 			}
 

@@ -1,5 +1,6 @@
 package com.thezorro266.simpleregionmarket.signs;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.bukkit.Bukkit;
@@ -34,15 +35,15 @@ public class TemplateHotel extends TemplateLet {
 				if (SimpleRegionMarket.econManager.moneyTransaction(Utils.getEntryString(this, world, region, "owner"), account, price)) {
 					Utils.setEntry(this, world, region, "expiredate", new Date(newRentTime));
 					tokenManager.updateSigns(this, world, region);
-					langHandler.outputMessage(owner, "HOTEL_SUCCESS_RERENT", null);
+					langHandler.playerNormalOut(owner, "PLAYER.REGION.ADDED_RENTTIME", null);
 				}
 			} else {
 				Utils.setEntry(this, world, region, "expiredate", new Date(newRentTime));
 				tokenManager.updateSigns(this, world, region);
-				langHandler.outputMessage(owner, "HOTEL_SUCCESS_RERENT", null);
+				langHandler.playerNormalOut(owner, "PLAYER.REGION.ADDED_RENTTIME", null);
 			}
 		} else {
-			langHandler.outputError(owner, "ERR_RERENT_TOO_LONG", null);
+			langHandler.playerErrorOut(owner, "PLAYER.ERROR.RERENT_TOO_LONG", null);
 		}
 	}
 
@@ -53,7 +54,9 @@ public class TemplateHotel extends TemplateLet {
 				untakeRegion(world, region);
 				final Player player = Bukkit.getPlayer(Utils.getEntryString(this, world, region, "owner"));
 				if (player != null) {
-					langHandler.outputMessage(player, "HOTEL_EXPIRED", null);
+					ArrayList<String> list = new ArrayList<String>();
+					list.add(region);
+					langHandler.playerNormalOut(player, "PLAYER.REGION.EXPIRED", list);
 				}
 			}
 		}

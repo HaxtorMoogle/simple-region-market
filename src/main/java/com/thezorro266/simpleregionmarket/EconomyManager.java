@@ -1,7 +1,5 @@
 package com.thezorro266.simpleregionmarket;
 
-import java.util.logging.Level;
-
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
@@ -13,28 +11,25 @@ import com.nijikokun.register.payment.Methods;
 import com.thezorro266.simpleregionmarket.handlers.LanguageHandler;
 
 public class EconomyManager {
-	private final LanguageHandler LANG_HANDLER;
+	private final LanguageHandler langHandler;
 
 	private int enableEconomy;
 	private Economy economy;
 
 	public EconomyManager(SimpleRegionMarket plugin, LanguageHandler langHandler) {
-		LANG_HANDLER = langHandler;
+		this.langHandler = langHandler;
 		final Server server = plugin.getServer();
 		enableEconomy = SimpleRegionMarket.configurationHandler.getConfig().getBoolean("enable_economy") ? 1 : 0;
 		if (enableEconomy > 0) {
 			if (server.getPluginManager().getPlugin("Register") == null && server.getPluginManager().getPlugin("Vault") == null) {
-				langHandler.langOutputConsole("NO_REGISTER_VAULT", Level.WARNING, null);
+				langHandler.consoleOut("MAIN.WARN.NO_ECO_API");
 				enableEconomy = 0;
 			} else if (server.getPluginManager().getPlugin("Register") != null && server.getPluginManager().getPlugin("Vault") == null) {
 				enableEconomy = 1;
 			} else {
 				enableEconomy = 2;
-				/*
-				 * if(!setupPermissions()) { langHandler.langOutputConsole("ERR_VAULT_PERMISSIONS", Level.WARNING, null); }
-				 */
 				if (!setupEconomy()) {
-					langHandler.langOutputConsole("ERR_VAULT_ECONOMY", Level.WARNING, null);
+					langHandler.consoleOut("MAIN.WARN.VAULT_NO_ECO");
 					enableEconomy = 0;
 				}
 			}
@@ -55,7 +50,7 @@ public class EconomyManager {
 		if (Methods.hasMethod()) {
 			return Methods.getMethod();
 		} else {
-			LANG_HANDLER.outputConsole(Level.SEVERE, "Error: Economic System was not found.");
+			langHandler.consoleOut("MAIN.WARN.REGISTER_NO_ECO");
 			enableEconomy = 0;
 			return null;
 		}
@@ -119,7 +114,7 @@ public class EconomyManager {
 				if (econHasEnough(from, money)) {
 					econGiveMoney(from, -money);
 				} else {
-					LANG_HANDLER.outputError(Bukkit.getPlayer(from), "ERR_NO_MONEY", null);
+					langHandler.playerErrorOut(Bukkit.getPlayer(from), "PLAYER.ERROR.NO_MONEY", null);
 				}
 				return true;
 			} else if (from == null) {
@@ -130,14 +125,14 @@ public class EconomyManager {
 					econGiveMoney(from, -money);
 					econGiveMoney(to, money);
 				} else {
-					LANG_HANDLER.outputError(Bukkit.getPlayer(from), "ERR_NO_MONEY", null);
+					langHandler.playerErrorOut(Bukkit.getPlayer(from), "PLAYER.ERROR.NO_MONEY", null);
 				}
 				return true;
 			}
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
-		LANG_HANDLER.outputError(Bukkit.getPlayer(from), "ERR_ECO_TRANSFER", null);
+		langHandler.playerErrorOut(Bukkit.getPlayer(from), "PLAYER.ERROR.ECO_PROBLEM", null);
 		return false;
 	}
 }

@@ -64,7 +64,7 @@ public class SimpleRegionMarket extends JavaPlugin {
 		tokenManager = new TokenManager(this, langHandler);
 		tokenManager.initTemplates();
 
-		limitHandler = new LimitHandler(this, langHandler, tokenManager);
+		limitHandler = new LimitHandler(this, tokenManager);
 
 		new ListenerHandler(this, langHandler, tokenManager);
 
@@ -74,10 +74,10 @@ public class SimpleRegionMarket extends JavaPlugin {
 		final File agents = new File(SimpleRegionMarket.getPluginDir() + "agents.yml");
 		if (agents.exists()) {
 			if (configurationHandler.loadOld()) {
-				langHandler.outputConsole(Level.INFO, "Imported successfully the old agents.yml");
+				langHandler.consoleDirectOut(Level.INFO, "Imported successfully the old agents.yml");
 				agents.delete();
 			} else {
-				langHandler.outputConsole(Level.INFO, "Importing was not successful. Do you have SELL and HOTEL templates?");
+				langHandler.consoleDirectOut(Level.INFO, "Importing was not successful. Do you have SELL and HOTEL templates?");
 			}
 		}
 
@@ -85,9 +85,9 @@ public class SimpleRegionMarket extends JavaPlugin {
 		long ms = System.currentTimeMillis();
 		final int[] count = tokenManager.checkRegions();
 		ms = System.currentTimeMillis() - ms;
-		langHandler.outputConsole(Level.INFO, "Loaded " + TokenManager.tokenList.size() + " template(s), " + count[0] + " world(s) and " + count[1]
+		langHandler.consoleDirectOut(Level.INFO, "Loaded " + TokenManager.tokenList.size() + " template(s), " + count[0] + " world(s) and " + count[1]
 				+ " region(s).");
-		langHandler.outputConsole(Level.INFO, "The check took " + ms + "ms");
+		langHandler.consoleDirectOut(Level.INFO, "The check took " + ms + "ms");
 
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
 			@Override
@@ -109,11 +109,11 @@ public class SimpleRegionMarket extends JavaPlugin {
 					try {
 						mgr.save();
 					} catch (final ProtectionDatabaseException e) {
-						langHandler.outputConsole(Level.SEVERE, "WorldGuard >> Failed to write regionsfile: " + e.getMessage());
+						langHandler.consoleDirectOut(Level.SEVERE, "WorldGuard >> Failed to write regionsfile: " + e.getMessage());
 					}
 				}
 			} else {
-				langHandler.outputConsole(Level.SEVERE, "Saving WorldGuard failed, because it is not loaded.");
+				langHandler.consoleDirectOut(Level.SEVERE, "Saving WorldGuard failed, because it is not loaded.");
 			}
 		}
 		for (final TemplateMain token : TokenManager.tokenList) {

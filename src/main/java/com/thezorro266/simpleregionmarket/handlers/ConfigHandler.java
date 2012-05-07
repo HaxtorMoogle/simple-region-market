@@ -113,7 +113,7 @@ public class ConfigHandler {
 
 						final ArrayList<Location> signLocations = Utils.getSignLocations(tokenHotel, world, region);
 						signLocations.add(new Location(worldWorld, path.getDouble("X"), path.getDouble("Y"), path.getDouble("Z")));
-						if (signLocations.isEmpty()) {
+						if (signLocations.size() == 1) {
 							Utils.setEntry(tokenHotel, world, region, "signs", signLocations);
 						}
 					} else { // SELL
@@ -130,7 +130,7 @@ public class ConfigHandler {
 
 						final ArrayList<Location> signLocations = Utils.getSignLocations(tokenAgent, world, region);
 						signLocations.add(new Location(worldWorld, path.getDouble("X"), path.getDouble("Y"), path.getDouble("Z")));
-						if (signLocations.isEmpty()) {
+						if (signLocations.size() == 1) {
 							Utils.setEntry(tokenAgent, world, region, "signs", signLocations);
 						}
 					}
