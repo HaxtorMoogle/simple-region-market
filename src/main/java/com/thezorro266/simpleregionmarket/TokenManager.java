@@ -160,7 +160,7 @@ public class TokenManager {
 		if (player != null && token != null && world != null && protectedRegion != null) {
 			final String region = protectedRegion.getId();
 			if (!Utils.getEntryBoolean(token, world, region, "taken")) {
-				if (protectedRegion.isOwner(player.getName())) { // TODO Player Member when bought?
+				if (protectedRegion.isOwner(SimpleRegionMarket.wgManager.wrapPlayer(player))) { // TODO Player Member when bought?
 					return true;
 				}
 			} else {
