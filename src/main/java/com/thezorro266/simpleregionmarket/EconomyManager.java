@@ -12,12 +12,17 @@ import com.thezorro266.simpleregionmarket.handlers.LanguageHandler;
 
 public class EconomyManager {
 	private final LanguageHandler langHandler;
+	private final SimpleRegionMarket plugin;
 
 	private int enableEconomy;
 	private Economy economy;
 
 	public EconomyManager(SimpleRegionMarket plugin, LanguageHandler langHandler) {
+		this.plugin = plugin;
 		this.langHandler = langHandler;
+	}
+
+	public void setupEconomy() {
 		final Server server = plugin.getServer();
 		enableEconomy = SimpleRegionMarket.configurationHandler.getConfig().getBoolean("enable_economy") ? 1 : 0;
 		if (enableEconomy > 0) {
@@ -28,7 +33,7 @@ public class EconomyManager {
 				enableEconomy = 1;
 			} else {
 				enableEconomy = 2;
-				if (!setupEconomy()) {
+				if (!setupVaultEconomy()) {
 					langHandler.consoleOut("MAIN.WARN.VAULT_NO_ECO");
 					enableEconomy = 0;
 				}
@@ -36,7 +41,7 @@ public class EconomyManager {
 		}
 	}
 
-	private Boolean setupEconomy() {
+	private Boolean setupVaultEconomy() {
 		final RegisteredServiceProvider<Economy> economyProvider = Bukkit.getServer().getServicesManager()
 				.getRegistration(net.milkbowl.vault.economy.Economy.class);
 		if (economyProvider != null) {
@@ -57,7 +62,7 @@ public class EconomyManager {
 	}
 
 	public boolean isEconomy() {
-		return enableEconomy > 0 && (enableEconomy != 1 || getEconomicManager() != null);
+		return enableEconomy > 1 || (enableEconomy == 1 && getEconomicManager() != null);
 	}
 
 	public boolean econGiveMoney(String account, double money) throws Exception {

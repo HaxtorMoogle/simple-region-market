@@ -18,6 +18,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import com.thezorro266.simpleregionmarket.SimpleRegionMarket;
+import com.thezorro266.simpleregionmarket.Utils;
 
 public class LanguageHandler {
 	private final FileConfiguration languageFile = new YamlConfiguration();
@@ -25,8 +26,34 @@ public class LanguageHandler {
 
 	public LanguageHandler(SimpleRegionMarket plugin) {
 		this.plugin = plugin;
-		if (!new File(SimpleRegionMarket.getPluginDir() + "en.yml").exists()) {
+
+		try {
+			languageFile.load(SimpleRegionMarket.getPluginDir() + "en.yml");
+		} catch (final FileNotFoundException e) {
 			plugin.saveResource("en.yml", false);
+			return;
+		} catch (final IOException e) {
+			e.printStackTrace();
+			return;
+		} catch (final InvalidConfigurationException e) {
+			e.printStackTrace();
+			return;
+		}
+		final String languageVersion = languageFile.getString("version");
+		try {
+			languageFile.load(plugin.getResource("en.yml"));
+		} catch (final IOException e) {
+			e.printStackTrace();
+			return;
+		} catch (final InvalidConfigurationException e) {
+			e.printStackTrace();
+			return;
+		}
+		if (languageFile.getString("version") == null) {
+			return;
+		}
+		if (languageVersion == null || Utils.compareVersions(languageFile.getString("version"), languageVersion) == 1) {
+			plugin.saveResource("en.yml", true);
 		}
 	}
 
@@ -39,28 +66,32 @@ public class LanguageHandler {
 	}
 
 	public void consoleOut(String id) {
-		String[] split = id.split(".");
-		String levelID = split[1];
+		final String[] split = id.split("\\.");
+		if (split.length < 3) {
+			consoleDirectOut(Level.WARNING, "Could not resolve language ID '" + id + "'.");
+			return;
+		}
+		final String levelID = split[1];
 		String prefix = "";
 		Level msgLevel = Level.INFO;
-		
-		if(levelID.equalsIgnoreCase("norm")) {
+
+		if (levelID.equalsIgnoreCase("norm")) {
 			msgLevel = Level.INFO;
-		} else if(levelID.equalsIgnoreCase("error")) {
+		} else if (levelID.equalsIgnoreCase("error")) {
 			msgLevel = Level.SEVERE;
-		} else if(levelID.equalsIgnoreCase("warn")) {
+		} else if (levelID.equalsIgnoreCase("warn")) {
 			msgLevel = Level.WARNING;
-		} else if(levelID.equalsIgnoreCase("log")) {
+		} else if (levelID.equalsIgnoreCase("log")) {
 			msgLevel = Level.INFO;
-		} else if(levelID.equalsIgnoreCase("debug")) {
+		} else if (levelID.equalsIgnoreCase("debug")) {
 			msgLevel = Level.INFO;
 			prefix = "Debug: ";
 		}
-		if(msgLevel != null) {
+		if (msgLevel != null) {
 			consoleDirectOut(msgLevel, prefix + parseLanguageString(id, null));
 		}
 	}
-	
+
 	public void playerDirectOut(Player p, ChatColor color, String string) {
 		p.sendMessage(ChatColor.WHITE + "[" + ChatColor.DARK_BLUE + "SRM" + ChatColor.WHITE + "] " + color + string);
 	}

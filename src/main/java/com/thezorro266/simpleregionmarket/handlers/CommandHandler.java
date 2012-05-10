@@ -46,9 +46,9 @@ public class CommandHandler implements CommandExecutor {
 				langHandler.consoleDirectOut(Level.INFO, "loaded version " + plugin.getDescription().getVersion() + ",  " + Utils.getCopyright());
 			}
 		} else if (args[0].equalsIgnoreCase("untake")) {
-			if(args.length < 2) {
+			if (args.length < 2) {
 				if (player == null) {
-					
+
 				} else {
 					langHandler.playerListOut(player, "CMD.UNTAKE.NO_ARG", null);
 				}
@@ -56,15 +56,15 @@ public class CommandHandler implements CommandExecutor {
 			}
 
 		} else if (args[0].equalsIgnoreCase("remove")) {
-			if(args.length < 2) {
+			if (args.length < 2) {
 				if (player == null) {
-					
+
 				} else {
 					langHandler.playerListOut(player, "CMD.REMOVE.NO_ARG", null);
 				}
 				return true;
 			}
-			
+
 		} else if (args[0].equalsIgnoreCase("list")) { // TODO Can list own and rented regions
 			if (player == null) {
 				langHandler.consoleDirectOut(Level.INFO, "Not yet implemented");

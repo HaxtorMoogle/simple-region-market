@@ -92,7 +92,7 @@ public class TokenManager {
 				final World worldWorld = Bukkit.getWorld(world);
 				if (worldWorld == null) {
 					if (!worldsHad.contains(world)) {
-						ArrayList<String> list = new ArrayList<String>();
+						final ArrayList<String> list = new ArrayList<String>();
 						list.add(world);
 						langHandler.consoleOut("CHECK.WARN.NO_WORLD", Level.WARNING, list);
 					}
@@ -105,7 +105,7 @@ public class TokenManager {
 						final ProtectedRegion protectedRegion = SimpleRegionMarket.wgManager.getProtectedRegion(worldWorld, region);
 						if (protectedRegion == null) {
 							if (!regionsHad.contains(region)) {
-								ArrayList<String> list = new ArrayList<String>();
+								final ArrayList<String> list = new ArrayList<String>();
 								list.add(region);
 								langHandler.consoleOut("CHECK.WARN.NO_REGION", Level.WARNING, list);
 							}
@@ -146,7 +146,7 @@ public class TokenManager {
 				} else if (type.equalsIgnoreCase("hotel")) {
 					tokenList.add(new TemplateHotel(plugin, langHandler, this, key));
 				} else {
-					ArrayList<String> list = new ArrayList<String>();
+					final ArrayList<String> list = new ArrayList<String>();
 					list.add(type);
 					langHandler.consoleOut("TEMPLATES.WARN.TYPE_NOT_KOWN", Level.WARNING, list);
 				}

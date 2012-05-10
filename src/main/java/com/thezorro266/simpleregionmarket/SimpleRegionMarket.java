@@ -61,6 +61,8 @@ public class SimpleRegionMarket extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		econManager.setupEconomy();
+
 		tokenManager = new TokenManager(this, langHandler);
 		tokenManager.initTemplates();
 

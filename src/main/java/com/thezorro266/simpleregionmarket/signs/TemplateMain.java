@@ -142,7 +142,7 @@ public abstract class TemplateMain {
 						replacementMap.put("id_taken", Utils.getOptionString(this, "taken.id"));
 						replacementMap.put("world", world.toLowerCase());
 						replacementMap.put("region", region.toLowerCase());
-						if (SimpleRegionMarket.econManager.isEconomy() || Utils.getEntryDouble(this, world, region, "price") == 0) {
+						if (!SimpleRegionMarket.econManager.isEconomy() || Utils.getEntryDouble(this, world, region, "price") == 0) {
 							replacementMap.put("price", "FREE");
 						} else {
 							replacementMap.put("price", SimpleRegionMarket.econManager.econFormat(Utils.getEntryDouble(this, world, region, "price")));
@@ -270,20 +270,24 @@ public abstract class TemplateMain {
 		final String region = protectedRegion.getId();
 
 		if (!entries.containsKey(world) || !entries.get(world).containsKey(region)) {
+			final double priceMin = Utils.getOptionDouble(this, "price.min");
+			final double priceMax = Utils.getOptionDouble(this, "price.max");
 			double price;
-			if (SimpleRegionMarket.econManager.isEconomy() && input.get("price") != null) {
-				try {
-					price = Double.parseDouble(input.get("price"));
-				} catch (final Exception e) {
-					langHandler.playerErrorOut(player, "PLAYER.ERROR.NO_PRICE", null);
-					return false;
+			if (SimpleRegionMarket.econManager.isEconomy()) {
+				if (input.get("price") != null) {
+					try {
+						price = Double.parseDouble(input.get("price"));
+					} catch (final Exception e) {
+						langHandler.playerErrorOut(player, "PLAYER.ERROR.NO_PRICE", null);
+						return false;
+					}
+				} else {
+					price = priceMin;
 				}
 			} else {
 				price = 0;
 			}
 
-			final double priceMin = Utils.getOptionDouble(this, "price.min");
-			final double priceMax = Utils.getOptionDouble(this, "price.max");
 			if (priceMin > price && (priceMax == -1 || price < priceMax)) {
 				final ArrayList<String> list = new ArrayList<String>();
 				list.add(String.valueOf(priceMin));

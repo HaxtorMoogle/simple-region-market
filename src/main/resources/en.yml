@@ -1,3 +1,4 @@
+version: ${majorversion}
 MAIN:
   WARN:
     NO_ECO_API: Neither Register nor Vault was found - Switching to economy-free version

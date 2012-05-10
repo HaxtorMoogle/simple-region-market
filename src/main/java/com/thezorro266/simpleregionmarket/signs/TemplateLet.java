@@ -70,15 +70,19 @@ public class TemplateLet extends TemplateMain {
 			final double priceMin = Utils.getOptionDouble(this, "price.min");
 			final double priceMax = Utils.getOptionDouble(this, "price.max");
 			double price;
-			if (SimpleRegionMarket.econManager.isEconomy() && input.get("price") != null) {
-				try {
-					price = Double.parseDouble(input.get("price"));
-				} catch (final Exception e) {
-					langHandler.playerErrorOut(player, "PLAYER.ERROR.NO_PRICE", null);
-					return false;
+			if (SimpleRegionMarket.econManager.isEconomy()) {
+				if (input.get("price") != null) {
+					try {
+						price = Double.parseDouble(input.get("price"));
+					} catch (final Exception e) {
+						langHandler.playerErrorOut(player, "PLAYER.ERROR.NO_PRICE", null);
+						return false;
+					}
+				} else {
+					price = priceMin;
 				}
 			} else {
-				price = priceMin;
+				price = 0;
 			}
 
 			if (priceMin > price && (priceMax == -1 || price < priceMax)) {

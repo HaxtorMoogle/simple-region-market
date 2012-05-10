@@ -310,6 +310,26 @@ public class Utils {
 		return time;
 	}
 
+	public static int compareVersions(String v1, String v2) {
+		final String s1 = normalisedVersion(v1);
+		final String s2 = normalisedVersion(v2);
+		final int cmp = s1.compareToIgnoreCase(s2);
+		return (cmp < 0 ? 2 : cmp > 0 ? 1 : 0);
+	}
+
+	public static String normalisedVersion(String version) {
+		return normalisedVersion(version, ".", 4);
+	}
+
+	public static String normalisedVersion(String version, String sep, int maxWidth) {
+		final String[] split = Pattern.compile(sep, Pattern.LITERAL).split(version);
+		final StringBuilder sb = new StringBuilder();
+		for (final String s : split) {
+			sb.append(String.format("%" + maxWidth + 's', s));
+		}
+		return sb.toString();
+	}
+
 	/**
 	 * Returns the Copyright.
 	 * 

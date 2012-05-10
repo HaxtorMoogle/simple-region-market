@@ -52,11 +52,13 @@ public class TemplateHotel extends TemplateLet {
 		if (Utils.getEntryBoolean(this, world, region, "taken")) {
 			if (Utils.getEntryLong(this, world, region, "expiredate") < System.currentTimeMillis()) {
 				untakeRegion(world, region);
-				final Player player = Bukkit.getPlayer(Utils.getEntryString(this, world, region, "owner"));
-				if (player != null) {
-					ArrayList<String> list = new ArrayList<String>();
-					list.add(region);
-					langHandler.playerNormalOut(player, "PLAYER.REGION.EXPIRED", list);
+				if (Utils.getEntry(this, world, region, "owner") != null) {
+					final Player player = Bukkit.getPlayer(Utils.getEntryString(this, world, region, "owner"));
+					if (player != null) {
+						final ArrayList<String> list = new ArrayList<String>();
+						list.add(region);
+						langHandler.playerNormalOut(player, "PLAYER.REGION.EXPIRED", list);
+					}
 				}
 			}
 		}
