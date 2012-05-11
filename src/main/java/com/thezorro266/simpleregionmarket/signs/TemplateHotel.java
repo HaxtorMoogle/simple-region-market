@@ -51,7 +51,6 @@ public class TemplateHotel extends TemplateLet {
 	public void schedule(String world, String region) {
 		if (Utils.getEntryBoolean(this, world, region, "taken")) {
 			if (Utils.getEntryLong(this, world, region, "expiredate") < System.currentTimeMillis()) {
-				untakeRegion(world, region);
 				if (Utils.getEntry(this, world, region, "owner") != null) {
 					final Player player = Bukkit.getPlayer(Utils.getEntryString(this, world, region, "owner"));
 					if (player != null) {
@@ -60,6 +59,7 @@ public class TemplateHotel extends TemplateLet {
 						langHandler.playerNormalOut(player, "PLAYER.REGION.EXPIRED", list);
 					}
 				}
+				untakeRegion(world, region);
 			}
 		}
 	}

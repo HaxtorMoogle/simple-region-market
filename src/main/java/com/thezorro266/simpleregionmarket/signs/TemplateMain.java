@@ -201,9 +201,7 @@ public abstract class TemplateMain {
 			}
 			final double price = Utils.getEntryDouble(this, world, region, "price");
 			if (SimpleRegionMarket.econManager.moneyTransaction(player.getName(), account, price)) {
-				if (account == null) {
-					takeRegion(player, world, region);
-				}
+				takeRegion(player, world, region);
 			}
 		} else {
 			takeRegion(player, world, region);

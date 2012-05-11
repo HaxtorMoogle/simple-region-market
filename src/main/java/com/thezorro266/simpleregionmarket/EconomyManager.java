@@ -1,5 +1,7 @@
 package com.thezorro266.simpleregionmarket;
 
+import java.util.logging.Level;
+
 import net.milkbowl.vault.economy.Economy;
 
 import org.bukkit.Bukkit;
@@ -65,32 +67,43 @@ public class EconomyManager {
 		return enableEconomy > 1 || (enableEconomy == 1 && getEconomicManager() != null);
 	}
 
-	public boolean econGiveMoney(String account, double money) throws Exception {
-		final boolean ret = true;
-		if (enableEconomy == 1) {
-			if (getEconomicManager() != null) {
-				if (money > 0) {
-					getEconomicManager().getAccount(account).add(money);
-				} else {
-					getEconomicManager().getAccount(account).subtract(-money);
+	public boolean econGiveMoney(String account, double money) {
+		if(money == 0) {
+			langHandler.consoleDirectOut(Level.FINEST, "[EconomyManager] Money is zero");
+			return true;
+		}
+		try {
+			if (enableEconomy == 1) {
+				if (getEconomicManager() != null) {
+					if (money > 0) {
+						langHandler.consoleDirectOut(Level.FINEST, "[EconomyManager - Register] Adding " + String.valueOf(money) + " to Account " + account);
+						getEconomicManager().getAccount(account).add(money);
+					} else {
+						langHandler.consoleDirectOut(Level.FINEST, "[EconomyManager - Register] Subtracting " + String.valueOf(money) + " from Account " + account);
+						getEconomicManager().getAccount(account).subtract(-money);
+					}
 				}
-			}
-		} else if (enableEconomy == 2) {
-			try {
+			} else if (enableEconomy == 2) {
 				if (money > 0) {
+					langHandler.consoleDirectOut(Level.FINEST, "[EconomyManager - Register] Adding " + String.valueOf(money) + " to Account " + account);
 					economy.depositPlayer(account, money);
 				} else {
+					langHandler.consoleDirectOut(Level.FINEST, "[EconomyManager] Money is zero");
 					economy.withdrawPlayer(account, -money);
 				}
-			} catch (final Exception e) {
-				throw e;
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
 		}
-		return ret;
+		return true;
 	}
 
 	public boolean econHasEnough(String account, double money) {
 		boolean ret = false;
+		if(money == 0) {
+			return true;
+		}
 		if (enableEconomy == 1) {
 			if (getEconomicManager() != null) {
 				ret = getEconomicManager().getAccount(account).hasEnough(money);

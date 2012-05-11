@@ -33,15 +33,28 @@ public class TemplateLet extends TemplateMain {
 	public void takeRegion(Player newOwner, String world, String region) {
 		final ProtectedRegion protectedRegion = SimpleRegionMarket.wgManager.getProtectedRegion(Bukkit.getWorld(world), region);
 
-		// Clear Members and Owners
-		protectedRegion.setMembers(new DefaultDomain());
-		protectedRegion.setOwners(new DefaultDomain());
+		if (Utils.getEntryBoolean(this, world, region, "taken")) {
+			final Player oldOwner = Bukkit.getPlayer(Utils.getEntryString(this, world, region, "owner"));
+			final ArrayList<String> list = new ArrayList<String>();
+			list.add(region);
+			list.add(newOwner.getName());
+			langHandler.playerNormalOut(oldOwner, "PLAYER.REGION.JUST_TAKEN_BY", list);
+			untakeRegion(world, region);
+		} else {
+			// Clear Members and Owners
+			protectedRegion.setMembers(new DefaultDomain());
+			protectedRegion.setOwners(new DefaultDomain());
+		}
 
 		protectedRegion.getMembers().addPlayer(SimpleRegionMarket.wgManager.wrapPlayer(newOwner));
 
 		Utils.setEntry(this, world, region, "taken", true);
 		Utils.setEntry(this, world, region, "owner", newOwner.getName());
 		Utils.setEntry(this, world, region, "expiredate", System.currentTimeMillis() + Utils.getEntryLong(this, world, region, "renttime"));
+
+		final ArrayList<String> list = new ArrayList<String>();
+		list.add(region);
+		langHandler.playerNormalOut(newOwner, "PLAYER.REGION.RENT", list);
 
 		tokenManager.updateSigns(this, world, region);
 	}
@@ -147,6 +160,31 @@ public class TemplateLet extends TemplateMain {
 
 	@Override
 	public void schedule(String world, String region) {
-		// TODO Automatic extend
+		if (Utils.getEntryBoolean(this, world, region, "taken")) {
+			if (Utils.getEntryLong(this, world, region, "expiredate") < System.currentTimeMillis()) {
+				if (Utils.getEntry(this, world, region, "owner") != null) {
+					String owner = Utils.getEntryString(this, world, region, "owner");
+					String account = Utils.getEntryString(this, world, region, "account");
+					Double price = Utils.getEntryDouble(this, world, region, "price");
+					final Player player = Bukkit.getPlayer(owner);
+					if(SimpleRegionMarket.econManager.econHasEnough(owner, price)) {
+						if (SimpleRegionMarket.econManager.moneyTransaction(owner, account, price)) {
+							if(player != null) {
+								final ArrayList<String> list = new ArrayList<String>();
+								list.add(region);
+								langHandler.playerNormalOut(player, "PLAYER.REGION.AUTO_EXPANDED", list);
+							}
+							return;
+						}
+					}
+					if (player != null) {
+						final ArrayList<String> list = new ArrayList<String>();
+						list.add(region);
+						langHandler.playerNormalOut(player, "PLAYER.REGION.EXPIRED", list);
+					}
+				}
+				untakeRegion(world, region);
+			}
+		}
 	}
 }

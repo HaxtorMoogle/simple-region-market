@@ -41,10 +41,12 @@ PLAYER:
   REGION:
     YOURS: This is your region.
     BOUGHT: You successfully bought the region $0.
+    RENT: You successfully rented the region $0.
     JUST_TAKEN_BY: The region $0 was just taken by $1.
     TAKEN_BY: This region is owned by $0.
     ADDED_SIGN: Successfully added this sign to the region.
     ADDED_RENTTIME: You successfully extended your room's time.
+    AUTO_EXPANDED: Your region $0 got automatically expanded.
     DELETED_SIGN: Deleted that sign from the region.
     DELETED: Successfully deleted the region.
     EXPIRED: Your region $0 expired.
