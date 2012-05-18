@@ -163,13 +163,13 @@ public class TemplateLet extends TemplateMain {
 		if (Utils.getEntryBoolean(this, world, region, "taken")) {
 			if (Utils.getEntryLong(this, world, region, "expiredate") < System.currentTimeMillis()) {
 				if (Utils.getEntry(this, world, region, "owner") != null) {
-					String owner = Utils.getEntryString(this, world, region, "owner");
-					String account = Utils.getEntryString(this, world, region, "account");
-					Double price = Utils.getEntryDouble(this, world, region, "price");
+					final String owner = Utils.getEntryString(this, world, region, "owner");
+					final String account = Utils.getEntryString(this, world, region, "account");
+					final Double price = Utils.getEntryDouble(this, world, region, "price");
 					final Player player = Bukkit.getPlayer(owner);
-					if(SimpleRegionMarket.econManager.econHasEnough(owner, price)) {
+					if (SimpleRegionMarket.econManager.econHasEnough(owner, price)) {
 						if (SimpleRegionMarket.econManager.moneyTransaction(owner, account, price)) {
-							if(player != null) {
+							if (player != null) {
 								final ArrayList<String> list = new ArrayList<String>();
 								list.add(region);
 								langHandler.playerNormalOut(player, "PLAYER.REGION.AUTO_EXPANDED", list);

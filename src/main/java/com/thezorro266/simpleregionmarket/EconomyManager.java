@@ -68,7 +68,7 @@ public class EconomyManager {
 	}
 
 	public boolean econGiveMoney(String account, double money) {
-		if(money == 0) {
+		if (money == 0) {
 			langHandler.consoleDirectOut(Level.FINEST, "[EconomyManager] Money is zero");
 			return true;
 		}
@@ -79,7 +79,8 @@ public class EconomyManager {
 						langHandler.consoleDirectOut(Level.FINEST, "[EconomyManager - Register] Adding " + String.valueOf(money) + " to Account " + account);
 						getEconomicManager().getAccount(account).add(money);
 					} else {
-						langHandler.consoleDirectOut(Level.FINEST, "[EconomyManager - Register] Subtracting " + String.valueOf(money) + " from Account " + account);
+						langHandler.consoleDirectOut(Level.FINEST, "[EconomyManager - Register] Subtracting " + String.valueOf(money) + " from Account "
+								+ account);
 						getEconomicManager().getAccount(account).subtract(-money);
 					}
 				}
@@ -92,7 +93,7 @@ public class EconomyManager {
 					economy.withdrawPlayer(account, -money);
 				}
 			}
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 			return false;
 		}
@@ -101,7 +102,7 @@ public class EconomyManager {
 
 	public boolean econHasEnough(String account, double money) {
 		boolean ret = false;
-		if(money == 0) {
+		if (money == 0) {
 			return true;
 		}
 		if (enableEconomy == 1) {
@@ -131,10 +132,11 @@ public class EconomyManager {
 			if (to == null) {
 				if (econHasEnough(from, money)) {
 					econGiveMoney(from, -money);
+					return true;
 				} else {
 					langHandler.playerErrorOut(Bukkit.getPlayer(from), "PLAYER.ERROR.NO_MONEY", null);
+					return false;
 				}
-				return true;
 			} else if (from == null) {
 				econGiveMoney(to, money);
 				return true;
@@ -142,10 +144,11 @@ public class EconomyManager {
 				if (econHasEnough(from, money)) {
 					econGiveMoney(from, -money);
 					econGiveMoney(to, money);
+					return true;
 				} else {
 					langHandler.playerErrorOut(Bukkit.getPlayer(from), "PLAYER.ERROR.NO_MONEY", null);
+					return false;
 				}
-				return true;
 			}
 		} catch (final Exception e) {
 			e.printStackTrace();
