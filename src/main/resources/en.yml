@@ -19,9 +19,12 @@ TEMPLATES:
     NO_STANDARD_TEMPLATES: Could not create standard templates
 CMD:
   UNTAKE:
-    NO_ARG: 'Usage: /rm untake <region> - Removes the owners and members from the region'
+    NO_ARG: 'Usage: /rm untake <region> (<world>)- Removes the owners and members from the region'
+    CONSOLE_NOWORLD: You have to give the world in the console
+    SUCCESS: Region $0 in world $1 has been successfully untaken.
+    NO_REGION: Region $0 was not found in world $1.
   REMOVE:
-    NO_ARG: 'Usage: /rm rem <region> - Removes the region out of the system'
+    NO_ARG: 'Usage: /rm rem <region> (<world>) - Removes the region out of the system'
 PLAYER:
   ERROR:
     ECO_PROBLEM: There was a problem with transfering the money.
@@ -36,6 +39,7 @@ PLAYER:
     NEED_ONE_SIGN: This template needs at least one sign when it's taken.
     OTHER_TOKEN: You can't create a sign from this token, when there are signs from other tokens.
   NO_PERMISSIONS:
+    NORM: You do not have permission to do this.
     BUY: You do not have the permission to buy that region.
     SELL: You do not have the permission to sell that region.
   REGION:
