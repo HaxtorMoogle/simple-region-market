@@ -102,7 +102,7 @@ public class CommandHandler implements CommandExecutor {
 			} else {
 				langHandler.playerErrorOut(player, "PLAYER.NO_PERMISSIONS.NORM", null);
 			}
-		} else if (args[0].equalsIgnoreCase("remove")) {
+		} else if (args[0].equalsIgnoreCase("remove")) { // TODO taken regions can be deleted directly
 			if (args.length < 2) {
 				if (player == null) {
 

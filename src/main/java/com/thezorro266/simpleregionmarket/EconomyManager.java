@@ -19,11 +19,13 @@ public class EconomyManager {
 	private int enableEconomy;
 	private Economy economy;
 
+	// TODO Make iConomy working
 	public EconomyManager(SimpleRegionMarket plugin, LanguageHandler langHandler) {
 		this.plugin = plugin;
 		this.langHandler = langHandler;
 	}
 
+	// TODO Remove Vault and take Register instead
 	public void setupEconomy() {
 		final Server server = plugin.getServer();
 		enableEconomy = SimpleRegionMarket.configurationHandler.getConfig().getBoolean("enable_economy") ? 1 : 0;

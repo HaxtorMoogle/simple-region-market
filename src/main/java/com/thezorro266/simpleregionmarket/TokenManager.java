@@ -59,6 +59,7 @@ public class TokenManager {
 			final String[] lines = new String[Utils.SIGN_LINES];
 			for (int i = 0; i < Utils.SIGN_LINES; i++) {
 				String line;
+				// TODO Replace color-codes with real color-codes
 				if (Utils.getEntryBoolean(token, world, region, "taken")) {
 					line = Utils.getOptionString(token, "taken." + (i + 1));
 				} else {

@@ -36,6 +36,7 @@ public class Utils {
 		return buffer.toString();
 	}
 
+	// TODO Make more inputs per line possible (example: '[[price]]:[[time]]')
 	public static HashMap<String, String> getSignInput(TemplateMain token, String[] lines) {
 		final HashMap<String, String> hashMap = new HashMap<String, String>();
 		for (int i = 0; i < lines.length; i++) {
