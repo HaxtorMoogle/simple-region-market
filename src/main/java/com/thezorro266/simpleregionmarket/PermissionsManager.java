@@ -10,11 +10,11 @@ public class PermissionsManager {
 	}
 
 	public boolean canPlayerBuyToken(Player player, TemplateMain token) {
-		return player.hasPermission("simpleregionmarket." + token.id + ".buy");
+		return player.hasPermission("simpleregionmarket." + token.id + ".take");
 	}
 
 	public boolean canPlayerSellToken(Player player, TemplateMain token) {
-		return player.hasPermission("simpleregionmarket." + token.id + ".sell");
+		return player.hasPermission("simpleregionmarket." + token.id + ".offer");
 	}
 
 	public boolean isAdmin(Player player) {
