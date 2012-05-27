@@ -17,14 +17,16 @@ TEMPLATES:
     TYPE_NOT_KOWN: I don't know the template type $0
   ERROR:
     NO_STANDARD_TEMPLATES: Could not create standard templates
+COMMON:
+  CONSOLE_NOWORLD: You have to give the world in the console
+  NO_REGION: Region $0 was not found in world $1.
 CMD:
   UNTAKE:
     NO_ARG: 'Usage: /rm untake <region> (<world>)- Removes the owners and members from the region'
-    CONSOLE_NOWORLD: You have to give the world in the console
-    SUCCESS: Region $0 in world $1 has been successfully untaken.
-    NO_REGION: Region $0 was not found in world $1.
+    SUCCESS: Region $0 in world $1 has been untaken.
   REMOVE:
-    NO_ARG: 'Usage: /rm rem <region> (<world>) - Removes the region out of the system'
+    NO_ARG: 'Usage: /rm remove <region> (<world>) - Removes the region out of the system'
+    SUCCESS: Region $0 in world $1 has been removed.
 PLAYER:
   ERROR:
     ECO_PROBLEM: There was a problem with transfering the money.

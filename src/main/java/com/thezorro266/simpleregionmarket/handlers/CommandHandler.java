@@ -66,7 +66,7 @@ public class CommandHandler implements CommandExecutor {
 						world = args[2];
 					} else {
 						if (isConsole) {
-							langHandler.consoleOut("CMD.UNTAKE.CONSOLE_NOWORLD", Level.SEVERE, null);
+							langHandler.consoleOut("COMMON.CONSOLE_NOWORLD", Level.SEVERE, null);
 							return true;
 						} else {
 							world = player.getWorld().getName();
@@ -93,22 +93,67 @@ public class CommandHandler implements CommandExecutor {
 						}
 					} else {
 						if (isConsole) {
-							langHandler.consoleOut("CMD.UNTAKE.NO_REGION", Level.WARNING, list);
+							langHandler.consoleOut("COMMON.NO_REGION", Level.WARNING, list);
 						} else {
-							langHandler.playerErrorOut(player, "CMD.UNTAKE.NO_REGION", list);
+							langHandler.playerErrorOut(player, "COMMON.NO_REGION", list);
 						}
 					}
 				}
 			} else {
 				langHandler.playerErrorOut(player, "PLAYER.NO_PERMISSIONS.NORM", null);
 			}
-		} else if (args[0].equalsIgnoreCase("remove")) { // TODO taken regions can be deleted directly
-			if (args.length < 2) {
-				if (player == null) {
-
+		} else if (args[0].equalsIgnoreCase("remove")) {
+			if (isConsole || SimpleRegionMarket.permManager.isAdmin(player)) {
+				if (args.length < 2) {
+					if (isConsole) {
+						langHandler.consoleOut("CMD.REMOVE.NO_ARG", Level.INFO, null);
+					} else {
+						langHandler.playerListOut(player, "CMD.REMOVE.NO_ARG", null);
+					}
+					return true;
 				} else {
-					langHandler.playerListOut(player, "CMD.REMOVE.NO_ARG", null);
+					final String region = args[1];
+					String world;
+					if (args.length > 2) {
+						world = args[2];
+					} else {
+						if (isConsole) {
+							langHandler.consoleOut("COMMON.CONSOLE_NOWORLD", Level.SEVERE, null);
+							return true;
+						} else {
+							world = player.getWorld().getName();
+						}
+					}
+					Boolean found = false;
+					for (final TemplateMain token : TokenManager.tokenList) {
+						if (Utils.getEntry(token, world, region, "taken") != null) {
+							if (Utils.getEntryBoolean(token, world, region, "taken")) {
+								token.untakeRegion(world, region);
+								Utils.removeRegion(token, world, region);
+								found = true;
+								break;
+							}
+						}
+					}
+					final ArrayList<String> list = new ArrayList<String>();
+					list.add(region);
+					list.add(world);
+					if (found) {
+						if (isConsole) {
+							langHandler.consoleOut("CMD.REMOVE.SUCCESS", Level.INFO, list);
+						} else {
+							langHandler.playerNormalOut(player, "CMD.REMOVE.SUCCESS", list);
+						}
+					} else {
+						if (isConsole) {
+							langHandler.consoleOut("COMMON.NO_REGION", Level.WARNING, list);
+						} else {
+							langHandler.playerErrorOut(player, "COMMON.NO_REGION", list);
+						}
+					}
 				}
+			} else {
+				langHandler.playerErrorOut(player, "PLAYER.NO_PERMISSIONS.NORM", null);
 			}
 		} else if (args[0].equalsIgnoreCase("list")) { // TODO Can list own and rented regions
 			if (player == null) {
